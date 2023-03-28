@@ -1,0 +1,43 @@
+<!-- HTML code -->
+<button id="start-button">Start recording</button>
+<button id="stop-button">Stop recording</button>
+
+<script>
+  const startButton = document.getElementById("start-button");
+  const stopButton = document.getElementById("stop-button");
+
+  let recording = false;
+  let recognition = null;
+
+  startButton.addEventListener("click", () => {
+    if (!recording) {
+      recognition = new window.webkitSpeechRecognition(); // instantiate the speech recognition object
+      recognition.continuous = true; // keep recording until stop button is clicked
+      recognition.start(); // start recording
+
+      recording = true;
+      console.log("Recording started.");
+    }
+  });
+
+  stopButton.addEventListener("click", () => {
+    if (recording) {
+      recognition.stop(); // stop recording
+
+      recording = false;
+      console.log("Recording stopped.");
+    }
+  });
+
+  recognition.onresult = (event) => {
+    // get the transcript of the speech
+    const transcript = event.results[event.results.length - 1][0].transcript;
+    console.log("Transcript:", transcript);
+
+    // send an AJAX request to the Django view to save the audio file
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "/home/");
+    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhr.send(JSON.stringify({ transcript }));
+  };
+</script>

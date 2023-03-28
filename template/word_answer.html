@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+  <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/jquery.knob/1.2.13/jquery.knob.min.js"></script>
+
+  <title>Parakh</title>
+</head>
+
+<body>
+  <div class="background-image"></div>
+
+  <style>
+    .background-image {
+      background-image: url("{% static 'images/parakh 1.png'%}");
+      background-size: cover;
+      background-position: center center;
+      background-attachment: fixed;
+      height: 100%;
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+
+    .a {
+      background-color: #093966;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 10px;
+    }
+
+    a {
+      background-color: #ffffff;
+      border: none;
+      color: white;
+      padding: 0px 35px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      /* font-size: 16px; */
+      margin: -4px 0px;
+      cursor: pointer;
+      border-radius: 10px;
+    }
+
+    text {
+      color: #093966;
+      font-size: 35px;
+    }
+
+    .button {
+      background-color: #093966;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 10px;
+    }
+
+    table {
+      /* display: inline-block; */
+      margin-right: 10px;
+    }
+
+    tbody,
+    td,
+    tfoot,
+    th,
+    thead,
+    tr {
+      border-color: inherit;
+      border-style: solid;
+      border-width: 0;
+      padding: 13px;
+    }
+  </style>
+
+
+
+
+  <!-- Button trigger modal -->
+  <!-- <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal1">
+        Open modal
+    </button> -->
+
+  <!--pop up all  Modal 1 -->
+  <div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+    data-backdrop="static">
+    <div class="modal-dialog">
+      <div class="modal-content" style="width: 100%;">
+
+        <div class="modal-body">
+          <img src="{% static 'images/top_user.png'%}" alt="top_user" style="position: absolute; top: 0; left: 0;"> <br>
+          <br> <br>
+          <center>
+            <text> <b> Your Answer </b> </text> <br>
+            <!-- <p>  {{ text }}. <br> </p> <br> <br> -->
+
+
+
+            <form action="/word_answer" method="post">
+              {% csrf_token %}
+
+              <div style="display: flex; flex-wrap: wrap; max-width: 100%;">
+                <table style="flex: 1; margin-right: 10px;">
+                  <thead>
+                    <tr>
+                      <!-- <th style="text-align: center;">Word</th> -->
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for val in text %}
+                    <tr>
+                      <td style="
+                          text-align: center;   
+                          height: 94px;
+                          background-color:#97d79fa1;
+                          border: 1px solid #ccc;
+                          box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+                          border-radius: 5px;
+                          top: 143px;
+                          padding-bottom: 20px;
+                      ">
+                        <b><h4>{{ val }}</h4></b>
+                      </td>
+                    </tr>
+                    <tr style="height: 20px; vertical-align: middle;"></tr> <!-- empty row for space -->
+                    {% endfor %}
+                  </tbody>
+                  
+                
+                </table>
+                {% if copy_file %}
+                <table style="flex: 1;  margin-right: 10px;">
+                  <thead>
+                    <tr>
+                      <!-- <th>Audio File</th> -->
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for audio_url in audio_urls %}
+                    <tr>
+                      <td>
+                        <!-- <audio controls style="width: 195px" >
+                                <source src="{{ audio_url }}" type="audio/wav">
+                                Your browser does not support the audio element.
+                                </audio> -->
+                                <audio controls>
+                                  <source src="{{ audio_url }}" type="audio/wav">
+                                  Your browser does not support the audio element.
+                                  </audio>
+
+                        <a href="#" onclick="document.getElementById('my-audio').play(); return false; ">
+                          <img src="{% static 'images/play_icon.png'%}" alt="Click to play audio">
+                        </a>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+                {% endif %}
+                
+                <table style="flex: 1; margin-right: 10px;">
+                  <thead>
+                    <tr>
+                      <!-- <th style="text-align: center;">Word</th> -->
+                    </tr>
+                  </thead>
+                  <tbody>
+
+                             
+                    <tr>
+                      
+                      <form action="/next_word" method="post">
+                        {% csrf_token %}
+    
+                        <td style="text-align: center;" ><input class="a" id="record"  style="display:none;" name="record" type="submit" value="Retake"></td>
+                        
+    
+                      </form>
+                    </tr>
+                    <tr>
+                      
+                      <form action="/next_word" method="post">
+                        {% csrf_token %}
+    
+                        <td style="text-align: center;" ><input class="a" id="record" name="record" type="submit" value="Retake"></td>
+                        
+    
+                      </form>
+                    </tr>
+                    <tr>
+                      
+                      <form action="/next_word" method="post">
+                        {% csrf_token %}
+    
+                        <td style="text-align: center;" ><input class="a" id="record2" name="record2" type="submit" value="Retake"></td>
+                        
+    
+                      </form>
+                    </tr>
+                    <tr>
+                      
+                      <form action="/next_word" method="post">
+                        {% csrf_token %}
+    
+                        <td style="text-align: center;" ><input class="a" id="record3" name="record3" type="submit" value="Retake"></td>
+                        
+    
+                      </form>
+                    </tr>
+                    <tr>
+                      
+                      <form action="/next_word" method="post">
+                        {% csrf_token %}
+    
+                        <td style="text-align: center;" ><input class="a" id="record4" name="record4" type="submit" value="Retake"></td>
+                        
+    
+                      </form>
+                    </tr>
+                    <tr>
+                      
+                      <form action="/next_word" method="post">
+                        {% csrf_token %}
+    
+                        <td style="text-align: center;" ><input class="a" id="record5" name="record5" type="submit" value="Retake"></td>
+                        
+    
+                      </form>
+                    </tr>
+
+                  </tbody>
+                </table>
+              </div>
+              <!-- <input class="a" id="retake" name="retake" type="submit" value="Retake"><br><br> -->
+            </form>
+            <!-- <a href="#" style="position: absolute; top: 71%; left: 68%;"> Retake</a> <br> <br> <br> <br>  -->
+            <!-- <span>Fluency (wcpm) : {{ total_wcpm }}</span> <br> -->
+            <span>Total number of mistakes : <span style="background-color: yellow; padding: 7px 9px;"> {{ total_mis }}
+              </span> </span> <br> <br>
+
+            <!-- <input type="submit" value="Next"> -->
+            <!-- <a href="#"  >Next</a> <br> -->
+            <form action="" method="post">
+              {% csrf_token %}
+              <input class="a" id="next" name="next" type="submit" value="Next"><br><br>
+            </form>
+          </center>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- <style>
+    .highlight {
+  background-image: linear-gradient(to right, #cdc7c7ec,#cdc7c7ec,#cdc7c7ec);
+  border-radius: 6px;
+  padding: 3px 27px;
+  justify-content: space-around;
+}
+  </style> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <!-- end all popup Modal -->
+
+
+  <!-- Modal 3 script -->
+  <script>
+    let selectedImagee = null;
+
+    function selectImages(img) {
+      if (selectedImage !== null) {
+        selectedImage.style.border = "";
+      }
+      selectedImage = img;
+      selectedImage.style.border = "2px solid blue";
+    }
+
+    function submitForm() {
+      if (selectedImage === null) {
+        alert("Please select an image");
+        return false;
+      }
+      document.getElementById("selected_image").value = selectedImage.src;
+      return true;
+    }
+  </script>
+
+  <!-- all popup script -->
+  <script>
+    $("div[id^='myModal']").each(function () {
+
+      var currentModal = $(this);
+
+      //click next
+      currentModal.find('.btn-next').click(function () {
+        currentModal.modal('hide');
+        currentModal.closest("div[id^='myModal']").nextAll("div[id^='myModal']").first().modal('show');
+      });
+
+      //click prev
+      currentModal.find('.btn-prev').click(function () {
+        currentModal.modal('hide');
+        currentModal.closest("div[id^='myModal']").prevAll("div[id^='myModal']").first().modal('show');
+      });
+
+    });
+
+  </script>
+  <!-- reload and open popup -->
+  <script>
+    $(document).ready(function () {
+
+      $("#myModal1").modal('show');
+      $("myModal1").width(100);
+    });
+
+  </script>
+
+  <!-- modal 8 sound wave  -->
+  <script>
+
+    $(document).ready(function () {
+      $("#fire").modal('show');
+    });
+
+    //    spinner 
+    function showSpinner() {
+      var spinnerDialog = document.getElementById("spinner");
+      spinnerDialog.style.display = "block";
+    }
+
+    window.addEventListener("load", () => {
+      const bar = document.querySelectorAll(".bar");
+      for (let i = 0; i < bar.length; i++) {
+        bar.forEach((item, j) => {
+          // Random move
+          item.style.animationDuration = `${Math.random() * (0.7 - 0.2) + 0.2}s`; // Change the numbers for speed / ( max - min ) + min / ex. ( 0.5 - 0.1 ) + 0.1
+        });
+      }
+    });
+  </script>
+
+  <!-- modal 10 script -->
+
+  <script>
+    let selectedImage = null;
+
+    function selectImage(img) {
+      if (selectedImage !== null) {
+        selectedImage.style.border = "";
+      }
+      selectedImage = img;
+      selectedImage.style.border = "2px solid blue";
+    }
+
+    function submitForm() {
+      if (selectedImage === null) {
+        alert("Please select an image");
+        return false;
+      }
+      document.getElementById("selected_image").value = selectedImage.src;
+      return true;
+    }
+  </script>
+
+</body>
+
+</html>
