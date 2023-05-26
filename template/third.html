@@ -73,7 +73,11 @@
 
     text{
       color: #093966;
-      font-size: 35px;
+      font-size: 36px;
+    }
+    input{
+      font-size: 20px;
+
     }
 
 
@@ -101,6 +105,11 @@
                 overflow-y: auto;
                 /* / text-align:justify;  */
             }
+            .card img:hover {
+  opacity: 0.8;
+  cursor: pointer;
+  background-color: #456bbc;
+}
   </style>
 
 
@@ -125,6 +134,13 @@
                 <text> Enter child name: </text>
               </label><br>
               <input style="width: 55%; height: 40px;" type="text" id="child_name" name="child_name"/><br>
+              {% if messages %}
+              <ul class="messages">
+                  {% for message in messages %}
+                      <p{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</p>
+                  {% endfor %}
+              </ul>
+              {% endif %}
               <text>Choose Avatar </text><br>
 
               <div class="card-container scroll">

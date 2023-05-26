@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+         <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> UI block --> 
+    <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script> -->
+
+    <!-- audio script  -->
+
+
+    <!-- <script type="text/javascript" src="https://code.jquery.com/jquery.min.js"></script> -->
+    <script src="{% static 'JS/jquery.min.js' %}" type="text/javascript"></script>  
+
+    <!-- <script src="https://markjivko.com/dist/recorder.js"></script> -->
+    <script src="{% static 'JS/Recorder.js' %}" type="text/javascript"></script>  
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <title>Parakh</title>
+</head>
+
+<body>
+    <div class="background-image"></div>
+
+    <style>
+      .background-image {
+          background-image: url("{% static 'images/parakh 1.png'%}");
+          background-size: cover;
+          background-position: center center;
+          background-attachment: fixed;
+          height: 100%;
+          width: 100%;
+          position: fixed;
+          top: 0;
+          left: 0;
+          z-index: -1;
+      }
+
+      .a {
+          background-color: #093966;
+          border: none;
+          color: white;
+          padding: 15px 32px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 16px;
+          margin: 4px 2px;
+          cursor: pointer;
+          border-radius: 10px;
+      }
+      .b {
+          background-color: #a7262a;
+          border: none;
+          color: white;
+          padding: 15px 32px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 16px;
+          margin: 4px 2px;
+          cursor: pointer;
+          border-radius: 10px;
+      }
+
+
+      .text {
+          color: #093966;
+          font-size: 25px;
+          font-family: sans-serif;
+          background-color: lightblue;
+          border-radius: 10%;
+          text-align: center;
+      }
+      .form-container form {
+              display: inline-block;
+              margin-right: 10px;
+          }
+      .wav {
+          display: inline-block;
+          margin-right: 10px;
+      }
+      text {
+      color: #093966;
+      font-size: 36px;
+    }
+  </style>
+    <style>
+      body {
+  background-color: rgba(0, 0, 0, 0.5); /* darken the background */
+  opacity: 1; /* set the opacity of the background */
+}
+
+.modal {
+      display: none; 
+      position: fixed; 
+      z-index: 1;
+      padding-top: 23px;
+      left: 0;
+      top: 0;
+      width: 100%; 
+      height: 100%;
+      overflow: auto; 
+      background-color: rgb(0,0,0); 
+      background-color: rgba(0,0,0,0.4);
+    }
+
+    .modal-content {
+      position: relative;
+      background-color: #fefefe;
+      margin: auto;
+      padding: 0;
+      border: 1px solid #888;
+      width: 98%;
+      box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+      -webkit-animation-name: animatetop;
+      -webkit-animation-duration: 0.4s;
+      animation-name: animatetop;
+      animation-duration: 0.4s
+    }
+@-webkit-keyframes animatetop {
+      from {top:-300px; opacity:0} 
+      to {top:0; opacity:1}
+    }
+    
+    @keyframes animatetop {
+      from {top:-300px; opacity:0}
+      to {top:0; opacity:1}
+    }
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+    </style>
+    
+    <style>
+      /* For mobile devices */
+@media screen and (max-width: 767px) {
+  /* Center the modal vertically and horizontally */
+  #myModal .modal-dialog {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+
+  /* Set the modal content to full width */
+  #myModal .modal-content {
+    width: 100%;
+  }
+}
+
+    </style>
+ <!-- <style>
+    body {font-family: Arial, Helvetica, sans-serif;}
+    
+   
+    .modal {
+      display: none; 
+      position: fixed; 
+      z-index: 1;
+      padding-top: 23px;
+      left: 0;
+      top: 0;
+      width: 100%; 
+      height: 100%;
+      overflow: auto; 
+      background-color: rgb(0,0,0); 
+      background-color: rgba(0,0,0,0.4);
+    }
+    
+    /* / Modal Content / */
+    .modal-content {
+      position: relative;
+      background-color: #fefefe;
+      margin: auto;
+      padding: 0;
+      border: 1px solid #888;
+      width: 40%;
+      box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+      -webkit-animation-name: animatetop;
+      -webkit-animation-duration: 0.4s;
+      animation-name: animatetop;
+      animation-duration: 0.4s
+    }
+    
+    @-webkit-keyframes animatetop {
+      from {top:-300px; opacity:0} 
+      to {top:0; opacity:1}
+    }
+    
+    @keyframes animatetop {
+      from {top:-300px; opacity:0}
+      to {top:0; opacity:1}
+    }
+    
+    /* / The Close Button / */
+    .close {
+      color: white;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    
+    .close:hover,
+    .close:focus {
+      color: #000;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    
+    .modal-header {
+      padding: 2px 16px;
+      background-color: #5cb85c;
+      color: white;
+    }
+    
+    .modal-body {padding: 2px 16px;}
+    
+    .modal-footer {
+      padding: 2px 16px;
+      background-color: #5cb85c;
+      color: white;
+    }
+    text {
+      color: #093966;
+      font-size: 36px;
+    }
+    </style> -->
+
+    
+    <button id="myBtn" style="display: none;">Open Modal</button>
+    
+<div id="myModal" class="modal">
+  <div class="modal-dialog">
+
+    <div class="modal-content">
+     
+      <div class="modal-body">
+        <!-- <img src="{% static 'images/top_user.png'%}" alt="top_user"
+        style="position: absolute; top: 0; left: 0;">  -->
+        <a href="{% url 'select_profile' %}">
+          <img src="{% static 'images/top_user.png' %}" alt="top_user" style="position: absolute; top: 0; left: 0;">
+        </a>
+       <img src="{% static 'images/pratham_center.png'%}" style="position: absolute; top: 0; right: 0; padding-right: 5px; padding-top: 5px; width: 80px; height: 50px;" alt="top_user"> <br> <br>
+
+        <br> <br> <br>
+        <center>
+          <!-- <h2 class="text">Paragraph</h2> <br> -->
+          <text> <b style=" font-family: Roboto ;"> Letter </b> </text><br> <br> <br>
+
+        <p class="text">  <br> <br> {{ val }}<br> <br> <br> </p> 
+        <p class="text" style="display: none;" >  <br> <br> {{ data_id }}<br> <br> <br> </p> 
+      
+        <div class="holder">
+          <div data-role="controls">
+              <button style="display: none;" id="recordButton">Record</button>
+          </div>
+          <div data-role="recordings"></div>
+          <div class="modal-body">
+            <div class="wav">
+              <i style="font-size:45px;     padding-top: 13px;  position: absolute; left: 35%;"  class="fa">&#xf028; </i> 
+              <img src="{% static 'images/sound.gif'%}" alt="sound_waves.png" style="position: absolute;  height: 80%; width: 25%; "  > 
+              <br><br><br>
+            </div>
+           
+          </div>
+          
+      </div>
+      <div id="loader" style="display:none;">
+        <div class="spinner-border text-primary" role="status">
+            <span style="font-size: 25px; color: red;" class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+      
+      <div class="form-container">
+        
+          <form action="/submit_letter_skip" method="post">
+            {% csrf_token %}
+            <input class="b"  id="stop" type="submit" name="stop" value="Skip" >
+          </form>
+          <form action="/save_letter" method="post">
+            {% csrf_token %}
+                <input id="question" type="hidden" name="question" value=' {{ val }}' />
+                <!-- <input class="a" id="stopButton" name="stopButton"   type="submit" value="Submit"> -->
+                <input class="a" id="stopButton" name="stopButton" type="submit" value="Submit" onclick="showLoader()">
+
+          </form>
+      </div>
+    </center>
+
+       </div>
+      </div>
+      
+    </div>
+  
+  </div>
+  <script>
+    function showLoader() {
+        document.getElementById("stopButton").style.display = "none";
+        document.getElementById("stop").style.display = "none";
+
+        document.getElementById("loader").style.display = "block";
+    }
+  </script>
+  <script>
+// Get the modal
+var modal = document.getElementById("myModal");
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal
+btn.onclick = function() {
+  modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+
+  </script>
+    <script>
+        function autoClick() {
+          var button = document.getElementById("myBtn");
+          if (button) {
+            button.click();
+          }
+        }
+        setTimeout(autoClick, 100);
+      </script>
+
+
+
+<script>// Get the modal
+    document.addEventListener("DOMContentLoaded", function() {
+
+  // Get the modal
+  var modal = document.getElementById("myModal");
+
+  // Get the button that opens the modal
+  var btn = document.getElementById("myBtn");
+
+  // Get the <span> element that closes the modal
+  var span = document.getElementsByClassName("close")[0];
+
+  // When the user clicks on the button, open the modal
+  btn.onclick = function() {
+    modal.style.display = "block";
+  }
+
+  // When the user clicks on <span> (x), close the modal
+  // span.onclick = function() {
+  //   modal.style.display = "none";
+  // }
+
+  // When the user clicks anywhere outside of the modal, close it
+  window.onclick = function(event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  }
+});
+</script>
+<script>
+  history.pushState(null, null, document.URL);
+  window.addEventListener('popstate', function () {
+      history.pushState(null, null, document.URL);
+  });
+</script>
+      
+
+<!-- 
+<script>
+  jQuery(document).ready(function () {
+    var $ = jQuery;
+    var myRecorder = {
+      objects: {
+        context: null,
+        stream: null,
+        recorder: null
+      },
+      init: function () {
+        if (null === myRecorder.objects.context) {
+          myRecorder.objects.context = new (
+            window.AudioContext || window.webkitAudioContext
+          );
+        }
+      },
+      start: function () {
+        var options = {audio: true, video: false};
+        navigator.mediaDevices.getUserMedia(options).then(function (stream) {
+          myRecorder.objects.stream = stream;
+          myRecorder.objects.recorder = new Recorder(
+            myRecorder.objects.context.createMediaStreamSource(stream),
+            {numChannels: 1}
+          );
+          myRecorder.objects.recorder.record();
+          $('#recordButton').attr('disabled', true);
+          $('#stopButton').attr('disabled', false);
+        }).catch(function (err) {
+          console.log('Error accessing microphone: ' + err);
+        });
+      },
+      stop: function () {
+        if (null !== myRecorder.objects.stream) {
+          myRecorder.objects.stream.getAudioTracks()[0].stop();
+        }
+        if (null !== myRecorder.objects.recorder) {
+          myRecorder.objects.recorder.stop();
+
+          // Export the WAV file
+          myRecorder.objects.recorder.exportWAV(function (blob) {
+            // var url = (window.URL || window.webkitURL).createObjectURL(blob);
+            // var link = document.createElement('a');
+            // link.href = url;
+            // link.download = new Date().toUTCString() + '.wav';
+            // document.body.appendChild(link);
+            // link.click();
+            // document.body.removeChild(link);
+
+            var formData = new FormData();
+            formData.append('audio_blob', blob, 'recording.wav');
+            formData.append('data_id', $('#data_id').text());
+
+            $.ajax({
+              url: '/save_file',
+              type: 'POST',
+              data: formData,
+              processData: false,
+              contentType: false,
+              success: function(data) {
+                console.log('Audio file saved');
+                // Redirect to the desired page
+                window.location.href = '/answer';
+              },
+              error: function(xhr, status, error) {
+                console.log('Error saving audio file');
+              }
+            });
+
+          });
+          $('#stopButton').attr('disabled', true);
+          $('#recordButton').attr('disabled', false);
+        }
+      }
+    }; -->
+
+
+
+
+    <script>
+      window.addEventListener('load', function() {
+        var button = document.getElementById('recordButton');
+        if (button) {
+          button.click();
+        }
+      });
+        jQuery(document).ready(function () {
+    var $ = jQuery;
+    var myRecorder = {
+        objects: {
+            context: null,
+            stream: null,
+            recorder: null
+        },
+        init: function () {
+            if (null === myRecorder.objects.context) {
+                myRecorder.objects.context = new (
+                        window.AudioContext || window.webkitAudioContext
+                        );
+            }
+        },
+        // start: function () {
+        //     var options = {audio: true, video: false};
+        //     navigator.mediaDevices.getUserMedia(options).then(function (stream) {
+        //         myRecorder.objects.stream = stream;
+        //         myRecorder.objects.recorder = new Recorder(
+        //                 myRecorder.objects.context.createMediaStreamSource(stream),
+        //                 {numChannels: 1}
+        //         );
+        //         myRecorder.objects.recorder.record();
+        //         $('#recordButton').attr('disabled', true);
+        //         $('#stopButton').attr('disabled', false);
+        //     }).catch(function (err) {});
+        // },
+
+
+
+        start: function () {
+          // if (!navigator.mediaDevices) {
+          //   alert('Error: getUserMedia not supported in this browser');
+          //   return;
+          // }
+          
+          // if (location.protocol !== 'https:') {
+          //   alert('Warning: getUserMedia requires a secure context (HTTPS)');
+          // }
+          
+          var options = {audio: true, video: false};
+          navigator.mediaDevices.getUserMedia(options).then(function (stream) {
+              myRecorder.objects.stream = stream;
+              myRecorder.objects.recorder = new Recorder(
+                      myRecorder.objects.context.createMediaStreamSource(stream),
+                      {numChannels: 1}
+              );
+              myRecorder.objects.recorder.record();
+              $('#recordButton').attr('disabled', true);
+              $('#stopButton').attr('disabled', false);
+          }).catch(function (err) {});
+        },
+        stop: function () {
+            if (null !== myRecorder.objects.stream) {
+                myRecorder.objects.stream.getAudioTracks()[0].stop();
+            }
+            if (null !== myRecorder.objects.recorder) {
+                myRecorder.objects.recorder.stop();
+
+                // Export the WAV file
+                myRecorder.objects.recorder.exportWAV(function (blob) {
+                // var url = (window.URL || window.webkitURL).createObjectURL(blob);
+                // var link = document.createElement('a');
+                // link.href = url;
+                // link.download = new Date().toUTCString() + '.wav';
+                // document.body.appendChild(link);
+                // link.click();
+                // document.body.removeChild(link);
+
+                var formData = new FormData();
+                formData.append('audio_blob', blob, 'recording.wav');
+                formData.append('data_id', $('#data_id').text());
+
+                $.ajax({
+                    url: '/save_letter',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(data) {
+                        console.log('Audio file saved');
+                        // Redirect to the desired page
+                        window.location.href = '/letter_answer';
+                    },
+                    error: function(xhr, status, error) {
+                      console.log('Error saving audio file');
+                      Swal.fire({
+                          title: 'Error',
+                          text: 'There was an error saving the audio file. Please try again.',
+                          icon: 'error',
+                          confirmButtonText: 'OK'
+                      }).then((result) => {
+                          if (result.isConfirmed) {
+                              location.reload();
+                          }
+                      });
+                  }
+                });
+
+            });
+                $('#stopButton').attr('disabled', true);
+                $('#recordButton').attr('disabled', false);
+            }
+        }
+
+    };
+
+    // Prepare the recordings list
+    var listObject = $('[data-role="recordings"]');
+
+    $('#recordButton').click(function () {
+        // Initialize the recorder
+        myRecorder.init();
+
+        // Get the button state 
+        var buttonState = !!$(this).attr('data-recording');
+
+        // Toggle
+        if (!buttonState) {
+            $(this).attr('data-recording', 'true');
+            myRecorder.start();
+        } 
+    });
+
+    
+    //     $('#recordButton').click(function () {
+    // // Initialize the recorder
+    //       myRecorder.init();
+
+    //       // Get the button state 
+    //       var buttonState = !!$(this).attr('data-recording');
+
+    //       // Toggle
+    //       if (!buttonState) {
+    //           if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    //               navigator.mediaDevices.getUserMedia({audio: true, video: false})
+    //               .then(function (stream) {
+    //                   $(this).attr('data-recording', 'true');
+    //                   myRecorder.start(stream);
+    //               })
+    //               .catch(function (err) {
+    //                   console.log('Error accessing microphone:', err);
+    //               });
+    //           } else {
+    //               console.log('getUserMedia not supported');
+    //           }
+    //       } 
+    //   });
+
+    $('#stopButton').click(function () {
+        var buttonState = !!$('#recordButton').attr('data-recording');
+
+        if (buttonState) {
+            $('#recordButton').attr('data-recording', '');
+            myRecorder.stop(listObject);
+        }
+    });
+});
+    </script>
+      <script>
+        $(document).ready(function () {
+          $("#myModal1").modal('show');
+          $("myModal1").width(100);
+        });
+    
+      </script>
+     <!-- <script>
+        function autoClick() {
+          var button = document.getElementById("recordButton");
+          if (button) {
+            button.click();
+          }
+        }
+        setTimeout(autoClick, 100);
+      </script> -->
+</body>
+</html>

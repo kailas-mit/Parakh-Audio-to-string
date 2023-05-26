@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+  <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/jquery.knob/1.2.13/jquery.knob.min.js"></script>
+
+  <title>Parakh</title>
+</head>
+<body>
+  <div class="background-image"></div>
+
+  <style>
+    .background-image {
+  background-image: url("{% static 'images/parakh 1.png'%}");
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+    .a {
+      background-color: #093966;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 10px;
+    }
+
+    /* a {
+      background-color: #093966;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 10px;
+    } */
+    .b {
+            background-color: #a7262a;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
+ 
+   
+    .text{
+    color: #093966;
+    font-size: 25px;
+    font-family: sans-serif;
+    background-color: lightblue;
+      border-radius: 10%;
+      font-family: Roboto;
+  }
+
+    text {
+      color: #093966;
+      font-size: 45px;
+    }
+    
+    
+    .button {
+      background-color: #093966;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 10px;
+    }
+    form {
+    display: inline-block;
+    margin-right: 10px; /* adjust this value to add some space between the forms */
+  }
+  .highlight {
+  color: red;
+}
+  </style>
+<style>
+  @media screen and (max-width: 767px) {
+  /* Center the modal vertically */
+  #myModal1 .modal-dialog {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+
+  /* Set the modal content to full width */
+  #myModal1 .modal-content {
+    width: 100%;
+  }
+}
+</style>
+ <!--pop up all  Modal 1 -->
+ <div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+ data-backdrop="static">
+ <div class="modal-dialog">
+   <div class="modal-content">
+    
+     <div class="modal-body">
+       
+         <!-- <img src="{% static 'images/top_user.png'%}" alt="top_user" style="position: absolute; top: 0; left: 0;">  -->
+         <a href="{% url 'select_profile' %}">
+          <img src="{% static 'images/top_user.png' %}" alt="top_user" style="position: absolute; top: 0; left: 0;">
+        </a>
+         <br>
+         <br> <br>
+         <center>
+          <text> <b style="font-size: 36px; font-family: Roboto;"> Your Answer </b> </text> <br><br><br>
+          <!-- <p class="text" style="display: none;" > <br> <br> {{ text }} <br> <br><br><br>  </p> <br> <br> -->
+          <p class="text"  id="originalText"   > <br> <br> {{ originaltext }} <br> <br>  </p> 
+          
+
+
+           <!-- {% if audio_url %}
+           <img src="{% static 'images/play_icon.png'%}" style="width: 50px; height: 50px;  cursor: pointer;"
+           onclick="var audio = new Audio('{{ audio_url }}'); audio.play();">
+           {% endif %} -->
+           {% if audio_url %}
+              <img src="{% static 'images/play.ico'%}" style="width: 50px; height: 50px;  cursor: pointer;" id="audio-toggle">
+              <audio src="{{ audio_url }}" id="audio-player"></audio>
+           {% endif %}
+
+
+           <!-- <i style="font-size:24px" class="fa">&#xf028; </i>  -->
+           <!-- <img src="{% static 'images/sound_waves.png'%}" alt="sound_waves.png" style="position: absolute; top: 0; left: 0;" >  -->
+           <br> <br>
+           <!-- <img src="{% static 'images/play_icon.png'%}" style="position: absolute; top: 71%; left: 0;" alt="play_icon.png"> -->
+           
+           <!-- <a href="#" style="position: absolute; top: 71%; left: 68%;"> Retake</a> <br> <br> <br> <br>  -->
+           <span style="display: none;">Fluency (wcpm) : <span id="luency" style=" font-family: Roboto ;">{{ wcpm }}</span> </span>
+
+           <span style=" font-size: 25px; color: #273285;">Total number of mistakes :  <span id="fluency" style="background-color: #D97D3A; color: black; padding: 7px 9px; font-weight: bold; border-radius: 10px;">{{ no_mistakes }}</span>  </span> <br> <br> 
+           <span style="display: none;">Total number of mistakes :  <span id="mis">{{ sub_details }}</span>  </span>
+           <span style="display: none;" >Total number of mistakes :  <span id="dil">{{ del_details }}</span>  </span> 
+
+
+
+           <!-- <input type="submit" value="Next"> -->
+           <!-- <a href="#"  >Next</a> <br> -->
+           <form action="/next_story" method="post">
+            {% csrf_token %}
+
+            <input class="a" id="retake" onclick="retake()" name="retake" type="submit" value="Retake"><br>
+          </form>
+           <form action="/next_page_story" method="post">
+             {% csrf_token %}
+             <input type="hidden" name="no_mistakes" value="{{ no_mistakes }}">
+
+
+             <input class="a" onclick="sendFluency()"  name="next" type="submit" value="Next"><br>
+           </form>
+
+         </center> 
+     </div>
+    
+   </div>
+ </div>
+</div>
+<!-- <script>
+  var audioPlayer = document.getElementById("audio-player");
+  var audioToggle = document.getElementById("audio-toggle");
+
+  audioToggle.addEventListener("click", function() {
+    if (audioPlayer.paused) {
+      audioPlayer.play();
+      audioToggle.src = "{% static 'images/pause.ico'%}";
+    } else {
+      audioPlayer.pause();
+      audioToggle.src = "{% static 'images/play.ico'%}";
+    }
+  });
+</script> -->
+<script>
+  var audioPlayer = document.getElementById("audio-player");
+  var audioToggle = document.getElementById("audio-toggle");
+
+  audioToggle.addEventListener("click", function() {
+    if (audioPlayer.paused) {
+      audioPlayer.play();
+      audioToggle.src = "{% static 'images/pause.ico'%}";
+    } else {
+      audioPlayer.pause();
+      audioToggle.src = "{% static 'images/play.ico'%}";
+    }
+  });
+
+  audioPlayer.addEventListener("ended", function() {
+    audioToggle.src = "{% static 'images/play.ico'%}";
+  });
+</script>
+
+<!-- <script>
+  var fluency = document.getElementById('fluency').innerText;
+  localStorage.setItem('fluency', fluency);
+</script> -->
+<!-- <script>
+  function sendFluency() {
+    var fluency = document.getElementById('fluency').innerText;
+    localStorage.setItem('fluency', fluency);
+  
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "{% url 'next_page' %}", true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === XMLHttpRequest.DONE) {
+        if (xhr.status === 200) {
+          var nomistake = parseInt(xhr.responseText);
+          if (nomistake <= 3) {
+            window.location.href = "{% url 'next_answer' %}";
+          } else {
+            window.location.href = "{% url 'word_msg' %}";
+          }
+        } else {
+          console.log("Error: " + xhr.status);
+        }
+      }
+    };
+    var data = 'fluency=' + localStorage.getItem('fluency');
+    xhr.send(data);
+  }
+</script> -->
+<!-- <script>
+  
+  var spanElement = document.getElementById("mis");
+  var subDetails = spanElement.innerHTML;
+  var subDetailsArray = subDetails.split(/,|-/);
+  
+  var integerArray = [];
+  for (var i = 0; i < subDetailsArray.length; i++) {
+    var intValue = parseInt(subDetailsArray[i], 10);
+    if (!isNaN(intValue)) {
+      integerArray.push(intValue);
+    }
+  }
+  
+  console.log(integerArray);
+  
+  var spanElement = document.getElementById("dil");
+  var subDetails = spanElement.innerHTML;
+  var subDetailsArray = subDetails.split(/,|-/);
+  
+  var delintegerArray = [];
+  for (var i = 0; i < subDetailsArray.length; i++) {
+    var intValue = parseInt(subDetailsArray[i], 10);
+    if (!isNaN(intValue)) {
+      delintegerArray.push(intValue);
+    }
+  }
+  
+  console.log(delintegerArray);
+  
+  const originalText = document.querySelector(".text").textContent.trim();
+  const originalTextList = originalText.split(" ");
+  console.log("Original text list:", originalTextList);
+
+  
+  
+  for (let i = 0; i < originalTextList.length; i++) {
+    if (integerArray.includes(i)) {
+      originalTextList[i] = "<span style='color:red'>" + originalTextList[i] + "</span>";
+    } else if (delintegerArray.includes(i)) {
+      originalTextList[i] = "<span style='color:red'>" + originalTextList[i] + "</span>";
+    } else {
+      originalTextList[i] = "<span style='color:green'>" + originalTextList[i] + "</span>";
+    }
+  }
+  
+  document.querySelector(".text").innerHTML = originalTextList.join(" ");
+</script> -->
+<script>
+  var spanElement = document.getElementById("mis");
+  var subDetails = spanElement.innerHTML;
+  var subDetailsArray = subDetails.split(/,|-/);
+  
+  var integerArray = [];
+  for (var i = 0; i < subDetailsArray.length; i++) {
+    var intValue = parseInt(subDetailsArray[i], 10);
+    if (!isNaN(intValue)) {
+      integerArray.push(intValue);
+    }
+  }
+  
+  console.log(integerArray);
+  
+  var spanElement = document.getElementById("dil");
+  var subDetails = spanElement.innerHTML;
+  var subDetailsArray = subDetails.split(/,|-/);
+  
+  var delintegerArray = [];
+  for (var i = 0; i < subDetailsArray.length; i++) {
+    var intValue = parseInt(subDetailsArray[i], 10);
+    if (!isNaN(intValue)) {
+      delintegerArray.push(intValue);
+    }
+  }
+  
+  console.log(delintegerArray);
+  
+  const originalText = document.querySelector(".text").textContent.trim();
+  const originalTextList = originalText.split(" ");
+  console.log("Original text list:", originalTextList);
+  
+  var luency = document.getElementById("luency").textContent.trim();
+  
+  if (luency === "None") {
+    for (let i = 0; i < originalTextList.length; i++) {
+      originalTextList[i] = "<span style='color:red'>" + originalTextList[i] + "</span>";
+    }
+  } else {
+    for (let i = 0; i < originalTextList.length; i++) {
+      if (integerArray.includes(i)) {
+        originalTextList[i] = "<span style='color:red'>" + originalTextList[i] + "</span>";
+      } else if (delintegerArray.includes(i)) {
+        originalTextList[i] = "<span style='color:red'>" + originalTextList[i] + "</span>";
+      } else {
+        originalTextList[i] = "<span style='color:green'>" + originalTextList[i] + "</span>";
+      }
+    }
+  }
+  
+  document.querySelector(".text").innerHTML = originalTextList.join(" ");
+</script>
+
+
+
+  
+  
+
+<!-- 
+<script>
+  // get the text and originaltext values from the HTML
+  var text = "{{ text }}";
+  var originaltext = "{{ originaltext }}".toLowerCase().replace(/\.$/, ""); // remove trailing dot
+  // split the text and originaltext values into arrays of words
+  var textArray = text.trim().split(" ");
+  var originaltextArray = originaltext.trim().split(" ");
+  // create an empty list to store the highlighted words
+  var highlightedWords = [];
+  // loop through the originaltext array to check each word
+  for (var i = 0; i < originaltextArray.length; i++) {
+    var word = originaltextArray[i].trim();
+
+    // if the word is found in the text array, add it to the highlighted words list
+    if (textArray.indexOf(word) > -1) {
+      highlightedWords.push(word);
+    }
+    // if the word is not found in the text array, highlight it in the originaltext value
+    else {
+      highlightedWords.push("<span style='color: red;'>" + word + "</span>");
+    }
+  }
+  // capitalize the first letter of the sentence
+  highlightedWords[0] = highlightedWords[0].charAt(0).toUpperCase() + highlightedWords[0].slice(1);
+
+  // join the highlighted words list back into a string and update the HTML
+  document.getElementsByClassName("text")[0].innerHTML = highlightedWords.join(" ");
+</script> -->
+
+
+<!--                                                               Highlight the word  -->
+<!-- <script>
+  var text = "{{ text }}";
+  var originalText = "{{ originaltext }}".toLowerCase();
+  var textArray = text.split(" ");
+  var originalTextArray = originalText.split(" ");
+  var output = "";
+
+  if (textArray.length != originalTextArray.length) {
+    for (var i = 0; i < Math.max(textArray.length, originalTextArray.length); i++) {
+      var word = textArray[i] || "";
+      var originalWord = originalTextArray[i] || "";
+
+      if (word !== originalWord) {
+        output += "<span style='color: red;'>";
+
+        for (var j = 0; j < Math.max(word.length, originalWord.length); j++) {
+          var char = word[j] || "";
+          var originalChar = originalWord[j] || "";
+
+          if (char !== originalChar) {
+            output += "<span style='color: red;'>" + char + "</span>";
+          } else {
+            output += char;
+          }
+        }
+
+        output += "</span> ";
+      } else {
+        output += word + " ";
+      }
+    }
+  } else {
+    for (var i = 0; i < textArray.length; i++) {
+      var word = textArray[i];
+      var originalWord = originalTextArray[i];
+
+      if (word.replace(/[^a-zA-Z0-9]+$/, "").toLowerCase() == originalWord.replace(/[^a-zA-Z0-9]+$/, "")) {
+        output += " " + word + " ";
+      } else {
+        output += "<span style='color: red;'>";
+
+        for (var j = 0; j < Math.max(word.length, originalWord.length); j++) {
+          var char = word[j] || "";
+          var originalChar = originalWord[j] || "";
+
+          if (char !== originalChar) {
+            output += "<span style='color: red;'>" + char + "</span>";
+          } else {
+            output += char;
+          }
+        }
+
+        output += "</span> ";
+      }
+    }
+  }
+
+  document.getElementsByClassName("text")[0].innerHTML = output;
+</script> -->
+
+
+
+
+
+<script>
+ let selectedImagee = null;
+ function selectImages(img) {
+   if (selectedImage !== null) {
+     selectedImage.style.border = "";
+   }
+   selectedImage = img;
+   selectedImage.style.border = "2px solid blue";
+ }
+
+ function submitForm() {
+   if (selectedImage === null) {
+     alert("Please select an image");
+     return false;
+   }
+   document.getElementById("selected_image").value = selectedImage.src;
+   return true;
+ }
+</script>
+
+<script>
+ function retake(){
+   retake_value = document.getElementById("retake").value
+
+   localStorage.setItem("retake", retake)
+ }
+</script>
+  <!-- all popup script -->
+  <script>
+    $("div[id^='myModal']").each(function () {
+
+      var currentModal = $(this);
+
+      //click next
+      currentModal.find('.btn-next').click(function () {
+        currentModal.modal('hide');
+        currentModal.closest("div[id^='myModal']").nextAll("div[id^='myModal']").first().modal('show');
+      });
+
+      //click prev
+      currentModal.find('.btn-prev').click(function () {
+        currentModal.modal('hide');
+        currentModal.closest("div[id^='myModal']").prevAll("div[id^='myModal']").first().modal('show');
+      });
+
+    });
+
+  </script>
+  <!-- reload and open popup -->
+  <script>
+    $(document).ready(function () {
+      $("#myModal1").modal('show');
+      $("myModal1").width(100);
+    });
+
+  </script>
+
+  <!-- modal 8 sound wave  -->
+  <script>
+
+    $(document).ready(function () {
+      $("#fire").modal('show');
+    });
+
+    //    spinner 
+    function showSpinner() {
+      var spinnerDialog = document.getElementById("spinner");
+      spinnerDialog.style.display = "block";
+    }
+
+    window.addEventListener("load", () => {
+      const bar = document.querySelectorAll(".bar");
+      for (let i = 0; i < bar.length; i++) {
+        bar.forEach((item, j) => {
+          // Random move
+          item.style.animationDuration = `${Math.random() * (0.7 - 0.2) + 0.2}s`; // Change the numbers for speed / ( max - min ) + min / ex. ( 0.5 - 0.1 ) + 0.1
+        });
+      }
+    });
+  </script>
+
+  <!-- modal 10 script -->
+
+  <script>
+    let selectedImage = null;
+
+    function selectImage(img) {
+      if (selectedImage !== null) {
+        selectedImage.style.border = "";
+      }
+      selectedImage = img;
+      selectedImage.style.border = "2px solid blue";
+    }
+
+    function submitForm() {
+      if (selectedImage === null) {
+        alert("Please select an image");
+        return false;
+      }
+      document.getElementById("selected_image").value = selectedImage.src;
+      return true;
+    }
+  </script>
+
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
+    <title>Parakh</title>
+</head>
+<style>
+    .background-image {
+        background-image: url("{% static 'images/parakh 1.png'%}");
+        background-size: cover;
+        background-position: center center;
+        background-attachment: fixed;
+        height: 100%;
+        width: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: -1;
+    }
+
+
+    /* .card {
+        max-width: 100%;
+        display: flex;
+        flex-direction: column;
+        background-color: #c1bdbd4a;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        overflow: hidden;
+    } */
+
+    /* .card-body {
+        padding: 10px;
+        flex: 1;
+    } */
+
+    a {
+        background-color: #093966;
+        ;
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 10px;
+    }
+
+    p {
+        color: #ffffff;
+        background-color: rgb(213 130 22);
+        border-radius: 10px;
+        /* / border: 1px solid; / */
+        padding: 10px;
+        width: 300px;
+        height: 230px;
+        text-align: justify;
+        font-size: larger;
+    }
+
+    h4 {
+        color: #093966;
+    }
+
+    h3 {
+        color: #093966;
+    }
+
+    .text {
+        text-align: left;
+        position: absolute;
+        top: 57%;
+        left: 10%;
+    }
+</style>
+
+<body>
+    <div class="background-image"></div>
+    <!--pop up all  Modal 1 -->
+    <div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+        data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-body">
+                    <img src="{% static 'images/top_user.png'%}" alt="top_user"
+                        style="position: absolute; top: 0; left: 0;"> <br>
+                    <br> <br> <br>
+                    <center>
+
+                       <P> Congratulations!  Your Child <br>
+
+                            has completed the 
+
+                            test!
+                            <br>
+
+                            <br>
+                            The current reading level 
+
+                            of your child is 
+
+                            Story . <br> <br>
+                        </P> <br> <br> <br>
+                        <a href="#">Next</a>
+                    </center>
+                    <img src="{% static 'images/celb.png'%}" height="181px">
+                    <br>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
+
+<!-- all popup script -->
+<script>
+    $("div[id^='myModal']").each(function () {
+
+        var currentModal = $(this);
+
+        //click next
+        currentModal.find('.btn-next').click(function () {
+            currentModal.modal('hide');
+            currentModal.closest("div[id^='myModal']").nextAll("div[id^='myModal']").first().modal('show');
+        });
+
+        //click prev
+        currentModal.find('.btn-prev').click(function () {
+            currentModal.modal('hide');
+            currentModal.closest("div[id^='myModal']").prevAll("div[id^='myModal']").first().modal('show');
+        });
+
+    });
+
+</script>
+
+<!-- reload and open popup -->
+<script>
+    $(document).ready(function () {
+
+        $("#myModal1").modal('show');
+        $("myModal1").width(100);
+    });
+
+</script>

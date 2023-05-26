@@ -1,0 +1,537 @@
+{
+    "Letter":
+    [
+        {
+            "id": "ENG_Letters_0",
+            "data": "B"
+        },
+        {
+            "id": "ENG_Letters_1",
+            "data": "A"
+        },
+        {
+            "id": "ENG_Letters_2",
+            "data": "T"
+        },
+        {
+            "id": "ENG_Letters_3",
+            "data": "W"
+        },
+        {
+            "id": "ENG_Letters_4",
+            "data": "O"
+        },
+        {
+            "id": "ENG_Letters_5",
+            "data": "K"
+        },
+        {
+            "id": "ENG_Letters_6",
+            "data": "L"
+        },
+        {
+            "id": "ENG_Letters_7",
+            "data": "U"
+        },
+        {
+            "id": "ENG_Letters_8",
+            "data": "L"
+        },
+        {
+            "id": "ENG_Letters_9",
+            "data": "Y"
+        },
+        {
+            "id": "ENG_Letters_10",
+            "data": "P"
+        },
+        {
+            "id": "ENG_Letters_11",
+            "data": "G"
+        },
+        {
+            "id": "ENG_Letters_12",
+            "data": "E"
+        },
+        {
+            "id": "ENG_Letters_13",
+            "data": "R"
+        },
+        {
+            "id": "ENG_Letters_14",
+            "data": "C"
+        },
+        {
+            "id": "ENG_Letters_15",
+            "data": "B"
+        },
+        {
+            "id": "ENG_Letters_16",
+            "data": "M"
+        },
+        {
+            "id": "ENG_Letters_17",
+            "data": "O"
+        },
+        {
+            "id": "ENG_Letters_18",
+            "data": "I"
+        },
+        {
+            "id": "ENG_Letters_19",
+            "data": "E"
+        }
+    ],
+    "Word":
+    [
+        {
+            "id": "ENG_Word_0",
+            "data": "clap"
+        },
+        {
+            "id": "ENG_Word_1",
+            "data": "flag"
+        },
+        {
+            "id": "ENG_Word_2",
+            "data": "stack"
+        },
+        {
+            "id": "ENG_Word_3",
+            "data": "chat"
+        },
+        {
+            "id": "ENG_Word_4",
+            "data": "snap"
+        },
+        {
+            "id": "ENG_Word_5",
+            "data": "drag"
+        },
+        {
+            "id": "ENG_Word_6",
+            "data": "pram"
+        },
+        {
+            "id": "ENG_Word_7",
+            "data": "trap"
+        },
+        {
+            "id": "ENG_Word_8",
+            "data": "bled"
+        },
+        {
+            "id": "ENG_Word_9",
+            "data": "fled"
+        },
+        {
+            "id": "ENG_Word_10",
+            "data": "step"
+        },
+        {
+            "id": "ENG_Word_11",
+            "data": "chest"
+        },
+        {
+            "id": "ENG_Word_12",
+            "data": "dress"
+        },
+        {
+            "id": "ENG_Word_13",
+            "data": "fresh"
+        },
+        {
+            "id": "ENG_Word_14",
+            "data": "trek"
+        },
+        {
+            "id": "ENG_Word_15",
+            "data": "blip"
+        },
+        {
+            "id": "ENG_Word_16",
+            "data": "crib"
+        },
+        {
+            "id": "ENG_Word_17",
+            "data": "flip"
+        },
+        {
+            "id": "ENG_Word_18",
+            "data": "still"
+        },
+        {
+            "id": "ENG_Word_19",
+            "data": "chip"
+        },
+        {
+            "id": "ENG_Word_20",
+            "data": "spin"
+        },
+        {
+            "id": "ENG_Word_21",
+            "data": "drip"
+        },
+        {
+            "id": "ENG_Word_22",
+            "data": "print"
+        },
+        {
+            "id": "ENG_Word_23",
+            "data": "trim"
+        },
+        {
+            "id": "ENG_Word_24",
+            "data": "blot"
+        },
+        {
+            "id": "ENG_Word_25",
+            "data": "clot"
+        },
+        {
+            "id": "ENG_Word_26",
+            "data": "flop"
+        },
+        {
+            "id": "ENG_Word_27",
+            "data": "stop"
+        },
+        {
+            "id": "ENG_Word_28",
+            "data": "slog"
+        },
+        {
+            "id": "ENG_Word_29",
+            "data": "snob"
+        },
+        {
+            "id": "ENG_Word_30",
+            "data": "drop"
+        },
+        {
+            "id": "ENG_Word_31",
+            "data": "frog"
+        },
+        {
+            "id": "ENG_Word_32",
+            "data": "trot"
+        },
+        {
+            "id": "ENG_Word_33",
+            "data": "blur"
+        },
+        {
+            "id": "ENG_Word_34",
+            "data": "club"
+        },
+        {
+            "id": "ENG_Word_35",
+            "data": "flush"
+        },
+        {
+            "id": "ENG_Word_36",
+            "data": "stud"
+        },
+        {
+            "id": "ENG_Word_37",
+            "data": "chum"
+        },
+        {
+            "id": "ENG_Word_38",
+            "data": "snub"
+        },
+        {
+            "id": "ENG_Word_39",
+            "data": "drum"
+        },
+        {
+            "id": "ENG_Word_40",
+            "data": "trunk"
+        }
+    ],
+    "Sentence":
+    [
+        {
+            "id": "ENG_Sentence_L1_0",
+            "data": "The mat is wet.",
+            "ques": "The mat is wet.",
+            "language": {
+                "hindi": {
+                    "options": [
+                        "चटाई गीली है।",
+                        "चटाई हरी है।",
+                        "चटाई नई है।",
+                        "यह चटाई है।"
+                    ],
+                    "answers": "चटाई गीली है।"
+                },
+                "marathi": {
+                    "options": [
+                        "चटई ओली आहे.",
+                        "चटई हिरवी आहे.",
+                        "चटई नवीन आहे.",
+                        "ही चटई आहे."
+                    ],
+                    "answers":  "चटई ओली आहे."
+                }
+            },
+            "options": [
+                "चटाई गीली है।",
+                "चटाई हरी है।",
+                "चटाई नई है।",
+                "यह चटाई है।"
+            ],
+            "answers": "चटाई गीली है।"
+        },
+        {
+            "id": "ENG_Sentence_L1_1",
+            "data": "The sun is hot.",
+            "ques": "The sun is hot.",
+            "language": {
+                "hindi": {
+                    "options": [
+                        "सूरज गोल है।",
+                        "सूरज लाल है।",
+                        "सूरज गरम है।",
+                        "सूरज आसमान में है।"
+                    ],
+                    "answers": "सूरज गरम है।"
+                },
+                "marathi": {
+                    "options": [
+                        "सूर्य गोल आहे.",
+                        "सूर्य लाल आहे.",
+                        "सूर्य गरम आहे.",
+                        "सूर्य आकाशात आहे."
+                    ],
+                    "answers": "सूर्य गरम आहे."
+                }
+            },
+            "options": [
+                "सूरज गोल है।",
+                "सूरज लाल है।",
+                "सूरज गरम है।",
+                "सूरज आसमान में है।"
+            ],
+            "answers": "सूरज गरम है।"
+        },
+        {
+            "id": "ENG_Sentence_L1_2",
+            "data": "The dog is big",
+            "ques": "The dog is big",
+            "language": {
+                "hindi": {
+                    "options": [
+                        "कुत्ता काला है।",
+                        "कुत्ता बड़ा है।",
+                        "कुत्ता खड़ा है।",
+                        "कुत्ता बैठा है।"
+                    ],
+                    "answers": "कुत्ता बड़ा है।"
+                },
+                "marathi": {
+                    "options": [
+                        "कुत्रा काळा आहे.",
+                        "कुत्रा मोठा आहे.",
+                        "कुत्रा उभा आहे.",
+                        "कुत्रा बसला आहे."
+
+                    ],
+                    "answers":   "कुत्रा मोठा आहे."
+                }
+            },
+            "options": [
+                "कुत्ता काला है।",
+                "कुत्ता बड़ा है।",
+                "कुत्ता खड़ा है।",
+                "कुत्ता बैठा है।"
+            ],
+            "answers": "कुत्ता बड़ा है।"
+        },
+        {
+            "id": "ENG_Sentence_L1_3",
+            "data": "The bus is red.",
+            "ques": "The bus is red.",
+            "language": {
+                "hindi": {
+                    "options": [
+                        "बस बड़ी है।",
+                        "बस छोटी है।",
+                        "बस लाल है।",
+                        "बस खाली है।"
+                    ],
+                    "answers": "बस लाल है।"
+                },
+                "marathi": {
+                    "options": [
+                        "बस मोठी आहे.",
+                        "बस लहान आहे.",
+                        "बस लाल आहे.",
+                        "बस रिकामी आहे."
+
+                    ],
+                    "answers":  "बस लाल आहे."
+                }
+            },
+            "options": [
+                "बस बड़ी है।",
+                "बस छोटी है।",
+                "सबस लाल है।",
+                "बस खाली है।"
+            ],
+            "answers": "बस लाल है।"
+        },
+        {
+            "id": "ENG_Sentence_L1_4",
+            "data": "The pan is hot.",
+            "ques": "The pan is hot.",
+            "language": {
+                "hindi": {
+                    "options": [
+                        "तवा गरम है।",
+                        "तवा लाल है।",
+                        "वह तवा है।",
+                        "तवा ठंडा है।"
+                    ],
+                    "answers": "तवा गरम है।"
+                },
+                "marathi": {
+                    "options": [
+                        "तवा गरम आहे.",
+                        "तवा लाल आहे.",
+                        "तो तवा आहे.",
+                        "तवा थंड आहे."
+
+                    ],
+                    "answers":  "तवा गरम आहे."
+                }
+            },
+            "options": [
+                "तवा गरम है।",
+                "तवा लाल है।",
+                "वह तवा है।",
+                "तवा ठंडा है।"
+            ],
+            "answers": "तवा गरम है।"
+        },
+        {
+            "id": "ENG_Sentence_L1_5",
+            "data": "The hat is big.",
+            "ques": "The hat is big.",
+            "language": {
+                "hindi": {
+                    "options": [
+                        "टोपी नई है।",
+                        "टोपी बड़ी है।",
+                        "टोपी पुरानी है।",
+                        "टोपी महँगी है।"
+                    ],
+                    "answers":  "टोपी बड़ी है।"
+                },
+                "marathi": {
+                    "options": [
+                        "टोपी नवीन आहे.",
+                        "टोपी मोठी आहे.",
+                        "टोपी जुनी आहे.",
+                        "टोपी महाग आहे."
+
+                    ],
+                    "answers": "टोपी मोठी आहे."
+                }
+            },
+            "options": [
+                "टोपी नई है।",
+                "टोपी बड़ी है।",
+                "टोपी पुरानी है।",
+                "टोपी महँगी है।"
+            ],
+            "answers":  "टोपी बड़ी है।"
+        }
+    ],
+    "Paragraph":
+    [
+        {
+            "id": "ENG_Paragraph_0",
+            "data": "The pan is hot."
+        },
+        {
+            "id": "ENG_Paragraph_1",
+            "data": "The mug is red."
+        },
+        {
+            "id": "ENG_Paragraph_2",
+            "data": "The dog is big"
+        },
+        {
+            "id": "ENG_Paragraph_3",
+            "data": "A fat man ran."
+        },
+        {
+            "id": "ENG_Paragraph_4",
+            "data": "It is a box."
+        },
+        {
+            "id": "ENG_Paragraph_5",
+            "data": "It is a map."
+        },
+        {
+            "id": "ENG_Paragraph_6",
+            "data": "This is a tag."
+        },
+        {
+            "id": "ENG_Paragraph_7",
+            "data": "This is a cop."
+        },
+        {
+            "id": "ENG_Paragraph_8",
+            "data": "That is a tap."
+        },
+        {
+            "id": "ENG_Paragraph_9",
+            "data": "That is a fox."
+        },
+        {
+            "id": "ENG_Paragraph_10",
+            "data": "The bat is big."
+        },
+        {
+            "id": "ENG_Paragraph_11",
+            "data": "Do not sip it."
+        },
+        {
+            "id": "ENG_Paragraph_12",
+            "data": "My dog ran up."
+        },
+        {
+            "id": "ENG_Paragraph_13",
+            "data": "Do not hit him."
+        },
+        {
+            "id": "ENG_Paragraph_14",
+            "data": "This is a red pen."
+        },
+        {
+            "id": "ENG_Paragraph_15",
+            "data": "We got the rod."
+        }
+    ],
+    "Story":
+    [
+        {
+            "id": "ENG_Story_0",
+            "data": "Jina had a black box. She kept her clip, pen and brush in it. She kept the box in her bag.  The bag had a flag print on it."
+        },
+        {
+            "id": "ENG_Story_1",
+            "data": "On a hot day, Rob, the frog went to the beach. There he went for a swim. He found the water to be very cool. He was happy."
+        },
+        {
+            "id": "ENG_Story_2",
+            "data": "Joy is my cat and she is fat. She plays with dogs in the park. When she comes back, she takes a nap."
+        },
+        {
+            "id": "ENG_Story_3",
+            "data": "Amol went to the zoo and had a lot of fun. There he went near a deer. It was thin and small. It had long legs."
+        }
+    ]
+}

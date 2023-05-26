@@ -1,0 +1,545 @@
+{
+    "Letter":
+    [
+        {
+            "id": "ENG_Letters_0",
+            "data": "B"
+        },
+        {
+            "id": "ENG_Letters_1",
+            "data": "A"
+        },
+        {
+            "id": "ENG_Letters_2",
+            "data": "T"
+        },
+        {
+            "id": "ENG_Letters_3",
+            "data": "W"
+        },
+        {
+            "id": "ENG_Letters_4",
+            "data": "O"
+        },
+        {
+            "id": "ENG_Letters_5",
+            "data": "K"
+        },
+        {
+            "id": "ENG_Letters_6",
+            "data": "L"
+        },
+        {
+            "id": "ENG_Letters_7",
+            "data": "U"
+        },
+        {
+            "id": "ENG_Letters_8",
+            "data": "L"
+        },
+        {
+            "id": "ENG_Letters_9",
+            "data": "Y"
+        },
+        {
+            "id": "ENG_Letters_10",
+            "data": "P"
+        },
+        {
+            "id": "ENG_Letters_11",
+            "data": "G"
+        },
+        {
+            "id": "ENG_Letters_12",
+            "data": "E"
+        },
+        {
+            "id": "ENG_Letters_13",
+            "data": "R"
+        },
+        {
+            "id": "ENG_Letters_14",
+            "data": "C"
+        },
+        {
+            "id": "ENG_Letters_15",
+            "data": "B"
+        },
+        {
+            "id": "ENG_Letters_16",
+            "data": "M"
+        },
+        {
+            "id": "ENG_Letters_17",
+            "data": "O"
+        },
+        {
+            "id": "ENG_Letters_18",
+            "data": "I"
+        },
+        {
+            "id": "ENG_Letters_19",
+            "data": "E"
+        }
+    ],
+    "Word":
+    [
+        {
+            "id": "ENG_Word_0",
+            "data": "clap"
+        },
+        {
+            "id": "ENG_Word_1",
+            "data": "flag"
+        },
+        {
+            "id": "ENG_Word_2",
+            "data": "stack"
+        },
+        {
+            "id": "ENG_Word_3",
+            "data": "chat"
+        },
+        {
+            "id": "ENG_Word_4",
+            "data": "snap"
+        },
+        {
+            "id": "ENG_Word_5",
+            "data": "drag"
+        },
+        {
+            "id": "ENG_Word_6",
+            "data": "pram"
+        },
+        {
+            "id": "ENG_Word_7",
+            "data": "trap"
+        },
+        {
+            "id": "ENG_Word_8",
+            "data": "bled"
+        },
+        {
+            "id": "ENG_Word_9",
+            "data": "fled"
+        },
+        {
+            "id": "ENG_Word_10",
+            "data": "step"
+        },
+        {
+            "id": "ENG_Word_11",
+            "data": "chest"
+        },
+        {
+            "id": "ENG_Word_12",
+            "data": "dress"
+        },
+        {
+            "id": "ENG_Word_13",
+            "data": "fresh"
+        },
+        {
+            "id": "ENG_Word_14",
+            "data": "trek"
+        },
+        {
+            "id": "ENG_Word_15",
+            "data": "blip"
+        },
+        {
+            "id": "ENG_Word_16",
+            "data": "crib"
+        },
+        {
+            "id": "ENG_Word_17",
+            "data": "flip"
+        },
+        {
+            "id": "ENG_Word_18",
+            "data": "still"
+        },
+        {
+            "id": "ENG_Word_19",
+            "data": "chip"
+        },
+        {
+            "id": "ENG_Word_20",
+            "data": "spin"
+        },
+        {
+            "id": "ENG_Word_21",
+            "data": "drip"
+        },
+        {
+            "id": "ENG_Word_22",
+            "data": "print"
+        },
+        {
+            "id": "ENG_Word_23",
+            "data": "trim"
+        },
+        {
+            "id": "ENG_Word_24",
+            "data": "blot"
+        },
+        {
+            "id": "ENG_Word_25",
+            "data": "clot"
+        },
+        {
+            "id": "ENG_Word_26",
+            "data": "flop"
+        },
+        {
+            "id": "ENG_Word_27",
+            "data": "stop"
+        },
+        {
+            "id": "ENG_Word_28",
+            "data": "slog"
+        },
+        {
+            "id": "ENG_Word_29",
+            "data": "snob"
+        },
+        {
+            "id": "ENG_Word_30",
+            "data": "drop"
+        },
+        {
+            "id": "ENG_Word_31",
+            "data": "frog"
+        },
+        {
+            "id": "ENG_Word_32",
+            "data": "trot"
+        },
+        {
+            "id": "ENG_Word_33",
+            "data": "blur"
+        },
+        {
+            "id": "ENG_Word_34",
+            "data": "club"
+        },
+        {
+            "id": "ENG_Word_35",
+            "data": "flush"
+        },
+        {
+            "id": "ENG_Word_36",
+            "data": "stud"
+        },
+        {
+            "id": "ENG_Word_37",
+            "data": "chum"
+        },
+        {
+            "id": "ENG_Word_38",
+            "data": "snub"
+        },
+        {
+            "id": "ENG_Word_39",
+            "data": "drum"
+        },
+        {
+            "id": "ENG_Word_40",
+            "data": "trunk"
+        }
+    ],
+    "Sentence":
+    [
+        {
+            "id": "ENG_Sentence_L2_0",
+            "data": "The frog can not jump.",
+            "ques": "The frog can not jump.",
+            "options": [
+                "मेंढक  बैठा है।",
+                "मेंढक कूद नहीं सकता।",
+                "मेंढक हरा है।",
+                "मेंढक तालाब के पास है।"
+            ],
+            "answers":   "मेंढक कूद नहीं सकता।",
+            "language": {
+                "hindi": {
+                    "options": [
+                        "मेंढक  बैठा है।",
+                        "मेंढक कूद नहीं सकता।",
+                        "मेंढक हरा है।",
+                        "मेंढक तालाब के पास है।"
+                    ],
+                    "answers":   "मेंढक कूद नहीं सकता।"
+                },
+                "marathi": {
+                    "options": [
+                        "बेडूक बसला आहे.",
+                        "बेडूक उड्या मारू शकत नाही.",
+                        "बेडूक हिरवा आहे.",
+                        "बेडूक तलावाजवळ आहे."
+
+
+                    ],
+                    "answers":   "बेडूक उड्या मारू शकत नाही."
+                }
+            }
+        },
+        {
+            "id": "ENG_Sentence_L2_1",
+            "data": "That is a pink dress.",
+            "ques": "That is a pink dress.",
+            "options": [
+                "वह ड्रेस नई  है।",
+                "वह ड्रेस फटी है।",
+                "वह ड्रेस गुलाबी है।",
+                "वह ड्रेस मेरी है।"
+            ],
+            "answers":  "वह ड्रेस गुलाबी है।",
+            "language": {
+                "hindi": {
+                    "options": [
+                        "वह ड्रेस नई  है।",
+                        "वह ड्रेस फटी है।",
+                        "वह ड्रेस गुलाबी है।",
+                        "वह ड्रेस मेरी है।"
+                    ],
+                    "answers":  "वह ड्रेस गुलाबी है।"
+                },
+                "marathi": {
+                    "options": [
+                        "तो ड्रेस नवीन आहे.",
+                        "तो ड्रेस फाटला आहे.",
+                        "तो ड्रेस गुलाबी आहे.",
+                        "तो ड्रेस माझा आहे."
+
+
+                    ],
+                    "answers":  "तो ड्रेस गुलाबी आहे."
+                }
+            }
+        },
+        {
+            "id": "ENG_Sentence_L2_2",
+            "data": "She hurts her hand.",
+            "ques": "She hurts her hand.",
+            "options": [
+                "वह  गिर गई।",
+                "उसके  के हाथ को चोट लग गई।",
+                "उसको चोट लग गई।",
+                "उसे चोट नहीं लगी।"
+            ],
+            "answers": "उसके  के हाथ को चोट लग गई।",
+            "language": {
+                "hindi": {
+                    "options": [
+                        "वह  गिर गई।",
+                        "उसके  के हाथ को चोट लग गई।",
+                        "उसको चोट लग गई।",
+                        "उसे चोट नहीं लगी।"
+                    ],
+                    "answers": "उसके  के हाथ को चोट लग गई।"
+                },
+                "marathi": {
+                    "options": [
+                        "ती पडली.",
+                        "तिच्या हाताला दुखापत झाली.",
+                        "त्याला दुखापत झाली.",
+                        "त्याला दुखापत झाली नाही."
+
+
+                    ],
+                    "answers":  "तिच्या हाताला दुखापत झाली."
+                }
+            }
+        },
+        {
+            "id": "ENG_Sentence_L2_3",
+            "data": "This is a black dress.",
+            "ques": "This is a black dress.",
+            "options": [
+                "यह ड्रेस काली है।",
+                "यह ड्रेस सूंदर है।",
+                "यह ड्रेस पुरानी है।",
+                "यह ड्रेस प्यारी है।"
+            ],
+            "answers": "यह ड्रेस काली है।",
+            "language": {
+                "hindi": {
+                    "options": [
+                        "यह ड्रेस काली है।",
+                        "यह ड्रेस सूंदर है।",
+                        "यह ड्रेस पुरानी है।",
+                        "यह ड्रेस प्यारी है।"
+                    ],
+                    "answers": "यह ड्रेस काली है।"
+                },
+                "marathi": {
+                    "options": [
+                        "हा ड्रेस काळ्या रंगाचा आहे.",
+                        "हा ड्रेस सुंदर आहे.",
+                        "हा ड्रेस जुना आहे.",
+                        "हा ड्रेस सुंदर आहे."
+
+
+                    ],
+                    "answers":   "हा ड्रेस काळ्या रंगाचा आहे."
+                }
+            }
+        },
+        {
+            "id": "ENG_Sentence_L2_4",
+            "data": "She has a pink frock.",
+            "ques": "She has a pink frock.",
+            "options": [
+                "उसके पास एक फ्रॉक है।",
+                "उसके  पास सूंदर ड्रेस है।",
+                "उसके पास गुलाबी फ्रॉक है।",
+                "उसको नयी ड्रेस चाहिए।"
+            ],
+            "answers": "उसके पास गुलाबी फ्रॉक है।",
+            "language": {
+                "hindi": {
+                    "options": [
+                        "उसके पास एक फ्रॉक है।",
+                        "उसके  पास सूंदर ड्रेस है।",
+                        "उसके पास गुलाबी फ्रॉक है।",
+                        "उसको नयी ड्रेस चाहिए।"
+                    ],
+                    "answers": "उसके पास गुलाबी फ्रॉक है।"
+                },
+                "marathi": {
+                    "options": [
+                        "तिच्याकडे एक फ्रॉक आहे.",
+                        "तिच्याकडे सुंदर ड्रेस आहे.",
+                        "तिच्याकडे गुलाबी रंगाचा फ्रॉक आहे.",
+                        "तिला नवीन ड्रेस हवा आहे."
+
+
+                    ],
+                    "answers":  "तिच्याकडे गुलाबी रंगाचा फ्रॉक आहे."
+                }
+            }
+        },
+        {
+            "id": "ENG_Sentence_L2_5",
+            "data": "I will drink hot milk.",
+            "ques": "I will drink hot milk.",
+            "options": [
+                "मैं गरम दूध पिऊंगा/पिऊंगी |",
+                "मैं ठंडा ज्यूस पिऊंगा/पिऊंगी |",
+                "मैं दूध पिऊंगा/पिऊंगी |",
+                "मैं थोड़ा दूध पिऊंगा/पिऊंगी |"
+            ],
+            "answers": "मैं गरम दूध पिऊंगा/पिऊंगी |",
+            "language": {
+                "hindi": {
+                    "options": [
+                        "मैं गरम दूध पिऊंगा/पिऊंगी |",
+                        "मैं ठंडा ज्यूस पिऊंगा/पिऊंगी |",
+                        "मैं दूध पिऊंगा/पिऊंगी |",
+                        "मैं थोड़ा दूध पिऊंगा/पिऊंगी |"
+                    ],
+                    "answers": "मैं गरम दूध पिऊंगा/पिऊंगी |"
+                },
+                "marathi": {
+                    "options": [
+                        "मी गरम दूध पिईन.",
+                        "मी थंड रस पिईन.",
+                        "मी दूध पिणार.",
+                        "मी थोडे दूध पिईन."
+
+
+                    ],
+                    "answers":  "मी गरम दूध पिईन."
+                }
+            }
+        }
+    ],
+    "Paragraph":
+    [
+        {
+            "id": "ENG_Paragraph_0",
+            "data": "The pan is hot."
+        },
+        {
+            "id": "ENG_Paragraph_1",
+            "data": "The mug is red."
+        },
+        {
+            "id": "ENG_Paragraph_2",
+            "data": "The dog is big"
+        },
+        {
+            "id": "ENG_Paragraph_3",
+            "data": "A fat man ran."
+        },
+        {
+            "id": "ENG_Paragraph_4",
+            "data": "It is a box."
+        },
+        {
+            "id": "ENG_Paragraph_5",
+            "data": "It is a map."
+        },
+        {
+            "id": "ENG_Paragraph_6",
+            "data": "This is a tag."
+        },
+        {
+            "id": "ENG_Paragraph_7",
+            "data": "This is a cop."
+        },
+        {
+            "id": "ENG_Paragraph_8",
+            "data": "That is a tap."
+        },
+        {
+            "id": "ENG_Paragraph_9",
+            "data": "That is a fox."
+        },
+        {
+            "id": "ENG_Paragraph_10",
+            "data": "The bat is big."
+        },
+        {
+            "id": "ENG_Paragraph_11",
+            "data": "Do not sip it."
+        },
+        {
+            "id": "ENG_Paragraph_12",
+            "data": "My dog ran up."
+        },
+        {
+            "id": "ENG_Paragraph_13",
+            "data": "Do not hit him."
+        },
+        {
+            "id": "ENG_Paragraph_14",
+            "data": "This is a red pen."
+        },
+        {
+            "id": "ENG_Paragraph_15",
+            "data": "We got the rod."
+        }
+    ],
+    "Story":
+    [
+        {
+            "id": "ENG_Story_0",
+            "data": "Jina had a black box. She kept her clip, pen and brush in it. She kept the box in her bag.  The bag had a flag print on it."
+        },
+        {
+            "id": "ENG_Story_1",
+            "data": "On a hot day, Rob, the frog went to the beach. There he went for a swim. He found the water to be very cool. He was happy."
+        },
+        {
+            "id": "ENG_Story_2",
+            "data": "Joy is my cat and she is fat. She plays with dogs in the park. When she comes back, she takes a nap."
+        },
+        {
+            "id": "ENG_Story_3",
+            "data": "Amol went to the zoo and had a lot of fun. There he went near a deer. It was thin and small. It had long legs."
+        }
+    ]
+}

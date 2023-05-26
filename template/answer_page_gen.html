@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
+    <title>Parakh</title>
+</head>
+<style>
+    .background-image {
+        background-image: url("{% static 'images/parakh 1.png'%}");
+        background-size: cover;
+        background-position: center center;
+        background-attachment: fixed;
+        height: 100%;
+        width: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: -1;
+    }
+
+
+
+
+    .a {
+        background-color: #093966;
+        ;
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 10px;
+    }
+
+    p {
+        color: #ffffff;
+        background-color: rgb(213 130 22);
+        border-radius: 10px;
+        /* / border: 1px solid; / */
+        padding: 10px;
+        width: 300px;
+        height: 230px;
+        text-align: justify;
+        font-size: 25px;
+    }
+
+    h4 {
+        color: #093966;
+    }
+
+    h3 {
+        color: #093966;
+    }
+
+    .text {
+        text-align: left;
+        position: absolute;
+        top: 57%;
+        left: 10%;
+    }
+</style>
+<style>
+    @media screen and (max-width: 767px) {
+    #myModal1 .modal-dialog {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+    }
+  
+    #myModal1 .modal-content {
+      width: 100%;
+    }
+  }
+  </style>
+<body>
+    <div class="background-image"></div>
+    <!--pop up all  Modal 1 -->
+    <div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+        data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-body">
+                
+                        <a href="{% url 'select_profile' %}">
+                            <img src="{% static 'images/top_user.png' %}" alt="top_user" style="position: absolute; top: 0; left: 0;">
+                          </a>
+                         <img src="{% static 'images/pratham_center.png'%}" style="position: absolute; top: 0; right: 0; padding-right: 5px; padding-top: 5px; width: 80px; height: 50px;" alt="top_user"> <br> <br>
+
+                        <br>
+                    <br> <br> <br>
+                    <center>
+                       <P style=" font-family: Roboto ;"> Congratulations! Your child 
+                            has completed the test! <br> <br>
+                            The estimated reading level 
+                            of your child is '{{ level }}'. 
+                        </P> <br>
+                        <p style="display: none;">Phone number: {{ mobile_number }}</p>
+
+                            <form action="/" method="post">
+                                {% csrf_token %}
+                                <input class="a" type="submit" id="search" name="search" value="Next"><br>
+
+                            </form>
+
+                    </center>
+                    <img src="{% static 'images/celb.png'%}" height="181px">
+                    <br>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
+
+<script>
+    $("div[id^='myModal']").each(function () {
+        var currentModal = $(this);
+
+        currentModal.find('.btn-next').click(function () {
+            currentModal.modal('hide');
+            currentModal.closest("div[id^='myModal']").nextAll("div[id^='myModal']").first().modal('show');
+        });
+
+        currentModal.find('.btn-prev').click(function () {
+            currentModal.modal('hide');
+            currentModal.closest("div[id^='myModal']").prevAll("div[id^='myModal']").first().modal('show');
+        });
+
+    });
+
+</script>
+
+<script>
+    $(document).ready(function () {
+
+        $("#myModal1").modal('show');
+        $("myModal1").width(100);
+    });
+
+</script>
+<script>
+    history.pushState(null, null, document.URL);
+    window.addEventListener('popstate', function () {
+        history.pushState(null, null, document.URL);
+    });
+  </script>

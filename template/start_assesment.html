@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+
+
+  <title>Parakh</title>
+</head>
+<body>
+  <div class="background-image"></div>
+
+  <style>
+    .background-image {
+  background-image: url("{% static 'images/parakh 1.png'%}");
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+    .a {
+      background-color: #093966;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 10px;
+    }
+
+    /* a {
+      background-color: #093966;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 10px;
+    } */
+    
+    text{
+      color: #093966;
+      font-size: 36px;
+    }
+   .text {
+    color: #093966;
+    font-size: 25px;
+    font-family:  Roboto ;
+    }
+
+
+    .button {
+      background-color: #093966;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 10px;
+    }
+  </style>
+
+<style>
+  @media screen and (max-width: 767px) {
+  /* Center the modal vertically */
+  #myModal1 .modal-dialog {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+
+  /* Set the modal content to full width */
+  #myModal1 .modal-content {
+    width: 100%;
+  }
+}
+</style>
+
+
+  <!-- Button trigger modal -->
+  <!-- <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal1">
+        Open modal
+    </button> -->
+
+  <!--pop up all  Modal 1 -->
+  <div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+    data-backdrop="static">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+            <!-- <img src="{% static 'images/top_user.png'%}" style="position: absolute; top: 0; left: 0;" alt="top_user">  -->
+            <a href="{% url 'select_profile' %}">
+              <img src="{% static 'images/top_user.png' %}" alt="top_user" style="position: absolute; top: 0; left: 0;">
+            </a>
+            <br>
+            <br>
+            <center>
+           
+                <text> <b style="font-family:  Roboto ;"> Hello! </b></text> <br>
+                <span style="display: none;" id="fluency">{{ selected_option }}</span>
+                <span style="display: none;" id="">{{ status }}</span>
+
+
+                <p class="text" >We recommend using <br> headsets during the
+                  assessment. <br> <br> Please make sure to take the <br> assessment in a silent enviroment <br>
+                  for more accurate results</p> <br> 
+                <img src="{% static 'images/homepage.png'%}" style="height: 200px; width: 200px;" alt="homepage"> <br> <br> 
+                <!-- <input type="submit" value="Start Assessment"> -->
+                <!-- <form action="/start_nextpage" method="post">
+                  {% csrf_token %} -->
+                  <!-- <input type="hidden" name="selected_option" value="{{ selected_option }}"> -->
+                <input class="a" onclick=sendFluency()  type="submit" value="Start Assessment">
+  
+              <!-- </form> -->
+              {% for letter in json_data.Letter %}
+                <div>
+                  ID: {{ letter.id }} 
+                  Data: {{ letter.data }}
+                </div>
+              {% endfor %}
+              <!-- </div> -->
+              <!-- <div class="overlay"></div> -->
+            </center>
+        </div>
+       
+      </div>
+    </div>
+  </div>
+
+  <script>
+    history.pushState(null, null, document.URL);
+    window.addEventListener('popstate', function () {
+        history.pushState(null, null, document.URL);
+    });
+</script>
+<script>
+  history.pushState(null, null, document.URL);
+  window.addEventListener('popstate', function () {
+      history.pushState(null, null, document.URL);
+  });
+</script>
+
+  <script>
+    function sendFluency() {
+        var fluency = document.getElementById('fluency').innerText;
+        localStorage.setItem('fluency', fluency);
+    
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "{% url 'nextpage' %}", true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    var nomistake = parseInt(xhr.responseText);
+                    if (fluency === "Hindi") {
+                        paragraph(); // call the function 'bl'
+                    }else if (fluency === "Assamese") {
+                      paragraph(); // call the function 'bl'
+                    } else if (fluency === "Tamil") {
+                      paragraph(); // call the function 'bl'
+                    } else if (fluency === "Bengali") {
+                      paragraph(); // call the function 'bl'
+                    } else if (fluency === "Gujarati") {
+                      paragraph(); // call the function 'bl'
+                    } else if (fluency === "Kannada") {
+                      paragraph(); // call the function 'bl'
+                    } else if (fluency === "Malayalam") {
+                      paragraph(); // call the function 'bl'
+                    } else if (fluency === "Kannada") {
+                      paragraph(); // call the function 'bl'
+                    } else if (fluency === "Marathi") {
+                      paragraph(); // call the function 'bl'
+                    } else if (fluency === "Odiya") {
+                      paragraph(); // call the function 'bl'
+                    } else if (fluency === "Punjabi") {
+                      paragraph(); // call the function 'bl'
+                    } else if (fluency === "Telugu") {
+                      paragraph(); // call the function 'bl'
+                    } 
+                    else if (fluency === "Urdu") {
+                      paragraph(); // call the function 'bl'
+                    } 
+                    else if (fluency === "BL") {
+                      bl(); // call the function 'bl'
+                    } 
+                    else if (fluency === "ML1") {
+                      bl(); // call the function 'bl'
+                    }else if (fluency === "ML2") {
+                      bl(); // call the function 'bl'
+                    }else if (fluency === "EL") {
+                      bl(); // call the function 'bl'
+                    }
+                    else {
+                        paragraph(); // call the function 'paragraph'
+                    }
+                } else {
+                    console.log("Error: " + xhr.status);
+                }
+            }
+        };
+        var data = 'fluency=' + localStorage.getItem('fluency');
+        xhr.send(data);
+    }
+    
+    function bl() {
+        // Redirect to the function 'bl'
+        window.location.href = "{% url 'bl' %}";
+    }
+    function ml1() {
+        // Redirect to the function 'ml1'
+        window.location.href = "{% url 'ml1' %}";
+    }
+    function ml2() {
+        // Redirect to the function 'ml1'
+        window.location.href = "{% url 'ml2' %}";
+    }
+    function ml3() {
+        // Redirect to the function 'ml1'
+        window.location.href = "{% url 'ml3' %}";
+    }
+    
+    function paragraph() {
+        // Redirect to the paragraph
+        window.location.href = "{% url 'paragraph' %}";
+    }
+    </script> 
+    
+
+
+
+
+  <!-- end all popup Modal -->
+
+
+  <!-- Modal 3 script -->
+  <script>
+    let selectedImagee = null;
+
+    function selectImages(img) {
+      if (selectedImage !== null) {
+        selectedImage.style.border = "";
+      }
+      selectedImage = img;
+      selectedImage.style.border = "2px solid blue";
+    }
+
+    function submitForm() {
+      if (selectedImage === null) {
+        alert("Please select an image");
+        return false;
+      }
+      document.getElementById("selected_image").value = selectedImage.src;
+      return true;
+    }
+  </script>
+
+  <!-- all popup script -->
+  <script>
+    $("div[id^='myModal']").each(function () {
+
+      var currentModal = $(this);
+
+      //click next
+      currentModal.find('.btn-next').click(function () {
+        currentModal.modal('hide');
+        currentModal.closest("div[id^='myModal']").nextAll("div[id^='myModal']").first().modal('show');
+      });
+
+      //click prev
+      currentModal.find('.btn-prev').click(function () {
+        currentModal.modal('hide');
+        currentModal.closest("div[id^='myModal']").prevAll("div[id^='myModal']").first().modal('show');
+      });
+
+    });
+
+  </script>
+  <!-- reload and open popup -->
+  <script>
+    $(document).ready(function () {
+      $("#myModal1").modal('show');
+      $("myModal1").width(100);
+    });
+
+  </script>
+
+  <!-- modal 8 sound wave  -->
+  <script>
+
+    $(document).ready(function () {
+      $("#fire").modal('show');
+    });
+
+    //    spinner 
+    function showSpinner() {
+      var spinnerDialog = document.getElementById("spinner");
+      spinnerDialog.style.display = "block";
+    }
+
+    window.addEventListener("load", () => {
+      const bar = document.querySelectorAll(".bar");
+      for (let i = 0; i < bar.length; i++) {
+        bar.forEach((item, j) => {
+          // Random move
+          item.style.animationDuration = `${Math.random() * (0.7 - 0.2) + 0.2}s`; // Change the numbers for speed / ( max - min ) + min / ex. ( 0.5 - 0.1 ) + 0.1
+        });
+      }
+    });
+  </script>
+
+  <!-- modal 10 script -->
+
+  <script>
+    let selectedImage = null;
+
+    function selectImage(img) {
+      if (selectedImage !== null) {
+        selectedImage.style.border = "";
+      }
+      selectedImage = img;
+      selectedImage.style.border = "2px solid blue";
+    }
+
+    function submitForm() {
+      if (selectedImage === null) {
+        alert("Please select an image");
+        return false;
+      }
+      document.getElementById("selected_image").value = selectedImage.src;
+      return true;
+    }
+  </script>
+
+
+
+
+</body>
+
+</html>
+

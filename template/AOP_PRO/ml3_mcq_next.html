@@ -1,0 +1,993 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <p class="text">  <br> <br> {{ val }}<br> <br> <br> </p> 
+    <p class="text"  >  <br> <br> {{ data_id }}<br> <br> <br> </p> 
+    {% if languages %}
+    <p>Languages:</p>
+    <ul>
+        {% for language, data in languages.items %}
+            <li>{{ language }}</li>
+            <ul>
+                {% for key, value in data.items %}
+                    <li>{{ key }}: {{ value }}</li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+  <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/jquery.knob/1.2.13/jquery.knob.min.js"></script>
+  <script>
+    function disableBackButton() {
+      window.history.pushState(null, "", window.location.href);
+      window.onpopstate = function() {
+          window.history.pushState(null, "", window.location.href);
+      };
+
+      document.getElementById("message").innerHTML = "Successfully!, Browser back button disabled";
+      setTimeout(function() {
+        document.getElementById("message").style.display = "none";
+      }, 2000);
+    }
+
+    window.onload = function() {
+      var button = document.getElementById('myButton');
+      
+      // Programmatically click the button
+      button.click();
+
+      // Run the disableBackButton function
+      disableBackButton();
+    };
+  </script>
+  <title>Parakh</title>
+</head>
+<body >
+  <button style="display: none;" id="myButton" onclick="disableBackButton()">Click to Disable</button>
+  <p style="display: none;" id="message"></p>
+  <div class="background-image"></div>
+
+  <style>
+    .background-image {
+  background-image: url("{% static 'images/parakh 1.png'%}");
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+    .a {
+      background-color: #093966;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 10px;
+    }
+
+    /* a {
+      background-color: #093966;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 10px;
+    } */
+    .b {
+            background-color: #a7262a;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
+ 
+   
+    .text{
+    color: #093966;
+    font-size: 25px;
+    font-family: sans-serif;
+    background-color: lightblue;
+      border-radius: 10%;
+  }
+
+    text {
+      color: #093966;
+      font-size: 45px;
+    }
+    
+    
+    .button {
+      background-color: #093966;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 10px;
+    }
+    form {
+    display: inline-block;
+    margin-right: 10px; /* adjust this value to add some space between the forms */
+  }
+  .highlight {
+  color: red;
+}
+
+  #language-select {
+    position: absolute;
+    top: 60px;
+    right: 60px;
+    width: 150px;
+    height: 40px;
+    font-size: 20px;
+    border: 2px solid #a9a9a9;
+    border-radius: 10px;
+  }
+  </style>
+<style>
+  @media screen and (max-width: 767px) {
+  /* Center the modal vertically */
+  #myModal1 .modal-dialog {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+
+  /* Set the modal content to full width */
+  #myModal1 .modal-content {
+    width: 100%;
+  }
+}
+</style>
+ <!--pop up all  Modal 1 -->
+ <div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+ data-backdrop="static">
+ <div class="modal-dialog">
+   <div class="modal-content">
+    
+     <div class="modal-body">
+       
+         <!-- <img src="{% static 'images/top_user.png'%}" alt="top_user" style="position: absolute; top: 0; left: 0;">  -->
+         <a href="{% url 'select_profile' %}">
+          <img src="{% static 'images/top_user.png' %}" alt="top_user" style="position: absolute; top: 0; left: 0;">
+        </a>
+       <img src="{% static 'images/pratham_center.png'%}" style="position: absolute; top: 0; right: 0; padding-right: 5px; padding-top: 5px; width: 80px; height: 50px;" alt="top_user"> <br> <br>
+
+         <br>
+         <br> <br>
+         <select id="language-select" onchange="displayData()">
+          {% for language in languages %}
+          <option value="{{ language }}" {% if language == 'Hindi' %}selected{% endif %}>
+            {% if language == 'hindi' %}
+            Hindi - हिंदी
+            {% elif language == 'marathi' %}
+            Marathi- मराठी
+            {% else %}
+            {{ language }}
+            {% endif %}
+          </option>
+          {% endfor %}
+        </select><br><br>
+         <center>
+            <p class="text" style=" font-family: Roboto ;">   {{ val }}<br>  </p> 
+            <!-- <p class="text"  >  <br> <br> {{ data_id }}<br> <br> <br> </p>  -->
+            <!-- {% if languages %}
+                <p>Languages:</p>
+                <ul>
+                    {% for language, data in languages.items %}
+                        <li>{{ language }}</li>
+                        <ul>
+                            {% for key, value in data.items %}
+                                <li>
+                                    {{ key }}: <br>
+                                    {% if key != "answers" %}
+                                        {% for v in value %}
+                                            {{ v }}<br>
+                                        {% endfor %}
+                                    {% else %}
+                                        {{ value }}
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endfor %}
+                </ul>
+            {% endif %} -->
+            
+              <table id="data-table" >
+                <tbody>
+                    {% for language, data in languages.items %}
+                      <tr class="language-row {{ language }}">
+                        {% for key, value in data.items %}
+                          {% if key != 'language' %}
+                            <td>
+                              {% if key != "answers" %}
+                              {% if language == "hindi" %}
+                                <div id="v0" onclick="logValue('{{ value.0 }}', 'v0')" style="
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    text-align: center; 
+                                    width: 300px;  
+                                    cursor: pointer;
+                                    height: 60px;
+                                    background-color: #e2e2e0a1;
+                                    border: 1px solid #a9a9a9;
+                                    box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+                                    border-radius: 5px;
+                                    top: 143px;
+                                    font-size: 20px;
+                                    padding-bottom: 0px;">{{ value.0 }}</div><br>
+                    
+                                <div id="v1" onclick="logValue('{{ value.1 }}', 'v1')" style="
+                                   display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    text-align: center; 
+                                    width: 300px;  
+                                    cursor: pointer;
+                                    height: 60px;
+                                    background-color: #e2e2e0a1;
+                                    border: 1px solid #a9a9a9;
+                                    box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+                                    border-radius: 5px;
+                                    top: 143px;
+                                    font-size: 20px;
+                                    padding-bottom: 0px;">{{ value.1 }}</div><br>
+                    
+                                <div id="v2" onclick="logValue('{{ value.2 }}', 'v2')" style="
+                                   display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    text-align: center; 
+                                    width: 300px;  
+                                    cursor: pointer;
+                                    height: 60px;
+                                    background-color: #e2e2e0a1;
+                                    border: 1px solid #a9a9a9;
+                                    box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+                                    border-radius: 5px;
+                                    top: 143px;
+                                    font-size: 20px;
+                                    padding-bottom: 0px;">{{ value.2 }}</div><br>
+                    
+                                <div id="v3" onclick="logValue('{{ value.3 }}', 'v3')" style="
+                                   display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    text-align: center; 
+                                    width: 300px;  
+                                    cursor: pointer;
+                                    height: 60px;
+                                    background-color: #e2e2e0a1;
+                                    border: 1px solid #a9a9a9;
+                                    box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+                                    border-radius: 5px;
+                                    top: 143px;
+                                    font-size: 20px;
+                                    padding-bottom: 0px;">{{ value.3 }}</div><br>
+                                {% elif language == "marathi" %}
+                                <div id="v4" onclick="logValue('{{ value.4 }}', 'v4')" style="
+                                     display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    text-align: center; 
+                                    width: 300px;  
+                                    cursor: pointer;
+                                    height: 60px;
+                                    background-color: #e2e2e0a1;
+                                    border: 1px solid #a9a9a9;
+                                    box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+                                    border-radius: 5px;
+                                    top: 143px;
+                                    font-size: 20px;
+                                    padding-bottom: 0px;">{{ value.0 }}</div><br>
+                                   <div id="v5" onclick="logValue('{{ value.5 }}', 'v5')" style="
+                                     display: flex;
+                                      justify-content: center;
+                                      align-items: center;
+                                      text-align: center; 
+                                      width: 300px;  
+                                      cursor: pointer;
+                                      height: 60px;
+                                      background-color: #e2e2e0a1;
+                                      border: 1px solid #a9a9a9;
+                                      box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+                                      border-radius: 5px;
+                                      top: 143px;
+                                      font-size: 20px;
+                                      padding-bottom: 0px;">{{ value.1 }}</div><br>
+                     
+                                 <div id="v6" onclick="logValue('{{ value.6 }}', 'v6')" style="
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    text-align: center; 
+                                    width: 300px;  
+                                    cursor: pointer;
+                                    height: 60px;
+                                    background-color: #e2e2e0a1;
+                                    border: 1px solid #a9a9a9;
+                                    box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+                                    border-radius: 5px;
+                                    top: 143px;
+                                    font-size: 20px;
+                                    padding-bottom: 0px;">{{ value.2 }}</div><br>
+                     
+                                 <div id="v7" onclick="logValue('{{ value.7 }}', 'v7')" style="
+                                 display: flex;
+                                  justify-content: center;
+                                  align-items: center;
+                                  text-align: center; 
+                                  width: 300px;  
+                                  cursor: pointer;
+                                  height: 60px;
+                                  background-color: #e2e2e0a1;
+                                  border: 1px solid #a9a9a9;
+                                  box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+                                  border-radius: 5px;
+                                  top: 143px;
+                                  font-size: 20px;
+                                  padding-bottom: 0px;">{{ value.3 }}</div><br>
+                          {% endif %}
+                                  
+                              {% else %}
+                                <br>
+                                <div style="display: none;" id="language-value" class="{{ language }}">{{ value }}</div>
+
+                              {% endif %}
+                            </td>
+                          {% endif %}
+                        {% endfor %}
+                      </tr>
+                    {% endfor %}
+                    </tbody>
+              </table>
+              
+              <form action="/ml3_final_mcq" method="post"  onsubmit="return onSubmit()" >
+
+                {% csrf_token %}
+                <input style="display: none;" type="hidden" name="selected_language" id="selected-language" value="">
+                <input style="display: none;" type="text" id="selected-div" name="selected-div" readonly>
+                <input style="display: none;" type="text" id="selected-div_id" name="selected-div_id" readonly>
+
+                <input type="hidden" name="selected_language_input" id="selected-language-input" value="">
+                <p style="display: none;"  id="selected-language-display"></p>
+                <input class="a" name="next" id="nextform" type="submit" value="Next" disabled="true"><br>
+              </form>
+              <h1 style="display: none;" id="selected-div-display"></h1>
+              
+              <!-- <form id="mcq-form" action="/bl_mcq" method="post">
+                {% csrf_token %}
+                <input class="a" name="next" type="submit" value="Next" disabled><br>
+              </form> -->
+
+<!-- <script>
+    $(document).ready(function() {
+  $('.language-row').click(function() {
+    var selectedLanguage = $(this).attr('class').split(' ')[1];
+    var selectedValue = $(this).find('div').eq(0).text();
+    console.log('Selected language: ' + selectedLanguage);
+    console.log('Selected value: ' + selectedValue);
+  });
+});
+
+</script> -->
+
+<!-- <script type="text/javascript">
+  function disableF5(e) {
+    if ((e.which || e.keyCode) == 116 || (e.which || e.keyCode) == 82) {
+      e.preventDefault();
+    }
+  };
+
+  window.addEventListener("keydown", disableF5);
+  window.addEventListener("beforeunload", function(e) {
+    var confirmationMessage = "Are you sure you want to leave this page?";
+    (e || window.event).returnValue = confirmationMessage; // Gecko + IE
+    return confirmationMessage; // Webkit, Safari, Chrome etc.
+  });
+</script> -->
+<style>
+  p{
+    background-color: rgb(143, 143, 255);
+  }
+</style>
+<script>
+  
+</script>
+
+<script>
+//   const divIds = ["v0", "v1", "v2", "v3", "v4", "v5", "v6", "v7"];
+  
+//   for (let i = 0; i < divIds.length; i++) {
+//     const divElement = document.getElementById(divIds[i]);
+//     divElement.addEventListener('click', function clickHandler() {
+//       const clickedDivId = this.id;
+//       const clickedDivValue = this.textContent;
+//       var selectedLanguage = document.getElementById("language-select").value;
+//       var languageValue = document.querySelector(".language-row." + selectedLanguage + " #language-value").textContent;
+//       console.log(clickedDivValue);
+//       if (clickedDivValue === languageValue) {
+//         this.style.backgroundColor = "rgb(148, 255, 168)";
+//         this.style.border = "3px solid  rgb(0, 255, 38)";
+
+//       } else {
+//         this.style.backgroundColor = "rgb(255, 148, 148)";
+//         this.style.border = "3px solid rgb(247, 6, 6)";
+
+//         const matchingDivId = localStorage.getItem("matchingDivId");
+//         if (matchingDivId !== null && matchingDivId !== clickedDivId) {
+//           const matchingDiv = document.getElementById(matchingDivId);
+//           matchingDiv.style.backgroundColor = "rgb(148, 255, 168)";
+//           matchingDiv.style.border = "3px solid rgb(0, 255, 38)";
+
+          
+//         }
+//       }
+//       // remove click event listener from all divs
+//       for (let i = 0; i < divIds.length; i++) {
+//         const divElement = document.getElementById(divIds[i]);
+//         divElement.removeEventListener('click', clickHandler);
+//       }
+//       // disable language select element
+//       document.getElementById("language-select").disabled = true;
+//       // disable all divs
+// for (let i = 0; i < divIds.length; i++) {
+//   const divElement = document.getElementById(divIds[i]);
+//   divElement.style.pointerEvents = "none";
+// }
+
+//     });
+//     for (let i = 0; i < divIds.length; i++) {
+//     const divElement = document.getElementById(divIds[i]);
+//     divElement.addEventListener('click', function clickHandler() {
+//       // code for handling click event
+//       // ...
+//       // remove click event listener from all divs
+//       for (let i = 0; i < divIds.length; i++) {
+//         const divElement = document.getElementById(divIds[i]);
+//         divElement.removeEventListener('click', clickHandler);
+//       }
+//       // enable the form submit button
+//       document.getElementById("mcq-form").querySelector(".a").removeAttribute("disabled");
+//     });
+//   }
+//   }
+
+
+
+
+const divIds = ["v0", "v1", "v2", "v3", "v4", "v5", "v6", "v7"];
+for (let i = 0; i < divIds.length; i++) {
+  const divElement = document.getElementById(divIds[i]);
+  divElement.addEventListener('click', function clickHandler() {
+    const clickedDivId = this.id;
+    const clickedDivValue = this.textContent;
+    var selectedLanguage = document.getElementById("language-select").value;
+    var languageValue = document.querySelector(".language-row." + selectedLanguage + " #language-value").textContent;
+    console.log("on which i click ", clickedDivValue);
+    console.log("Clicked div ID:", clickedDivId);
+    localStorage.setItem('clickedDivValue', clickedDivValue);
+    document.getElementById("selected-div").value = clickedDivValue;
+    localStorage.setItem('clickedDivId', clickedDivId);
+    document.getElementById("selected-div_id").value = clickedDivId;
+      if (clickedDivValue === languageValue) {
+        this.style.backgroundColor = "rgb(143, 143, 255)";
+        this.style.border = "3px solid rgb(99, 99, 255)";
+        document.getElementById("selected-div").value = clickedDivValue;
+        document.getElementById("selected-div-display").textContent = "Selected div: " + clickedDivValue;
+      } else {
+        this.style.backgroundColor = "rgb(143, 143, 255)";
+        this.style.border = "3px solid rgb(99, 99, 255)";
+        const matchingDivId = localStorage.getItem("matchingDivId");
+        if (matchingDivId !== null && matchingDivId !== clickedDivId) {
+          const matchingDiv = document.getElementById(matchingDivId);
+        }
+      }
+      // remove click event listener from all divs
+      for (let i = 0; i < divIds.length; i++) {
+        const divElement = document.getElementById(divIds[i]);
+        divElement.removeEventListener('click', clickHandler);
+      }
+      // disable language select element
+      document.getElementById("language-select").disabled = true;
+      document.getElementById("nextform").disabled = false;
+
+      // disable all divs
+      for (let i = 0; i < divIds.length; i++) {
+        const divElement = document.getElementById(divIds[i]);
+        divElement.style.pointerEvents = "none";
+      }
+    });
+  }
+  function onSubmit() {
+  var selectedDivId = localStorage.getItem('clickedDivValue');
+  document.getElementById("selected-div").value = selectedDivId;
+  var selectedDivId = localStorage.getItem('clickedDivId');
+  document.getElementById("selected-div_id").value = selectedDivId;
+
+  return true;
+//   const selectedDivInput = document.getElementById('selected-div');
+// const storedDivValue = localStorage.getItem('divValue');
+// selectedDivInput.value = storedDivValue;
+
+}
+  function displayData() {
+  const divIds = ["v0", "v1", "v2", "v3", "v4", "v5", "v6", "v7"];
+  for (let i = 0; i < divIds.length; i++) {
+    const divElement = document.getElementById(divIds[i]);
+    divElement.addEventListener('click', function() {
+      const selectedDivs = JSON.parse(localStorage.getItem('selectedDivs')) || [];
+      selectedDivs.push(divIds[i]);
+      localStorage.setItem('selectedDivs', JSON.stringify(selectedDivs));
+    });
+  }
+
+  var selectedLanguage = document.getElementById("language-select").value;
+  document.getElementById("selected-language").value = selectedLanguage;
+  document.getElementById("selected-language-display").textContent = selectedLanguage;
+
+  var tableRows = document.getElementById("data-table").getElementsByClassName("language-row");
+  for (var i = 0; i < tableRows.length; i++) {
+    tableRows[i].style.display = "none";
+  }
+  document.getElementsByClassName(selectedLanguage)[0].style.display = "table-row";
+
+  var languageValue = document.querySelector(".language-row." + selectedLanguage + " #language-value").textContent;
+
+  for (let i = 0; i < divIds.length; i++) {
+    const divElement = document.getElementById(divIds[i]);
+    const divValue = divElement.textContent;
+    if (divValue === languageValue) {
+      const matchingDivId = divIds[i];
+      localStorage.setItem('matchingDivId', matchingDivId);
+      console.log("ID of div with value " + divValue + " is " + matchingDivId);
+      localStorage.setItem('divValue', divValue);
+      localStorage.setItem('matchingDivId', divIds[i]);
+
+
+    }
+  }
+}
+
+
+
+displayData();
+
+  // localStorage.clear()
+  // localStorage.clear()
+</script>
+
+<script>
+  history.pushState(null, null, document.URL);
+  window.addEventListener('popstate', function () {
+      history.pushState(null, null, document.URL);
+  });
+</script>
+  
+
+
+
+<!-- <script>
+  // Get all the language rows
+// Get all the language rows
+const v0Value = document.getElementById("v0").textContent;
+const v1Value = document.getElementById("v1").textContent;
+const v2Value = document.getElementById("v2").textContent;
+const v3Value = document.getElementById("v3").textContent;
+const v4Value = document.getElementById("v4").textContent;
+const v5Value = document.getElementById("v5").textContent;
+const v6Value = document.getElementById("v6").textContent;
+const v7Value = document.getElementById("v7").textContent;
+const hiddenValue = document.getElementById("value").textContent;
+
+if (v0Value === hiddenValue) {
+  console.log("v0");
+  // localStorage.setItem("v0Value", v0Value);
+  localStorage.setItem("v0ID", "v0");
+}
+if (v1Value === hiddenValue) {
+  console.log("v1");
+  // localStorage.setItem("v1Value", v1Value);
+  localStorage.setItem("v0ID", "v1");
+}
+if (v2Value === hiddenValue) {
+  console.log("v2");
+  // localStorage.setItem("v2Value", v2Value);
+  localStorage.setItem("v0ID", "v2");
+}
+if (v3Value === hiddenValue) {
+  console.log("v3");
+  // localStorage.setItem("v3Value", v3Value);
+  localStorage.setItem("v0ID", "v3");
+}
+if (v4Value === hiddenValue) {
+  console.log("v4");
+  // localStorage.setItem("v0Value", v0Value);
+  localStorage.setItem("v0ID", "v4");
+}
+if (v5Value === hiddenValue) {
+  console.log("v5");
+  // localStorage.setItem("v1Value", v1Value);
+  localStorage.setItem("v0ID", "v5");
+}
+if (v6Value === hiddenValue) {
+  console.log("v6");
+  // localStorage.setItem("v2Value", v2Value);
+  localStorage.setItem("v0ID", "v6");
+}
+if (v7Value === hiddenValue) {
+  console.log("v7");
+  // localStorage.setItem("v3Value", v3Value);
+  localStorage.setItem("v0ID", "v7");
+}
+// localStorage.clear()
+
+
+</script> -->
+
+<!-- 
+
+    <script>
+    // function logValue(value) {
+    // console.log(value);
+    // }
+
+    // var valueContent = document.getElementById("value").innerHTML;
+    // console.log("value content:", valueContent);
+    
+    var valueContent = document.getElementById("value").innerHTML;
+console.log("value content:", valueContent); 
+
+// function logValue(value, id) {
+//   console.log(value);
+//   var div = document.getElementById(id);
+//   if (value === valueContent) {
+//     div.style.backgroundColor = "green";
+//     // div.innerHTML += " (correct)";
+//     console.log("yes");
+//   } else {
+//     div.style.backgroundColor = "red";
+//     if (console.log("v0")){
+//       var div = document.getElementById("v0");
+//     div.style.backgroundColor = "green ";
+//     }
+//     console.log("no");
+//   }
+// }
+// Get the variables from local storage
+const v0ID = localStorage.getItem("v0ID");
+// const v1ID = localStorage.getItem("v1ID");
+// const v2ID = localStorage.getItem("v2ID");
+// const v3ID = localStorage.getItem("v3ID");
+
+function logValue(value, id) {
+  console.log(value);
+  var div = document.getElementById(id);
+  if (value === valueContent) {
+    div.style.backgroundColor = "green";
+    // div.innerHTML += " (correct)";
+    console.log("yes");
+  } else {
+    div.style.backgroundColor = "red";
+    console.log(v0ID);
+
+    if (v0ID === v0ID) {
+      var div = document.getElementById(v0ID);
+      div.style.backgroundColor = "green";
+    } else if (v0ID === v1ID) {
+      var div = document.getElementById(v1ID);
+      div.style.backgroundColor = "green";
+    } else if (v0ID === v2ID) {
+      var div = document.getElementById(v2ID);
+      div.style.backgroundColor = "green";
+    } else if (v0ID === v3ID) {
+      var div = document.getElementById(v3ID);
+      div.style.backgroundColor = "green";
+    }
+    else if (v0ID === v4ID) {
+      var div = document.getElementById(v4ID);
+      div.style.backgroundColor = "green";
+    } else if (v0ID === v5ID) {
+      var div = document.getElementById(v5ID);
+      div.style.backgroundColor = "green";
+    } else if (v0ID === v6ID) {
+      var div = document.getElementById(v6ID);
+      div.style.backgroundColor = "green";
+    }
+    else if (v0ID === v7ID) {
+      var div = document.getElementById(v7ID);
+      div.style.backgroundColor = "green";
+    }
+  } 
+}
+
+
+
+// Call logValue function with a value and an id
+// logValue("some value", "someId");
+
+
+// Checking if the console log message is "no"
+
+
+
+
+
+
+
+    function displayData() {
+    var selectedLanguage = document.getElementById("language-select").value;
+    var tableRows = document.getElementById("data-table").getElementsByClassName("language-row");
+    for (var i = 0; i < tableRows.length; i++) {
+    tableRows[i].style.display = "none";
+    }
+    document.getElementsByClassName(selectedLanguage)[0].style.display = "table-row";
+    }
+    displayData();
+    </script> -->
+    
+         </center> 
+     </div>
+    
+   </div>
+ </div>
+</div>
+<!-- <script>
+  var audioPlayer = document.getElementById("audio-player");
+  var audioToggle = document.getElementById("audio-toggle");
+
+  audioToggle.addEventListener("click", function() {
+    if (audioPlayer.paused) {
+      audioPlayer.play();
+      audioToggle.src = "{% static 'images/pause.ico'%}";
+    } else {
+      audioPlayer.pause();
+      audioToggle.src = "{% static 'images/play.ico'%}";
+    }
+  });
+</script> -->
+
+
+<!-- <script>
+  var fluency = document.getElementById('fluency').innerText;
+  localStorage.setItem('fluency', fluency);
+</script> -->
+<!-- <script>
+  function sendFluency() {
+    var fluency = document.getElementById('fluency').innerText;
+    localStorage.setItem('fluency', fluency);
+  
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "{% url 'next_page' %}", true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === XMLHttpRequest.DONE) {
+        if (xhr.status === 200) {
+          var nomistake = parseInt(xhr.responseText);
+          if (nomistake <= 3) {
+            window.location.href = "{% url 'story' %}";
+          } else {
+            window.location.href = "{% url 'word' %}";
+          }
+        } else {
+          console.log("Error: " + xhr.status);
+        }
+      }
+    };
+    var data = 'fluency=' + localStorage.getItem('fluency');
+    xhr.send(data);
+  }
+</script> -->
+
+<script>
+  var spanElement = document.getElementById("mis");
+  var subDetails = spanElement.innerHTML;
+  var subDetailsArray = subDetails.split(/,|-/);
+  
+  var integerArray = [];
+  for (var i = 0; i < subDetailsArray.length; i++) {
+    var intValue = parseInt(subDetailsArray[i], 10);
+    if (!isNaN(intValue)) {
+      integerArray.push(intValue);
+    }
+  }
+  
+  console.log(integerArray);
+  
+  var spanElement = document.getElementById("dil");
+  var subDetails = spanElement.innerHTML;
+  var subDetailsArray = subDetails.split(/,|-/);
+  
+  var delintegerArray = [];
+  for (var i = 0; i < subDetailsArray.length; i++) {
+    var intValue = parseInt(subDetailsArray[i], 10);
+    if (!isNaN(intValue)) {
+      delintegerArray.push(intValue);
+    }
+  }
+  
+  console.log(delintegerArray);
+  
+  const originalText = document.querySelector(".text").textContent.trim();
+  const originalTextList = originalText.split(" ");
+  console.log("Original text list:", originalTextList);
+  
+  var fluency = document.getElementById("fluency").textContent.trim();
+  
+  if (fluency === "None") {
+    for (let i = 0; i < originalTextList.length; i++) {
+      originalTextList[i] = "<span style='color:red'>" + originalTextList[i] + "</span>";
+    }
+  } else {
+    for (let i = 0; i < originalTextList.length; i++) {
+      if (integerArray.includes(i)) {
+        originalTextList[i] = "<span style='color:red'>" + originalTextList[i] + "</span>";
+      } else if (delintegerArray.includes(i)) {
+        originalTextList[i] = "<span style='color:red'>" + originalTextList[i] + "</span>";
+      } else {
+        originalTextList[i] = "<span style='color:rgb(69, 204, 69)'>" + originalTextList[i] + "</span>";
+      }
+    }
+  }
+  
+  document.querySelector(".text").innerHTML = originalTextList.join(" ");
+</script>
+
+
+
+
+  
+
+
+<script>
+ let selectedImagee = null;
+ function selectImages(img) {
+   if (selectedImage !== null) {
+     selectedImage.style.border = "";
+   }
+   selectedImage = img;
+   selectedImage.style.border = "2px solid blue";
+ }
+
+ function submitForm() {
+   if (selectedImage === null) {
+     alert("Please select an image");
+     return false;
+   }
+   document.getElementById("selected_image").value = selectedImage.src;
+   return true;
+ }
+</script>
+
+<script>
+ function retake(){
+   retake_value = document.getElementById("retake").value
+
+   localStorage.setItem("retake", retake)
+ }
+</script>
+  <!-- all popup script -->
+  <script>
+    $("div[id^='myModal']").each(function () {
+
+      var currentModal = $(this);
+
+      //click next
+      currentModal.find('.btn-next').click(function () {
+        currentModal.modal('hide');
+        currentModal.closest("div[id^='myModal']").nextAll("div[id^='myModal']").first().modal('show');
+      });
+
+      //click prev
+      currentModal.find('.btn-prev').click(function () {
+        currentModal.modal('hide');
+        currentModal.closest("div[id^='myModal']").prevAll("div[id^='myModal']").first().modal('show');
+      });
+
+    });
+
+  </script>
+  <!-- reload and open popup -->
+  <script>
+    $(document).ready(function () {
+      $("#myModal1").modal('show');
+      $("myModal1").width(100);
+    });
+
+  </script>
+
+  <!-- modal 8 sound wave  -->
+  <script>
+
+    $(document).ready(function () {
+      $("#fire").modal('show');
+    });
+
+    //    spinner 
+    function showSpinner() {
+      var spinnerDialog = document.getElementById("spinner");
+      spinnerDialog.style.display = "block";
+    }
+
+    window.addEventListener("load", () => {
+      const bar = document.querySelectorAll(".bar");
+      for (let i = 0; i < bar.length; i++) {
+        bar.forEach((item, j) => {
+          // Random move
+          item.style.animationDuration = `${Math.random() * (0.7 - 0.2) + 0.2}s`; // Change the numbers for speed / ( max - min ) + min / ex. ( 0.5 - 0.1 ) + 0.1
+        });
+      }
+    });
+  </script>
+
+  <!-- modal 10 script -->
+
+
+
+
+
+</body>
+
+</html>

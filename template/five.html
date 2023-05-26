@@ -71,7 +71,7 @@
 
     text{
       color: #093966;
-      font-size: 35px;
+      font-size: 36px;
     }
     .button {
       background-color: #093966;
@@ -104,14 +104,33 @@
         <div class="modal-body">
               <img src="{% static 'images/top_user.png'%}" alt="top_user" style="position: absolute; top: 0; left: 0;">
               <center>
-                <form action="/start_assesment"><br> <br> <br>
+                <form action="/start_assesment" method="post"><br> <br> <br>
+            {% csrf_token %}
+
                     <text> <b> Student Name: {{ child_name }} </b> </text><br><br>
                 <!-- <img src="{% static 'images/dash_user.png'%}" alt="dash_user" style="position: relative;width:95px;top:-28px;left:-5px"> -->
                 <img   src="{{ avatar_url }}" width="200" height="200" alt="Avatar Image" style="border-radius: 50%;"> <br> <br>
                 <text>Choose Assessment</text><br>
+                <!-- <select id="assessment-select" name="assessment">
+                  <option value="hindi">Hindi</option>
+                  
+                  <option value="english">English</option>
+                  <option value="gujarati">Gujarati</option>
+                </select>
+                <br> <br>
+                <div id="english-level-select" style="display:none;">
+                  <text>Choose Level</text><br>
+                  <select name="level">
+                    <option value="bL">BL</option>
+                    <option value="ml1">ML1</option>
+                    <option value="ml2">ML2</option>
+                    <option value="el">EL</option>
 
+                  </select>
+                  <br> <br>
+                </div> -->
                 <!-- <input type="submit" value="Language"> -->
-                <input class="a" type="submit" value="Language"><br><br>
+                <input class="a" type="submit" value="Submit"><br><br>
 
                 </form>
                 
@@ -121,7 +140,18 @@
       </div>
     </div>
   </div>
-
+  <script>
+    const assessmentSelect = document.getElementById('assessment-select');
+    const englishLevelSelect = document.getElementById('english-level-select');
+  
+    assessmentSelect.addEventListener('change', (event) => {
+      if (event.target.value === 'english') {
+        englishLevelSelect.style.display = 'block';
+      } else {
+        englishLevelSelect.style.display = 'none';
+      }
+    });
+  </script>
  
 
 

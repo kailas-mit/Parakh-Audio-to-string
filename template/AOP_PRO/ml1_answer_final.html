@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+  <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/jquery.knob/1.2.13/jquery.knob.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+
+  <title>Parakh</title>
+</head>
+<body>
+  <div class="background-image"></div>
+
+  <style>
+    .background-image {
+  background-image: url("{% static 'images/parakh 1.png'%}");
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+    .a {
+      background-color: #093966;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 10px;
+    }
+
+    /* a {
+      background-color: #093966;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 10px;
+    } */
+    .b {
+            background-color: #a7262a;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
+ 
+   
+    .text{
+    color: #093966;
+    font-size: 25px;
+    font-family: sans-serif;
+    background-color: lightblue;
+      border-radius: 10%;
+  }
+
+    text {
+      color: #093966;
+      font-size: 45px;
+    }
+    
+    
+    .button {
+      background-color: #093966;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 10px;
+    }
+    form {
+    display: inline-block;
+    margin-right: 10px; /* adjust this value to add some space between the forms */
+  }
+  .highlight {
+  color: red;
+}
+  </style>
+  <style>
+    #question {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+#question button {
+  width: 70px;
+  height: 40px;
+  font-size: 20px;
+  margin: 0 10px;
+}
+
+#yes-btn {
+  background-color: rgb(197, 210, 197);
+  color: white;
+}
+
+#no-btn {
+  background-color: rgb(197, 210, 197);;
+  color: white;
+}
+.ad{
+    width: 35px;
+}
+
+  </style>
+    </style>
+    <style>
+      #yes-btn.clicked {
+    background-color: #D97D3A;
+  }
+  #no-btn.clicked {
+    background-color: #D97D3A;
+  }
+    </style>
+
+
+<style>
+  .container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  }
+  
+  @media only screen and (max-width: 600px) {
+  .container {
+  align-items: center;
+  }
+  }
+  
+  </style>
+  
+<style>
+  @media screen and (max-width: 767px) {
+  /* Center the modal vertically */
+  #myModal1 .modal-dialog {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+
+  /* Set the modal content to full width */
+  #myModal1 .modal-content {
+    width: 100%;
+  }
+}
+</style>
+<style>
+  input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+ 
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+</style>
+<style>
+  @media (max-width: 768px) {
+  #adjustment-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #adjustment-form label {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+}
+
+</style>
+ <!--pop up all  Modal 1 -->
+ <div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+ data-backdrop="static">
+ <div class="modal-dialog">
+   <div class="modal-content">
+    
+     <div class="modal-body">
+       
+         <!-- <img src="{% static 'images/top_user.png'%}" alt="top_user" style="position: absolute; top: 0; left: 0;">  -->
+         <form action="/msg_api" method="post">
+
+          {% csrf_token %}
+          <input style="display: none;" type="text" id="mobile_number" name="mobile_number" placeholder="Enter 10 digits number" value="{{ mobile_number }}">
+
+          <button type="submit"  type="submit" id="search" name="search" value="Next" style="border: none; background: none; padding: 0; margin: 0; cursor: pointer;">
+            <img src="{% static 'images/top_user.png' %}" alt="top_user" style="position: absolute; top: 0; left: 0;">
+          </button>
+        </form>
+        <img src="{% static 'images/pratham_center.png'%}" style="position: absolute; top: 0; right: 0; padding-right: 5px; padding-top: 5px; width: 80px; height: 50px;" alt="top_user"> <br>
+         <br>
+         <br> <br>
+         <center>
+          <text> <b style=" font-family: Roboto ;"> Your Answer </b> </text> <br><br><br>
+          <!-- <p class="text" style="display: none;" > <br> <br> {{ text }} <br> <br><br><br>  </p> <br> <br> -->
+          <p class="text"  id="originalText" style=" font-family: Roboto ;" > <br> <br> {{ originaltext }} <br> <br>  </p> 
+          
+
+
+           <!-- {% if audio_url %}
+           <img src="{% static 'images/play_icon.png'%}" style="width: 50px; height: 50px;  cursor: pointer;"
+           onclick="var audio = new Audio('{{ audio_url }}'); audio.play();">
+           {% endif %} -->
+           {% if audio_url %}
+              <img src="{% static 'images/play.ico'%}" style="width: 50px; height: 50px;  cursor: pointer;" id="audio-toggle">
+              <audio src="{{ audio_url }}" id="audio-player"></audio>
+           {% endif %}
+
+
+           <!-- <i style="font-size:24px" class="fa">&#xf028; </i>  -->
+           <!-- <img src="{% static 'images/sound_waves.png'%}" alt="sound_waves.png" style="position: absolute; top: 0; left: 0;" >  -->
+           <br> <br>
+           <!-- <img src="{% static 'images/play_icon.png'%}" style="position: absolute; top: 71%; left: 0;" alt="play_icon.png"> -->
+           
+           <!-- <a href="#" style="position: absolute; top: 71%; left: 68%;"> Retake</a> <br> <br> <br> <br>  -->
+           <div class="container">
+            <span style="display: none;">Fluency (wcpm) : <span id="luency">{{ wcpm }}</span> </span>
+            <span id="mistake" style="font-size: 25px; color: #273285; font-family: Roboto ;">Number of mistakes : <span id="fluency" style="background-color: #D97D3A; color: black; padding: 7px 9px; font-weight: bold; border-radius: 10px;">{{ no_mistakes }}</span> </span> <br> <br>
+            <div id="question">
+              <span style="color: #273285; font-size: 25px; font-family: Roboto ;">Is this correct?</span>
+              <button style="color: black; border-radius: 10px;  border: 1px solid #4294ff; font-family: Roboto ;" id="yes-btn">YES</button>
+              <button style="color: black; border-radius: 10px;  border: 1px solid #4294ff; font-family: Roboto ;" id="no-btn">NO</button>
+            </div>
+          
+            <form id="adjustment-form" style="display: none;">
+              <div style="display: flex; flex-direction: row; align-items: center; justify-content: center;">
+                <label style="font-size: 25px; font-family: Roboto; color: #273285;" for="adjustment">Please update the number<br>of mistakes:</label>
+                <div style="display: flex;">
+                  <button style="background-color: #D97D3A; font-size: 18px; border-radius: 10px; border: 1px solid #D97D3A;" type="button" onclick="increment()">+</button>
+                  <input style="width: 40px; font-size: 18px; font-weight: bold; background-color: #D97D3A; border-radius: 10px; border: 1px solid #D97D3A;" type="number" id="adjustment" name="adjustment" value="0" min="0" max="10" oninput="reset()">
+                  <button style="background-color: #D97D3A; font-size: 18px; border-radius: 10px; border: 1px solid #D97D3A;" type="button" onclick="decrement()">-</button>
+                  <button style="background-color: #D97D3A; font-size: 18px; border-radius: 10px; border: 1px solid #D97D3A;" type="button" onclick="resetAdjustment()">Reset</button>
+                </div>
+              </div>
+            </form>
+          </div>
+            <!-- <button type="button" onclick="sendFluency()">Submit</button> -->
+          </form>
+           <span style="display: none;">Total number of mistakes :  <span id="mis">{{ sub_details }}</span>  </span>
+           <span style="display: none;" >Total number of mistakes :  <span id="dil">{{ del_details }}</span>  </span> <br>
+
+
+
+           <!-- <input type="submit" value="Next"> -->
+           <!-- <a href="#"  >Next</a> <br> -->
+           <form action="/ml1_retake" method="post">
+            {% csrf_token %}
+
+            <input class="a" id="retake" onclick="retake()" name="retake" type="submit" value="Retake"><br>
+          </form>
+          
+          
+          <form action="/ml1_next_store"  id="form" method="post">
+            {% csrf_token %}
+            <input type="hidden" id="fluency-adjustment" name="fluency_adjustment" value="">
+            <input class="a" onclick="sendFluency()" name="next" type="submit" value="Next" id="next-btn" ><br>
+          </form>
+
+      <span id="click-message" style="display:none;">Please click on Yes or No before clicking Next.</span>
+
+
+         </center> 
+     </div>
+    
+   </div>
+ </div>
+</div>
+<script>
+  function resetAdjustment() {
+      document.getElementById('adjustment').value = 0;
+  }
+</script>
+
+<script>
+  function sendFluency() {
+    var adjustment = document.getElementById('adjustment').value;
+    localStorage.setItem('adjustment', adjustment);
+    console.log("adjustment", adjustment);
+    document.getElementById('fluency-adjustment').value = adjustment;
+  }
+</script>
+<script>
+  const questionDiv = document.getElementById("question");
+  const adjustmentForm = document.getElementById("adjustment-form");
+  const mistakeSpan = document.getElementById("mistake");
+  const yesBtn = document.getElementById("yes-btn");
+  const noBtn = document.getElementById("no-btn");
+  const adjustmentInput = document.getElementById("adjustment");
+  const nextBtn = document.getElementById("next-btn");
+  const clickMessage = document.getElementById("click-message");
+
+
+  noBtn.addEventListener("click", () => {
+  questionDiv.style.display = "none";
+  adjustmentForm.style.display = "block";
+  mistakeSpan.style.display = "none";
+  nextBtn.disabled = false;
+});
+
+yesBtn.addEventListener("click", () => {
+  let fluency = parseInt(document.getElementById("fluency").textContent);
+  adjustmentInput.value = fluency;
+  questionDiv.style.display = "block";
+  adjustmentForm.style.display = "none";
+  nextBtn.disabled = false;
+});
+
+nextBtn.addEventListener("click", (event) => {
+  if (!yesBtn.classList.contains("clicked") && !noBtn.classList.contains("clicked")) {
+    event.preventDefault(); // prevent form submission
+    Swal.fire({
+      title: 'Error',
+      text: 'Please select the option',
+      icon: 'error',
+      confirmButtonText: 'OK'
+    });
+  }
+});
+
+  function increment() {
+    let adjustment = parseInt(adjustmentInput.value);
+    if (adjustment < maxAdjustment) {
+      adjustmentInput.stepUp();
+    }
+  }
+
+  function decrement() {
+    let adjustment = parseInt(adjustmentInput.value);
+    if (adjustment > 0) {
+      adjustmentInput.stepDown();
+    }
+  }
+
+  function reset() {
+    adjustmentInput.value = "0";
+  }
+
+  yesBtn.addEventListener("click", () => {
+    yesBtn.classList.add("clicked");
+    noBtn.classList.remove("clicked");
+  });
+
+  noBtn.addEventListener("click", () => {
+    noBtn.classList.add("clicked");
+    yesBtn.classList.remove("clicked");
+  });
+</script>
+
+<script>
+  let originalTextArray = document.getElementById("originalText").textContent.trim().split(/\s+/).concat("");
+  let maxAdjustment = originalTextArray.length - 1;
+
+  function increment() {
+    let adjustment = parseInt(document.getElementById("adjustment").value);
+    if (adjustment < maxAdjustment) {
+      document.getElementById("adjustment").stepUp();
+    }
+  }
+
+  function decrement() {
+    let adjustment = parseInt(document.getElementById("adjustment").value);
+    if (adjustment > 0) {
+      document.getElementById("adjustment").stepDown();
+    }
+  }
+</script>
+<script>
+  history.pushState(null, null, document.URL);
+  window.addEventListener('popstate', function () {
+      history.pushState(null, null, document.URL);
+  });
+</script>
+<!-- <script>
+  var audioPlayer = document.getElementById("audio-player");
+  var audioToggle = document.getElementById("audio-toggle");
+
+  audioToggle.addEventListener("click", function() {
+    if (audioPlayer.paused) {
+      audioPlayer.play();
+      audioToggle.src = "{% static 'images/pause.ico'%}";
+    } else {
+      audioPlayer.pause();
+      audioToggle.src = "{% static 'images/play.ico'%}";
+    }
+  });
+</script> -->
+<script>
+  var audioPlayer = document.getElementById("audio-player");
+  var audioToggle = document.getElementById("audio-toggle");
+
+  audioToggle.addEventListener("click", function() {
+    if (audioPlayer.paused) {
+      audioPlayer.play();
+      audioToggle.src = "{% static 'images/pause.ico'%}";
+    } else {
+      audioPlayer.pause();
+      audioToggle.src = "{% static 'images/play.ico'%}";
+    }
+  });
+
+  audioPlayer.addEventListener("ended", function() {
+    audioToggle.src = "{% static 'images/play.ico'%}";
+  });
+</script>
+
+<!-- <script>
+  var fluency = document.getElementById('fluency').innerText;
+  localStorage.setItem('fluency', fluency);
+</script> -->
+
+
+<!-- <script>
+  
+  var spanElement = document.getElementById("mis");
+  var subDetails = spanElement.innerHTML;
+  var subDetailsArray = subDetails.split(/,|-/);
+  
+  var integerArray = [];
+  for (var i = 0; i < subDetailsArray.length; i++) {
+    var intValue = parseInt(subDetailsArray[i], 10);
+    if (!isNaN(intValue)) {
+      integerArray.push(intValue);
+    }
+  }
+  
+  console.log(integerArray);
+  
+  var spanElement = document.getElementById("dil");
+  var subDetails = spanElement.innerHTML;
+  var subDetailsArray = subDetails.split(/,|-/);
+  
+  var delintegerArray = [];
+  for (var i = 0; i < subDetailsArray.length; i++) {
+    var intValue = parseInt(subDetailsArray[i], 10);
+    if (!isNaN(intValue)) {
+      delintegerArray.push(intValue);
+    }
+  }
+  
+  console.log(delintegerArray);
+  
+  const originalText = document.querySelector(".text").textContent.trim();
+  const originalTextList = originalText.split(" ");
+  console.log("Original text list:", originalTextList);
+
+  
+  
+  for (let i = 0; i < originalTextList.length; i++) {
+    if (integerArray.includes(i)) {
+      originalTextList[i] = "<span style='color:red'>" + originalTextList[i] + "</span>";
+    } else if (delintegerArray.includes(i)) {
+      originalTextList[i] = "<span style='color:red'>" + originalTextList[i] + "</span>";
+    } else {
+      originalTextList[i] = "<span style='color:green'>" + originalTextList[i] + "</span>";
+    }
+  }
+  
+  document.querySelector(".text").innerHTML = originalTextList.join(" ");
+</script> -->
+<script>
+  var spanElement = document.getElementById("mis");
+  var subDetails = spanElement.innerHTML;
+  var subDetailsArray = subDetails.split(/,|-/);
+  
+  var integerArray = [];
+  for (var i = 0; i < subDetailsArray.length; i++) {
+    var intValue = parseInt(subDetailsArray[i], 10);
+    if (!isNaN(intValue)) {
+      integerArray.push(intValue);
+    }
+  }
+  
+  console.log(integerArray);
+  
+  var spanElement = document.getElementById("dil");
+  var subDetails = spanElement.innerHTML;
+  var subDetailsArray = subDetails.split(/,|-/);
+  
+  var delintegerArray = [];
+  for (var i = 0; i < subDetailsArray.length; i++) {
+    var intValue = parseInt(subDetailsArray[i], 10);
+    if (!isNaN(intValue)) {
+      delintegerArray.push(intValue);
+    }
+  }
+  
+  console.log(delintegerArray);
+  
+  const originalText = document.querySelector(".text").textContent.trim();
+  const originalTextList = originalText.split(" ");
+  console.log("Original text list:", originalTextList);
+  
+  var luency = document.getElementById("luency").textContent.trim();
+  
+  if (luency === "None") {
+    for (let i = 0; i < originalTextList.length; i++) {
+      originalTextList[i] = "<span style='color:red'>" + originalTextList[i] + "</span>";
+    }
+  } else {
+    for (let i = 0; i < originalTextList.length; i++) {
+      if (integerArray.includes(i)) {
+        originalTextList[i] = "<span style='color:red'>" + originalTextList[i] + "</span>";
+      } else if (delintegerArray.includes(i)) {
+        originalTextList[i] = "<span style='color:red'>" + originalTextList[i] + "</span>";
+      } else {
+        originalTextList[i] = "<span style='color:green'>" + originalTextList[i] + "</span>";
+      }
+    }
+  }
+  
+  document.querySelector(".text").innerHTML = originalTextList.join(" ");
+</script>
+
+
+
+  
+  
+
+<!-- 
+<script>
+  // get the text and originaltext values from the HTML
+  var text = "{{ text }}";
+  var originaltext = "{{ originaltext }}".toLowerCase().replace(/\.$/, ""); // remove trailing dot
+  // split the text and originaltext values into arrays of words
+  var textArray = text.trim().split(" ");
+  var originaltextArray = originaltext.trim().split(" ");
+  // create an empty list to store the highlighted words
+  var highlightedWords = [];
+  // loop through the originaltext array to check each word
+  for (var i = 0; i < originaltextArray.length; i++) {
+    var word = originaltextArray[i].trim();
+
+    // if the word is found in the text array, add it to the highlighted words list
+    if (textArray.indexOf(word) > -1) {
+      highlightedWords.push(word);
+    }
+    // if the word is not found in the text array, highlight it in the originaltext value
+    else {
+      highlightedWords.push("<span style='color: red;'>" + word + "</span>");
+    }
+  }
+  // capitalize the first letter of the sentence
+  highlightedWords[0] = highlightedWords[0].charAt(0).toUpperCase() + highlightedWords[0].slice(1);
+
+  // join the highlighted words list back into a string and update the HTML
+  document.getElementsByClassName("text")[0].innerHTML = highlightedWords.join(" ");
+</script> -->
+
+
+<!--                                                               Highlight the word  -->
+<!-- <script>
+  var text = "{{ text }}";
+  var originalText = "{{ originaltext }}".toLowerCase();
+  var textArray = text.split(" ");
+  var originalTextArray = originalText.split(" ");
+  var output = "";
+
+  if (textArray.length != originalTextArray.length) {
+    for (var i = 0; i < Math.max(textArray.length, originalTextArray.length); i++) {
+      var word = textArray[i] || "";
+      var originalWord = originalTextArray[i] || "";
+
+      if (word !== originalWord) {
+        output += "<span style='color: red;'>";
+
+        for (var j = 0; j < Math.max(word.length, originalWord.length); j++) {
+          var char = word[j] || "";
+          var originalChar = originalWord[j] || "";
+
+          if (char !== originalChar) {
+            output += "<span style='color: red;'>" + char + "</span>";
+          } else {
+            output += char;
+          }
+        }
+
+        output += "</span> ";
+      } else {
+        output += word + " ";
+      }
+    }
+  } else {
+    for (var i = 0; i < textArray.length; i++) {
+      var word = textArray[i];
+      var originalWord = originalTextArray[i];
+
+      if (word.replace(/[^a-zA-Z0-9]+$/, "").toLowerCase() == originalWord.replace(/[^a-zA-Z0-9]+$/, "")) {
+        output += " " + word + " ";
+      } else {
+        output += "<span style='color: red;'>";
+
+        for (var j = 0; j < Math.max(word.length, originalWord.length); j++) {
+          var char = word[j] || "";
+          var originalChar = originalWord[j] || "";
+
+          if (char !== originalChar) {
+            output += "<span style='color: red;'>" + char + "</span>";
+          } else {
+            output += char;
+          }
+        }
+
+        output += "</span> ";
+      }
+    }
+  }
+
+  document.getElementsByClassName("text")[0].innerHTML = output;
+</script> -->
+
+
+
+
+
+<script>
+ let selectedImagee = null;
+ function selectImages(img) {
+   if (selectedImage !== null) {
+     selectedImage.style.border = "";
+   }
+   selectedImage = img;
+   selectedImage.style.border = "2px solid blue";
+ }
+
+ function submitForm() {
+   if (selectedImage === null) {
+     alert("Please select an image");
+     return false;
+   }
+   document.getElementById("selected_image").value = selectedImage.src;
+   return true;
+ }
+</script>
+
+<script>
+ function retake(){
+   retake_value = document.getElementById("retake").value
+
+   localStorage.setItem("retake", retake)
+ }
+</script>
+  <!-- all popup script -->
+  <script>
+    $("div[id^='myModal']").each(function () {
+
+      var currentModal = $(this);
+
+      //click next
+      currentModal.find('.btn-next').click(function () {
+        currentModal.modal('hide');
+        currentModal.closest("div[id^='myModal']").nextAll("div[id^='myModal']").first().modal('show');
+      });
+
+      //click prev
+      currentModal.find('.btn-prev').click(function () {
+        currentModal.modal('hide');
+        currentModal.closest("div[id^='myModal']").prevAll("div[id^='myModal']").first().modal('show');
+      });
+
+    });
+
+  </script>
+  <!-- reload and open popup -->
+  <script>
+    $(document).ready(function () {
+      $("#myModal1").modal('show');
+      $("myModal1").width(100);
+    });
+
+  </script>
+
+  <!-- modal 8 sound wave  -->
+  <script>
+
+    $(document).ready(function () {
+      $("#fire").modal('show');
+    });
+
+    //    spinner 
+    function showSpinner() {
+      var spinnerDialog = document.getElementById("spinner");
+      spinnerDialog.style.display = "block";
+    }
+
+    window.addEventListener("load", () => {
+      const bar = document.querySelectorAll(".bar");
+      for (let i = 0; i < bar.length; i++) {
+        bar.forEach((item, j) => {
+          // Random move
+          item.style.animationDuration = `${Math.random() * (0.7 - 0.2) + 0.2}s`; // Change the numbers for speed / ( max - min ) + min / ex. ( 0.5 - 0.1 ) + 0.1
+        });
+      }
+    });
+  </script>
+
+  <!-- modal 10 script -->
+
+  <script>
+    let selectedImage = null;
+
+    function selectImage(img) {
+      if (selectedImage !== null) {
+        selectedImage.style.border = "";
+      }
+      selectedImage = img;
+      selectedImage.style.border = "2px solid blue";
+    }
+
+    function submitForm() {
+      if (selectedImage === null) {
+        alert("Please select an image");
+        return false;
+      }
+      document.getElementById("selected_image").value = selectedImage.src;
+      return true;
+    }
+  </script>
+
+
+
+
+</body>
+
+</html>

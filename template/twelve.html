@@ -54,8 +54,21 @@
       cursor: pointer;
       border-radius: 10px;
     }
+    .b {
+            background-color: #a7262a;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 10px;
+        }
 
-    a {
+    /* a {
       background-color: #093966;
       border: none;
       color: white;
@@ -67,7 +80,7 @@
       margin: 4px 2px;
       cursor: pointer;
       border-radius: 10px;
-    }
+    } */
     .text{
     color: #093966;
     font-size: 25px;
@@ -77,7 +90,7 @@
   }
   text {
       color: #093966;
-      font-size: 35px;
+      font-size: 45px;
     }
 
     .button {
@@ -107,34 +120,43 @@
       <div class="modal-content">
         <div class="modal-body">
           
-            <img src="{% static 'images/top_user.png'%}" alt="top_user" style="position: absolute; top: 0; left: 0;"> <br>
+            <!-- <img src="{% static 'images/top_user.png'%}" alt="top_user" style="position: absolute; top: 0; left: 0;">  -->
+            <a href="{% url 'select_profile' %}">
+              <img src="{% static 'images/top_user.png' %}" alt="top_user" style="position: absolute; top: 0; left: 0;">
+            </a>
+            <br>
             <br> <br>
             <center>
               <text> <b> Your Answer </b> </text> <br>
-              <p class="text" > <br> <br> {{ text }}. <br> <br> <br> </p> <br> <br>
+              <!-- <p class="text" style="display: none;"> <br> <br> {{ text }} <br> <br> <br> </p> <br> <br> -->
+              <p class="text" id="originalText"  > <br> <br> {{ originaltext }} <br> <br>  </p> 
+
   
+              <!-- {% if audio_url %}
+              <img src="{% static 'images/play_icon.png'%}" style="width: 50px; height: 50px;  cursor: pointer;"
+              onclick="var audio = new Audio('{{ audio_url }}'); audio.play();">
+              {% endif %} -->
               {% if audio_url %}
-              <audio controls>
-                <source src="{{ audio_url }}" type="audio/wav">
-                Your browser does not support the audio element.
-              </audio>
+              <img src="{% static 'images/play.ico'%}" style="width: 50px; height: 50px;  cursor: pointer;" id="audio-toggle">
+              <audio src="{{ audio_url }}" id="audio-player"></audio>
               {% endif %}
   
   
-  
-              <br> <br> <br>
+              <br> <br> 
 
 
               <!-- <a href="#" style="position: absolute; top: 71%; left: 68%;"> Retake</a> <br> <br> <br> <br>  -->
-              <span>Fluency (wcpm) : {{ flu }} </span> <br>
-              <span>Total number of mistakes : <span id="fluency">{{ mis }}</span>  </span> <br> <br>
-  
+              <span>Fluency (wcpm) : <span >{{ wcpm }}</span> </span> <br>
+              <span>Total number of mistakes : <span id="fluency">{{ no_mistakes }}</span>  </span> <br> <br>
+              <span style="display: none;" >Total number of mistakes :  <span id="mis">{{ sub_details }}</span>  </span> 
+              <span style="display: none;" >Total number of mistakes :  <span id="dil">{{ del_details }}</span>  </span> 
+
               <!-- <input type="submit" value="Next"> -->
               <!-- <a href="#"  >Next</a> <br> -->
               <form action="/next_story" method="post">
                 {% csrf_token %}
   
-                <input class="a" id="retake" name="retake" type="submit" value="Retake"><br><br>
+                <input class="a" id="retake" onclick="retake()" name="retake" type="submit" value="Retake"><br><br>
               </form>
               <form action="/next_page" method="post">
                 {% csrf_token %}
@@ -143,12 +165,28 @@
   
             </center>
         </div>
-       
       </div>
     </div>
   </div>
 
- 
+  <script>
+    var audioPlayer = document.getElementById("audio-player");
+    var audioToggle = document.getElementById("audio-toggle");
+  
+    audioToggle.addEventListener("click", function() {
+      if (audioPlayer.paused) {
+        audioPlayer.play();
+        audioToggle.src = "{% static 'images/pause.ico'%}";
+      } else {
+        audioPlayer.pause();
+        audioToggle.src = "{% static 'images/play.ico'%}";
+      }
+    });
+  
+    audioPlayer.addEventListener("ended", function() {
+      audioToggle.src = "{% static 'images/play.ico'%}";
+    });
+  </script>
   <script>
     function sendFluency() {
       var fluency = document.getElementById('fluency').innerText;
@@ -165,7 +203,7 @@
             if (nomistake <= 3) {
               window.location.href = "{% url 'next_answer' %}";
             } else {
-              window.location.href = "{% url 'word' %}";
+              window.location.href = "{% url 'word_msg' %}";
             }
           } else {
             console.log("Error: " + xhr.status);
@@ -176,8 +214,192 @@
       xhr.send(data);
     }
   </script>
+
+</script>
+<script>
+  var spanElement = document.getElementById("mis");
+  var subDetails = spanElement.innerHTML;
+  var subDetailsArray = subDetails.split(/,|-/);
+  
+  var integerArray = [];
+  for (var i = 0; i < subDetailsArray.length; i++) {
+    var intValue = parseInt(subDetailsArray[i], 10);
+    if (!isNaN(intValue)) {
+      integerArray.push(intValue);
+    }
+  }
+  
+  console.log(integerArray);
+  
+  var spanElement = document.getElementById("dil");
+  var subDetails = spanElement.innerHTML;
+  var subDetailsArray = subDetails.split(/,|-/);
+  
+  var delintegerArray = [];
+  for (var i = 0; i < subDetailsArray.length; i++) {
+    var intValue = parseInt(subDetailsArray[i], 10);
+    if (!isNaN(intValue)) {
+      delintegerArray.push(intValue);
+    }
+  }
+  
+  console.log(delintegerArray);
+  
+  const originalText = document.querySelector(".text").textContent.trim();
+  const originalTextList = originalText.split(" ");
+  console.log("Original text list:", originalTextList);
+  
+  var fluency = document.getElementById("fluency").textContent.trim();
+  
+  if (fluency === "None") {
+    for (let i = 0; i < originalTextList.length; i++) {
+      originalTextList[i] = "<span style='color:red'>" + originalTextList[i] + "</span>";
+    }
+  } else {
+    for (let i = 0; i < originalTextList.length; i++) {
+      if (integerArray.includes(i)) {
+        originalTextList[i] = "<span style='color:red'>" + originalTextList[i] + "</span>";
+      } else if (delintegerArray.includes(i)) {
+        originalTextList[i] = "<span style='color:red'>" + originalTextList[i] + "</span>";
+      } else {
+        originalTextList[i] = "<span style='color:green'>" + originalTextList[i] + "</span>";
+      }
+    }
+  }
+  
+  document.querySelector(".text").innerHTML = originalTextList.join(" ");
+</script>
+
+
+  
+
+<!-- <script>
+  // get the text and originaltext values from the HTML
+  var text = "{{ text }}";
+  var originaltext = "{{ originaltext }}".toLowerCase().replace(/[\.,]+$/, ""); // remove trailing dot or comma
+  // split the text and originaltext values into arrays of words
+  var textArray = text.trim().split(/[\s,\.]+/);
+  var originaltextArray = originaltext.trim().split(/[\s,\.]+/);
+  // create an empty list to store the highlighted words
+  var highlightedWords = [];
+  // loop through the originaltext array to check each word
+  for (var i = 0; i < originaltextArray.length; i++) {
+    var word = originaltextArray[i].trim();
+
+    // if the word is found in the text array, add it to the highlighted words list with green color
+    if (textArray[i] === word) {
+      highlightedWords.push("<span style='color: green;'>" + word + "</span>");
+    }
+    // if the word is not found in the text array, highlight it in red color
+    else {
+      highlightedWords.push("<span style='color: red;'>" + word + "</span>");
+    }
+  }
+  // capitalize the first letter of the first sentence
+  highlightedWords[0] = highlightedWords[0].charAt(0).toUpperCase() + highlightedWords[0].slice(1);
+  
+  // loop through the highlightedWords list to capitalize the first letter of every sentence
+  for (var i = 1; i < highlightedWords.length; i++) {
+    var word = highlightedWords[i];
+    // check if the current word starts a new sentence
+    if (word.startsWith(".") || word.startsWith("!") || word.startsWith("?")) {
+      // capitalize the first letter of the next word
+      highlightedWords[i+1] = highlightedWords[i+1].charAt(0).toUpperCase() + highlightedWords[i+1].slice(1);
+    }
+  }
+
+  // join the highlighted words list back into a string and update the HTML
+  document.getElementsByClassName("text")[0].innerHTML = highlightedWords.join(" ");
+  
+  // find all the highlighted words in the originaltext and highlight them with red color
+  var originaltextHTML = document.getElementsByClassName("text")[1].innerHTML;
+  for (var i = 0; i < originaltextArray.length; i++) {
+    var word = originaltextArray[i].trim();
+    if (originaltextHTML.indexOf(word) > -1 && textArray.indexOf(word) === -1) {
+      originaltextHTML = originaltextHTML.replace(new RegExp("\\b" + word + "\\b", "g"), "<span style='color: red;'>" + word + "</span>");
+    }
+  }
+  // update the HTML with the highlighted originaltext value
+  document.getElementsByClassName("text")[1].innerHTML = originaltextHTML;
+</script> -->
+
+
+
+
+
+
+<!--                                                                Highlight  -->
+<!--   
+  <script>
+    var text = "{{ text }}";
+    var originalText = "{{ originaltext }}".toLowerCase().replace(/[^a-zA-Z0-9\s]/g, ""); // converting originalText to lowercase and removing non-alphanumeric characters
+    var textArray = text.split(" ");
+    var originalTextArray = originalText.split(" ");
+    var output = "";
+  
+    if (textArray.length != originalTextArray.length) {
+      for (var i = 0; i < Math.max(textArray.length, originalTextArray.length); i++) {
+        var word = textArray[i] || "";
+        var originalWord = originalTextArray[i] || "";
+  
+        // Removing parentheses and periods from word and originalWord before comparing
+        word = word.replace(/[()\.]/g, "");
+        originalWord = originalWord.replace(/[()\.]/g, "");
+  
+        if (word !== originalWord) {
+          output += "<span style='color: red;'>";
+  
+          for (var j = 0; j < Math.max(word.length, originalWord.length); j++) {
+            var char = word[j] || "";
+            var originalChar = originalWord[j] || "";
+  
+            if (char !== originalChar) {
+              output += "<span style='color: red;'>" + char + "</span>";
+            } else {
+              output += char;
+            }
+          }
+  
+          output += "</span> ";
+        } else {
+          output += word + " ";
+        }
+      }
+    } else {
+      for (var i = 0; i < textArray.length; i++) {
+        var word = textArray[i].replace(/[^a-zA-Z0-9\s]/g, ""); // removing non-alphanumeric characters
+        var originalWord = originalTextArray[i].replace(/[^a-zA-Z0-9\s]/g, ""); // removing non-alphanumeric characters
+  
+        // Removing parentheses and periods from word and originalWord before comparing
+        word = word.replace(/[()\.]/g, "");
+        originalWord = originalWord.replace(/[()\.]/g, "");
+  
+        if (word.toLowerCase() == originalWord) { // comparing after converting to lowercase
+          output += " " + textArray[i] + " ";
+        } else {
+          output += "<span style='color: red;'>";
+  
+          for (var j = 0; j < Math.max(word.length, originalWord.length); j++) {
+            var char = word[j] || "";
+            var originalChar = originalWord[j] || "";
+  
+            if (char !== originalChar) {
+              output += "<span style='color: red;'>" + char + "</span>";
+            } else {
+              output += char;
+            }
+          }
+  
+          output += "</span> ";
+        }
+      }
+    }
+  
+    document.getElementsByClassName("text")[0].innerHTML = output;
+  </script> -->
   
   
+
 
 
 
@@ -294,4 +516,3 @@
 </body>
 
 </html>
-

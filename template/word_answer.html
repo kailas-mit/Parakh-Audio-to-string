@@ -56,8 +56,21 @@
       cursor: pointer;
       border-radius: 10px;
     }
+    .b {
+            background-color: #a7262a;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 10px;
+        }
 
-    a {
+    /* a {
       background-color: #ffffff;
       border: none;
       color: white;
@@ -65,15 +78,15 @@
       text-align: center;
       text-decoration: none;
       display: inline-block;
-      /* font-size: 16px; */
       margin: -4px 0px;
       cursor: pointer;
       border-radius: 10px;
-    }
+    } */
 
     text {
       color: #093966;
-      font-size: 35px;
+      font-size: 36px;
+      font-family: Roboto;
     }
 
     .button {
@@ -104,12 +117,57 @@
       border-color: inherit;
       border-style: solid;
       border-width: 0;
-      padding: 13px;
+      padding: 0px;
     }
   </style>
 
+<style>
+  @media screen and (max-width: 767px) {
+  /* Center the modal vertically */
+  #myModal1 .modal-dialog {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
 
+  /* Set the modal content to full width */
+  #myModal1 .modal-content {
+    width: 100%;
+  }
+}
+</style>
+<style>
+  .first{
+    background-color: thistle;
+    margin-top: 25px;
 
+  }
+  .second{
+    background-color: thistle;
+    margin-top: 55px;
+  }
+  .third{
+    background-color: thistle;
+    margin-top: 45px;
+
+  }
+  .four{
+    background-color: thistle;
+    margin-top: 55px;
+
+  }
+  .five{
+      background-color: thistle;
+    margin-top: 45px;
+
+  }
+</style>
+<style>
+  .row {
+    display: inline-block;
+  }
+</style>
 
   <!-- Button trigger modal -->
   <!-- <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal1">
@@ -123,10 +181,17 @@
       <div class="modal-content" style="width: 100%;">
 
         <div class="modal-body">
-          <img src="{% static 'images/top_user.png'%}" alt="top_user" style="position: absolute; top: 0; left: 0;"> <br>
+          <!-- <form action="/select_profile" method="post">
+            <img src="{% static 'images/top_user.png'%}" alt="top_user" style="position: absolute; top: 0; left: 0;"> <br>
+
+          </form> -->
+          <a href="{% url 'select_profile' %}">
+            <img src="{% static 'images/top_user.png' %}" alt="top_user" style="position: absolute; top: 0; left: 0;">
+          </a>
+          
           <br> <br>
           <center>
-            <text> <b> Your Answer </b> </text> <br>
+            <text> <b > Your Answer </b> </text> <br>
             <!-- <p>  {{ text }}. <br> </p> <br> <br> -->
 
 
@@ -135,63 +200,146 @@
               {% csrf_token %}
 
               <div style="display: flex; flex-wrap: wrap; max-width: 100%;">
-                <table style="flex: 1; margin-right: 10px;">
+
+                <table  style="flex: 1; margin-right: 10px; display: none;">
                   <thead>
                     <tr>
                       <!-- <th style="text-align: center;">Word</th> -->
                     </tr>
                   </thead>
                   <tbody>
-                    {% for val in text %}
+                    {% for val in mis %}
                     <tr>
                       <td style="
                           text-align: center;   
-                          height: 94px;
+                          height: 81px;
                           background-color:#97d79fa1;
                           border: 1px solid #ccc;
                           box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
                           border-radius: 5px;
                           top: 143px;
-                          padding-bottom: 20px;
+                          padding-bottom: 0px;
                       ">
                         <b><h4>{{ val }}</h4></b>
+                      </td>
+                    </tr>
+                    
+                    <tr style="height: 20px; vertical-align: middle;"></tr> <!-- empty row for space -->
+                    {% endfor %}
+                  </tbody>
+                </table>
+                
+                <table  style="flex: 1; margin-right: 10px; ">
+                  <thead>
+                    <tr>
+                      <!-- <th style="text-align: center;">Word</th> -->
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for qword in qword %}
+                    <tr>
+                      <td style="
+                          text-align: center;   
+                          height: 81px;
+                          background-color:#97d79fa1;
+                          border: 1px solid #ccc;
+                          box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+                          border-radius: 5px;
+                          top: 143px;
+                          padding-bottom: 0px;
+                      ">
+                        <b><h4>{{ qword }}</h4></b>
                       </td>
                     </tr>
                     <tr style="height: 20px; vertical-align: middle;"></tr> <!-- empty row for space -->
                     {% endfor %}
                   </tbody>
-                  
-                
                 </table>
-                {% if copy_file %}
+               
                 <table style="flex: 1;  margin-right: 10px;">
                   <thead>
                     <tr>
                       <!-- <th>Audio File</th> -->
                     </tr>
                   </thead>
-                  <tbody>
-                    {% for audio_url in audio_urls %}
+                 
+                  <tbody style="height: 100px;">
                     <tr>
-                      <td>
-                        <!-- <audio controls style="width: 195px" >
-                                <source src="{{ audio_url }}" type="audio/wav">
-                                Your browser does not support the audio element.
-                                </audio> -->
-                                <audio controls>
-                                  <source src="{{ audio_url }}" type="audio/wav">
-                                  Your browser does not support the audio element.
-                                  </audio>
+                      {% if audio_url1 %}
 
-                        <a href="#" onclick="document.getElementById('my-audio').play(); return false; ">
-                          <img src="{% static 'images/play_icon.png'%}" alt="Click to play audio">
-                        </a>
-                      </td>
+
+                            <td>
+                              <img src="{% static 'images/play.ico'%}" style="width: 50px; height: 50px; margin-left: 45px; cursor: pointer;" id="audio-toggle-{{ audio_url }}">
+                              <audio src="{{ audio_url1 }}" id="audio-player-{{ audio_url }}"></audio>
+                            </td>
+                      {% endif %}
+                          
                     </tr>
-                    {% endfor %}
                   </tbody>
+                  
+             
+                
+                  <tbody style="height: 100px;">
+                    <tr>
+                      {% if audio_url2 %}
+
+                            <td>
+                              <img src="{% static 'images/play.ico'%}" style="width: 50px; height: 50px; margin-left: 45px; cursor: pointer;" id="audio-toggle-{{ audio_url }}">
+                              <audio src="{{ audio_url2 }}" id="audio-player-{{ audio_url }}"></audio>
+                            </td>
+                      {% endif %}
+                        
+                    </tr>
+                  </tbody>
+                  
+                   
+                  <tbody style="height: 100px;">
+                    <tr>
+                      {% if audio_url3 %}
+
+                            <td>
+                              <img src="{% static 'images/play.ico'%}" style="width: 50px; height: 50px; margin-left: 45px; cursor: pointer;" id="audio-toggle-{{ audio_url }}">
+                              <audio src="{{ audio_url3 }}" id="audio-player-{{ audio_url }}"></audio>
+                            </td>
+                      {% endif %}
+                      
+                    </tr>
+                  </tbody>
+                  
+         
+                
+                  <tbody style="height: 100px;">
+                    <tr>
+                      {% if audio_url4 %}
+
+                            <td>
+                              <img src="{% static 'images/play.ico'%}" style="width: 50px; height: 50px; margin-left: 45px; cursor: pointer;" id="audio-toggle-{{ audio_url }}">
+                              <audio src="{{ audio_url4 }}" id="audio-player-{{ audio_url }}"></audio>
+                            </td>
+                      {% endif %}
+                      
+                    </tr>
+                  </tbody>
+                  
+              
+                      
+                  <tbody style="height: 100px;">
+                    <tr>
+                      {% if audio_url5 %}
+
+                            <td>
+                              <img src="{% static 'images/play.ico'%}" style="width: 50px; height: 50px; margin-left: 45px; cursor: pointer;" id="audio-toggle-{{ audio_url }}">
+                              <audio src="{{ audio_url5 }}" id="audio-player-{{ audio_url }}"></audio>
+                      
+                            </td>
+                      {% endif %}
+                 
+                    </tr>
+                  </tbody>
+                  
+                  
                 </table>
-                {% endif %}
+                             
                 
                 <table style="flex: 1; margin-right: 10px;">
                   <thead>
@@ -266,18 +414,16 @@
                   </tbody>
                 </table>
               </div>
-              <!-- <input class="a" id="retake" name="retake" type="submit" value="Retake"><br><br> -->
             </form>
-            <!-- <a href="#" style="position: absolute; top: 71%; left: 68%;"> Retake</a> <br> <br> <br> <br>  -->
-            <!-- <span>Fluency (wcpm) : {{ total_wcpm }}</span> <br> -->
-            <span>Total number of mistakes : <span style="background-color: yellow; padding: 7px 9px;"> {{ total_mis }}
-              </span> </span> <br> <br>
+           
+           <span style=" font-size: 25px; color: #273285;">Total number of mistakes :  <span id="fluency" style="background-color: #D97D3A; color: black; padding: 7px 9px; font-weight: bold; border-radius: 10px;">{{ total_mis }}</span>  </span> <br> <br> 
 
-            <!-- <input type="submit" value="Next"> -->
-            <!-- <a href="#"  >Next</a> <br> -->
-            <form action="" method="post">
+         
+            <form action="/next_page" method="post">
               {% csrf_token %}
-              <input class="a" id="next" name="next" type="submit" value="Next"><br><br>
+              <input type="hidden" name="total_mis" value="{{ total_mis }}">
+
+              <input class="a"  onclick="sendFluency()" id="next" name="next" type="submit" value="Next">
             </form>
           </center>
 
@@ -287,31 +433,88 @@
     </div>
   </div>
 
-  <!-- <style>
-    .highlight {
-  background-image: linear-gradient(to right, #cdc7c7ec,#cdc7c7ec,#cdc7c7ec);
-  border-radius: 6px;
-  padding: 3px 27px;
-  justify-content: space-around;
-}
-  </style> -->
+<script>
+  var audioPlayers = document.querySelectorAll("audio");
+  var audioToggles = document.querySelectorAll("img[id^='audio-toggle']");
+  
+  audioToggles.forEach(function(audioToggle, i) {
+    var audioPlayer = audioPlayers[i];
+  
+    audioToggle.addEventListener("click", function() {
+      if (audioPlayer.paused) {
+        audioPlayer.play();
+        audioToggle.src = "{% static 'images/pause.ico'%}";
+      } else {
+        audioPlayer.pause();
+        audioToggle.src = "{% static 'images/play.ico'%}";
+      }
+    });
+  
+    audioPlayer.addEventListener("ended", function() {
+      audioToggle.src = "{% static 'images/play.ico'%}";
+    });
+  });
+  </script>
+
+<script>
+  let misValues = [];
+  let misCells = document.querySelectorAll("table")[0].querySelectorAll("td");
+  for (let i = 0; i < misCells.length; i++) {
+    misValues.push(parseInt(misCells[i].querySelector("h4").innerHTML));
+  }
+  
+  let misTable = document.querySelectorAll("table")[0];
+  let qwordTable = document.querySelectorAll("table")[1];
+  
+  for (let i = 0; i < misValues.length; i++) {
+    let val = misValues[i];
+    let misCell = misTable.querySelectorAll("td")[i];
+    let qwordCell = qwordTable.querySelectorAll("td")[i];
+  
+    if (val === 0) {
+      misCell.style.backgroundColor = "rgb(148, 255, 168)";
+      qwordCell.style.backgroundColor = "rgb(148, 255, 168)";
+    } else {
+      misCell.style.backgroundColor = "rgb(255, 148, 148)";
+      qwordCell.style.backgroundColor = "rgb(255, 148, 148)";
+    }
+  }
+  
+  </script>
+  
 
 
 
 
+<!-- 
+  <script>
+    function sendFluency() {
+      var fluency = document.getElementById('fluency').innerText;
+      localStorage.setItem('fluency', fluency);
+    
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", "{% url 'next_page' %}", true);
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+      xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+          if (xhr.status === 200) {
+            var nomistake = parseInt(xhr.responseText);
+            if (nomistake <= 1) {
+              window.location.href = "{% url 'word_msg' %}";
+            } else {
+              window.location.href = "{% url 'letter' %}";
+            }
+          } else {
+            console.log("Error: " + xhr.status);
+          }
+        }
+      };
+      var data = 'fluency=' + localStorage.getItem('fluency');
+      xhr.send(data);
+    }
+  </script> -->
 
-
-
-
-
-
-
-
-
-  <!-- end all popup Modal -->
-
-
-  <!-- Modal 3 script -->
   <script>
     let selectedImagee = null;
 
@@ -333,28 +536,22 @@
     }
   </script>
 
-  <!-- all popup script -->
   <script>
     $("div[id^='myModal']").each(function () {
-
       var currentModal = $(this);
 
-      //click next
       currentModal.find('.btn-next').click(function () {
         currentModal.modal('hide');
         currentModal.closest("div[id^='myModal']").nextAll("div[id^='myModal']").first().modal('show');
       });
 
-      //click prev
       currentModal.find('.btn-prev').click(function () {
         currentModal.modal('hide');
         currentModal.closest("div[id^='myModal']").prevAll("div[id^='myModal']").first().modal('show');
       });
 
     });
-
   </script>
-  <!-- reload and open popup -->
   <script>
     $(document).ready(function () {
 
@@ -364,14 +561,12 @@
 
   </script>
 
-  <!-- modal 8 sound wave  -->
   <script>
 
     $(document).ready(function () {
       $("#fire").modal('show');
     });
 
-    //    spinner 
     function showSpinner() {
       var spinnerDialog = document.getElementById("spinner");
       spinnerDialog.style.display = "block";
@@ -381,14 +576,12 @@
       const bar = document.querySelectorAll(".bar");
       for (let i = 0; i < bar.length; i++) {
         bar.forEach((item, j) => {
-          // Random move
           item.style.animationDuration = `${Math.random() * (0.7 - 0.2) + 0.2}s`; // Change the numbers for speed / ( max - min ) + min / ex. ( 0.5 - 0.1 ) + 0.1
         });
       }
     });
   </script>
 
-  <!-- modal 10 script -->
 
   <script>
     let selectedImage = null;
