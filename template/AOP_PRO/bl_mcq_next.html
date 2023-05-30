@@ -81,6 +81,25 @@
   <div class="background-image"></div>
 
   <style>
+
+
+.test{
+  display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    text-align: center; 
+                                    /* width: 270px;   */
+                                    cursor: pointer;
+                                    height: 45px;
+                                    background-color: #e2e2e0a1;
+                                    border: 1px solid #a9a9a9;
+                                    box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+                                    border-radius: 5px;
+                                    /* top: 143px; */
+                                    font-size: 20px;
+                                    padding-bottom: 0px;
+}
+
     .background-image {
   background-image: url("{% static 'images/parakh 1.png'%}");
   background-size: cover;
@@ -258,156 +277,151 @@
                     {% endfor %}
                 </ul>
             {% endif %} -->
-            
-              <table id="data-table" >
-                <tbody>
-                    {% for language, data in languages.items %}
-                      <tr class="language-row {{ language }}">
-                        {% for key, value in data.items %}
-                          {% if key != 'language' %}
-                            <td>
-                              {% if key != "answers" %}
-                              {% if language == "hindi" %}
-                                <div id="v0" onclick="logValue('{{ value.0 }}', 'v0')" style="
-                                    display: flex;
-                                    justify-content: center;
-                                    align-items: center;
-                                    text-align: center; 
-                                    width: 270px;  
-                                    cursor: pointer;
-                                    height: 45px;
-                                    background-color: #e2e2e0a1;
-                                    border: 1px solid #a9a9a9;
-                                    box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-                                    border-radius: 5px;
-                                    top: 143px;
-                                    font-size: 20px;
-                                    padding-bottom: 0px;">{{ value.0 }}</div><br>
-                    
-                                <div id="v1" onclick="logValue('{{ value.1 }}', 'v1')" style="
-                                   display: flex;
-                                    justify-content: center;
-                                    align-items: center;
-                                    text-align: center; 
-                                    width: 270px;  
-                                    cursor: pointer;
-                                    height: 45px;
-                                    background-color: #e2e2e0a1;
-                                    border: 1px solid #a9a9a9;
-                                    box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-                                    border-radius: 5px;
-                                    top: 143px;
-                                    font-size: 20px;
-                                    padding-bottom: 0px;">{{ value.1 }}</div><br>
-                    
-                                <div id="v2" onclick="logValue('{{ value.2 }}', 'v2')" style="
-                                   display: flex;
-                                    justify-content: center;
-                                    align-items: center;
-                                    text-align: center; 
-                                    width: 270px;  
-                                    cursor: pointer;
-                                    height: 45px;
-                                    background-color: #e2e2e0a1;
-                                    border: 1px solid #a9a9a9;
-                                    box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-                                    border-radius: 5px;
-                                    top: 143px;
-                                    font-size: 20px;
-                                    padding-bottom: 0px;">{{ value.2 }}</div><br>
-                    
-                                <div id="v3" onclick="logValue('{{ value.3 }}', 'v3')" style="
-                                   display: flex;
-                                    justify-content: center;
-                                    align-items: center;
-                                    text-align: center; 
-                                    width: 270px;  
-                                    cursor: pointer;
-                                    height: 45px;
-                                    background-color: #e2e2e0a1;
-                                    border: 1px solid #a9a9a9;
-                                    box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-                                    border-radius: 5px;
-                                    top: 143px;
-                                    font-size: 20px;
-                                    padding-bottom: 0px;">{{ value.3 }}</div><br>
-                                {% elif language == "marathi" %}
-                                <div id="v4" onclick="logValue('{{ value.4 }}', 'v4')" style="
-                                     display: flex;
-                                    justify-content: center;
-                                    align-items: center;
-                                    text-align: center; 
-                                    width: 270px;  
-                                    cursor: pointer;
-                                    height: 45px;
-                                    background-color: #e2e2e0a1;
-                                    border: 1px solid #a9a9a9;
-                                    box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-                                    border-radius: 5px;
-                                    top: 143px;
-                                    font-size: 20px;
-                                    padding-bottom: 0px;">{{ value.0 }}</div><br>
-                                   <div id="v5" onclick="logValue('{{ value.5 }}', 'v5')" style="
-                                     display: flex;
-                                      justify-content: center;
-                                      align-items: center;
-                                      text-align: center; 
-                                      width: 270px;  
-                                      cursor: pointer;
-                                      height: 45px;
-                                      background-color: #e2e2e0a1;
-                                      border: 1px solid #a9a9a9;
-                                      box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-                                      border-radius: 5px;
-                                      top: 143px;
-                                      font-size: 20px;
-                                      padding-bottom: 0px;">{{ value.1 }}</div><br>
-                     
-                                 <div id="v6" onclick="logValue('{{ value.6 }}', 'v6')" style="
-                                    display: flex;
-                                    justify-content: center;
-                                    align-items: center;
-                                    text-align: center; 
-                                    width: 270px;  
-                                    cursor: pointer;
-                                    height: 45px;
-                                    background-color: #e2e2e0a1;
-                                    border: 1px solid #a9a9a9;
-                                    box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-                                    border-radius: 5px;
-                                    top: 143px;
-                                    font-size: 20px;
-                                    padding-bottom: 0px;">{{ value.2 }}</div><br>
-                     
-                                 <div id="v7" onclick="logValue('{{ value.7 }}', 'v7')" style="
-                                 display: flex;
-                                  justify-content: center;
-                                  align-items: center;
-                                  text-align: center; 
-                                  width: 270px;  
-                                  cursor: pointer;
-                                  height: 45px;
-                                  background-color: #e2e2e0a1;
-                                  border: 1px solid #a9a9a9;
-                                  box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-                                  border-radius: 5px;
-                                  top: 143px;
-                                  font-size: 20px;
-                                  padding-bottom: 0px;">{{ value.3 }}</div><br>
-                          {% endif %}
-                                  
-                              {% else %}
-                                <br>
-                                <div style="display: none;" id="language-value" class="{{ language }}">{{ value }}</div>
 
-                              {% endif %}
-                            </td>
-                          {% endif %}
-                        {% endfor %}
-                      </tr>
-                    {% endfor %}
-                    </tbody>
-              </table>
+            <table id="data-table" >	
+              <tbody>	
+                  {% for language, data in languages.items %}	
+                    <tr class="language-row {{ language }}">	
+                      {% for key, value in data.items %}	
+                        {% if key != 'language' %}	
+                          <td>	
+                            {% if key != "answers" %}	
+                            {% if language == "hindi" %}	
+                              <div id="v0" onclick="logValue('{{ value.0 }}', 'v0')" style="	
+                                  display: flex;	
+                                  justify-content: center;	
+                                  align-items: center;	
+                                  text-align: center; 	
+                                  cursor: pointer;	
+                                  height: 45px;	
+                                  background-color: #e2e2e0a1;	
+                                  border: 1px solid #a9a9a9;	
+                                  box-shadow: 2px 2px 4px rgba(0,0,0,0.2);	
+                                  border-radius: 5px;	
+                                  top: 143px;	
+                                  font-size: 20px;	
+                                  padding-bottom: 0px;">{{ value.0 }}</div><br>	
+                    
+                              <div id="v1" onclick="logValue('{{ value.1 }}', 'v1')" style="	
+                                 display: flex;	
+                                  justify-content: center;	
+                                  align-items: center;	
+                                  text-align: center; 	
+                                  cursor: pointer;	
+                                  height: 45px;	
+                                  background-color: #e2e2e0a1;	
+                                  border: 1px solid #a9a9a9;	
+                                  box-shadow: 2px 2px 4px rgba(0,0,0,0.2);	
+                                  border-radius: 5px;	
+                                  top: 143px;	
+                                  font-size: 20px;	
+                                  padding-bottom: 0px;">{{ value.1 }}</div><br>	
+                    
+                              <div id="v2" onclick="logValue('{{ value.2 }}', 'v2')" style="	
+                                 display: flex;	
+                                  justify-content: center;	
+                                  align-items: center;	
+                                  text-align: center; 	
+                                  cursor: pointer;	
+                                  height: 45px;	
+                                  background-color: #e2e2e0a1;	
+                                  border: 1px solid #a9a9a9;	
+                                  box-shadow: 2px 2px 4px rgba(0,0,0,0.2);	
+                                  border-radius: 5px;	
+                                  top: 143px;	
+                                  font-size: 20px;	
+                                  padding-bottom: 0px;">{{ value.2 }}</div><br>	
+                    
+                              <div id="v3" onclick="logValue('{{ value.3 }}', 'v3')" style="	
+                                 display: flex;	
+                                  justify-content: center;	
+                                  align-items: center;	
+                                  text-align: center; 	
+                                  cursor: pointer;	
+                                  height: 45px;	
+                                  background-color: #e2e2e0a1;	
+                                  border: 1px solid #a9a9a9;	
+                                  box-shadow: 2px 2px 4px rgba(0,0,0,0.2);	
+                                  border-radius: 5px;	
+                                  top: 143px;	
+                                  font-size: 20px;	
+                                  padding-bottom: 0px;">{{ value.3 }}</div><br>	
+                              {% elif language == "marathi" %}	
+                              <div id="v4" onclick="logValue('{{ value.4 }}', 'v4')" style="	
+                                   display: flex;	
+                                  justify-content: center;	
+                                  align-items: center;	
+                                  text-align: center; 	
+                                  width: 270px;  	
+                                  cursor: pointer;	
+                                  height: 45px;	
+                                  background-color: #e2e2e0a1;	
+                                  border: 1px solid #a9a9a9;	
+                                  box-shadow: 2px 2px 4px rgba(0,0,0,0.2);	
+                                  border-radius: 5px;	
+                                  top: 143px;	
+                                  font-size: 20px;	
+                                  padding-bottom: 0px;">{{ value.0 }}</div><br>	
+                                 <div id="v5" onclick="logValue('{{ value.5 }}', 'v5')" style="	
+                                   display: flex;	
+                                    justify-content: center;	
+                                    align-items: center;	
+                                    text-align: center; 	
+                                    width: 270px;  	
+                                    cursor: pointer;	
+                                    height: 45px;	
+                                    background-color: #e2e2e0a1;	
+                                    border: 1px solid #a9a9a9;	
+                                    box-shadow: 2px 2px 4px rgba(0,0,0,0.2);	
+                                    border-radius: 5px;	
+                                    top: 143px;	
+                                    font-size: 20px;	
+                                    padding-bottom: 0px;">{{ value.1 }}</div><br>	
+                     
+                               <div id="v6" onclick="logValue('{{ value.6 }}', 'v6')" style="	
+                                  display: flex;	
+                                  justify-content: center;	
+                                  align-items: center;	
+                                  text-align: center; 	
+                                  width: 270px;  	
+                                  cursor: pointer;	
+                                  height: 45px;	
+                                  background-color: #e2e2e0a1;	
+                                  border: 1px solid #a9a9a9;	
+                                  box-shadow: 2px 2px 4px rgba(0,0,0,0.2);	
+                                  border-radius: 5px;	
+                                  top: 143px;	
+                                  font-size: 20px;	
+                                  padding-bottom: 0px;">{{ value.2 }}</div><br>	
+                     
+                               <div id="v7" onclick="logValue('{{ value.7 }}', 'v7')" style="	
+                               display: flex;	
+                                justify-content: center;	
+                                align-items: center;	
+                                text-align: center; 	
+                                width: 270px;  	
+                                cursor: pointer;	
+                                height: 45px;	
+                                background-color: #e2e2e0a1;	
+                                border: 1px solid #a9a9a9;	
+                                box-shadow: 2px 2px 4px rgba(0,0,0,0.2);	
+                                border-radius: 5px;	
+                                top: 143px;	
+                                font-size: 20px;	
+                                padding-bottom: 0px;">{{ value.3 }}</div><br>	
+                        {% endif %}	
+                                  
+                            {% else %}	
+                              <br>	
+                              <div style="display: none;" id="language-value" class="{{ language }}">{{ value }}</div>	
+                            {% endif %}	
+                          </td>	
+                        {% endif %}	
+                      {% endfor %}	
+                    </tr>	
+                  {% endfor %}	
+                  </tbody>	
+            </table>
               
               <form action="/bl_final_mcq" method="post"  onsubmit="return onSubmit()" >
 

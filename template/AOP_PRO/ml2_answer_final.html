@@ -459,37 +459,7 @@ nextBtn.addEventListener("click", (event) => {
   });
 </script>
 
-<!-- <script>
-  var fluency = document.getElementById('fluency').innerText;
-  localStorage.setItem('fluency', fluency);
-</script> -->
-<!-- <script>
-    function sendFluency() {
-      var adjustment = document.getElementById('adjustment').value;
-      localStorage.setItem('adjustment', adjustment);
-    
-      var xhr = new XMLHttpRequest();
-      xhr.open("POST", "{% url 'ml2_store' %}", true);
-      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-      xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-          if (xhr.status === 200) {
-            var adjustment = parseInt(xhr.responseText);
-            if (adjustment == 0) {
-              window.location.href = "{% url 'ml2_mcq' %}";
-            } else {
-              window.location.href = "{% url 'ml2_answer_page' %}";
-            }
-          } else {
-            console.log("Error: " + xhr.status);
-          }
-        }
-      };
-      var data = 'adjustment=' + localStorage.getItem('adjustment');
-      xhr.send(data);
-    }
-  </script> -->
+
 
 <!-- <script>
   

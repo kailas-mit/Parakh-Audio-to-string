@@ -174,7 +174,9 @@
               <form action="/red_start" method="post" onsubmit="return validateMobileNumber()">
                 {% csrf_token %}
                 <label for="please enter your mobile number"> <text style="font-weight: bold; font-family: Roboto;">Select Profile</text> </label><br>
-                <input type="number" id="mobile_number" name="mobile_number" style=" border-radius: 5px; border: 1px solid #a9a9a9; height: 38px; font-family: Roboto ;" placeholder="Enter Mobile NO">
+                <!-- <label for="please enter your mobile number"> <text style="font-family: Roboto;">Please enter your mobile number:</text> </label><br> -->
+                <input type="number" id="mobile_number" name="mobile_number" placeholder="Enter 10-digit number" pattern="[0-9]{10}" maxlength="10" style=" border-radius: 5px; border: 1px solid #a9a9a9; height: 38px; font-family: Roboto ;" onclick="enableInput()" oninput="restrictInputLength()">
+                <!-- <input type="number" id="mobile_number" name="mobile_number" style=" border-radius: 5px; border: 1px solid #a9a9a9; height: 38px; font-family: Roboto ;" placeholder="Enter Mobile NO"> -->
                 <input class="a" id="search" name="search" type="submit" value="SEARCH"><br>
             
                 {% if error_message %}
@@ -224,6 +226,18 @@
         </div>
       </div>
     </div>
+
+    <script>
+      function restrictInputLength() {
+        var mobileNumberInput = document.getElementById("mobile_number");
+        var mobileNumber = mobileNumberInput.value;
+      
+        if (mobileNumber.length > 10) {
+          mobileNumberInput.value = mobileNumber.slice(0, 10); // Truncate input to 10 digits
+        }
+      }
+      
+          </script>
     <script>
       const cardBody = document.querySelector(`[data-status="${item.status}"]`);
       cardBody.addEventListener('click', function () {

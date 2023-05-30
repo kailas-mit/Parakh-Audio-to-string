@@ -253,11 +253,14 @@ def start_assesment(request,selected_option):
     selected_option = request.session.get('selected_option')
     selected_level = request.session.get('selected_level')
     if request.method == 'POST':
+
         if selected_level == 'BL':
             return redirect('bl')
         elif selected_level == 'ML1':
             return redirect('bl')
             
+
+
     return render(request, 'start_assesment.html',{'selected_option':selected_option,'selected_level':selected_level,'status':status})
 
 def gen_aop_redirect(request,selected_option):
@@ -4183,6 +4186,7 @@ def next_page(request):
     if request.method == 'POST':
         total_mis = request.POST.get('total_mis')
         print("total_mis",total_mis)
+        number = int(total_mis)
         media_folder = os.path.join(settings.MEDIA_ROOT)
         for file in os.listdir(media_folder):
             file_path = os.path.join(media_folder, file)
@@ -4195,7 +4199,7 @@ def next_page(request):
         audio_file_name.clear()
 
      
-        if total_mis <= '1':
+        if number <= 1:
             child_name = request.session.get('child_name')
             level = "Word"
             return render(request,'answer_page_gen.html',{'child_name': child_name, 'level': level})
@@ -4207,6 +4211,7 @@ def next_page_para(request):
     if request.method == 'POST':
         word_mistakes = request.POST.get('no_mistakes')
         print("no_mistakes",word_mistakes)
+        number = int(word_mistakes)
         media_folder = os.path.join(settings.MEDIA_ROOT)
         for file in os.listdir(media_folder):
             file_path = os.path.join(media_folder, file)
@@ -4218,7 +4223,7 @@ def next_page_para(request):
         audio_file_name = request.session.setdefault('audio_file_name', [])
         audio_file_name.clear()
 
-        if word_mistakes > '3':
+        if number <= 3:
             return redirect("story")
         else:
             return redirect("word")
@@ -4227,6 +4232,7 @@ def next_page_story(request):
     if request.method == 'POST':
         word_mistakes = request.POST.get('no_mistakes')
         print("no_mistakes",word_mistakes)
+        number = int(word_mistakes)
         media_folder = os.path.join(settings.MEDIA_ROOT)
         for file in os.listdir(media_folder):
             file_path = os.path.join(media_folder, file)
@@ -4239,7 +4245,7 @@ def next_page_story(request):
         audio_file_name.clear()
 
         
-        if word_mistakes > '3':
+        if number <= 3:
             child_name = request.session.get('child_name')
             level = "Story"
             return render(request,'answer_page_gen.html',{'child_name': child_name, 'level': level})
@@ -4254,6 +4260,7 @@ def next_page_letter(request):
     if request.method == 'POST':
         total_mis = request.POST.get('total_mis')
         print("total_mis",total_mis)
+        number = int(total_mis)
         media_folder = os.path.join(settings.MEDIA_ROOT)
         for file in os.listdir(media_folder):
             file_path = os.path.join(media_folder, file)
@@ -4265,7 +4272,7 @@ def next_page_letter(request):
         audio_file_name = request.session.setdefault('audio_file_name', [])
         audio_file_name.clear()
 
-        if total_mis <= '1':
+        if number <= 1:
             child_name = request.session.get('child_name')
             level = "Letter"
             return render(request,'answer_page_gen.html',{'child_name': child_name, 'level': level})

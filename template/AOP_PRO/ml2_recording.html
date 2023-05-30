@@ -524,27 +524,29 @@ window.onclick = function(event) {
 
 
         start: function () {
-          // if (!navigator.mediaDevices) {
-          //   alert('Error: getUserMedia not supported in this browser');
-          //   return;
-          // }
-          
-          // if (location.protocol !== 'https:') {
-          //   alert('Warning: getUserMedia requires a secure context (HTTPS)');
-          // }
-          
-          var options = {audio: true, video: false};
-          navigator.mediaDevices.getUserMedia(options).then(function (stream) {
-              myRecorder.objects.stream = stream;
-              myRecorder.objects.recorder = new Recorder(
-                      myRecorder.objects.context.createMediaStreamSource(stream),
-                      {numChannels: 1}
-              );
-              myRecorder.objects.recorder.record();
-              $('#recordButton').attr('disabled', true);
-              $('#stopButton').attr('disabled', false);
-          }).catch(function (err) {});
-        },
+    var options = { audio: true, video: false };
+    navigator.mediaDevices.getUserMedia(options)
+        .then(function (stream) {
+            myRecorder.objects.stream = stream;
+            myRecorder.objects.recorder = new Recorder(
+                myRecorder.objects.context.createMediaStreamSource(stream),
+                { numChannels: 1 }
+            );
+            myRecorder.objects.recorder.record();
+            $('#recordButton').attr('disabled', true);
+            $('#stopButton').attr('disabled', false);
+        })
+        .catch(function (err) {
+            // Handle the case where the microphone is not available
+            console.log('Error accessing microphone:', err);
+            Swal.fire({
+                title: 'Error',
+                text: 'Failed to access the microphone. Please make sure a microphone is connected and try again.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        });
+},
         stop: function () {
             if (null !== myRecorder.objects.stream) {
                 myRecorder.objects.stream.getAudioTracks()[0].stop();
