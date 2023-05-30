@@ -1845,7 +1845,7 @@ def ml1_next_store(request):
         
             context = {
                 'mobile_number': phone_number,
-                'level' : "L1"
+                'level' : "L1-sentence"
             }
             return render(request, "AOP_PRO/ans_page_aop.html", context=context)
             # return redirect('ml1_answer_page')
@@ -3511,7 +3511,7 @@ def ml3_next_store(request):
         
             context = {
                 'mobile_number': phone_number,
-                'level' : "L2-sentence"
+                'level' : "L3-sentence"
             }
             return render(request, "AOP_PRO/ans_page_aop.html", context=context)
             # return redirect('ml3_answer_page')
@@ -4252,7 +4252,7 @@ def next_page_story(request):
             # return redirect("next_answer")
         else:
             child_name = request.session.get('child_name')
-            level = "Word"
+            level = "Paragraph"
             return render(request,'answer_page_gen.html',{'child_name': child_name, 'level': level})
             # return redirect("word_msg")
 
@@ -9838,6 +9838,7 @@ def lans_page(request):
                 filename = os.path.basename(filepath)
                 audio_url = request.build_absolute_uri(settings.MEDIA_URL + filename)
                 audio_urls.append(audio_url)
+                print('audiourls',audio_urls)
             else:
                 audio_urls.append('') 
        

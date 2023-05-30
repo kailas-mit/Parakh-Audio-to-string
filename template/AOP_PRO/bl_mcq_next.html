@@ -193,7 +193,7 @@
   #language-select {
     position: absolute;
     top: 60px;
-    right: 60px;
+    right: 20px;
     width: 150px;
     height: 40px;
     font-size: 20px;
@@ -216,6 +216,17 @@
     width: 100%;
   }
 }
+@media (max-width: 600px) {
+    #language-select {
+      /* / Custom styles for mobile view / */
+    }
+  }
+  
+  @media (min-width: 601px) {
+    #language-select {
+      /* / Custom styles for web view / */
+    }
+  }
 </style>
  <!--pop up all  Modal 1 -->
  <div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
@@ -239,7 +250,7 @@
 
          <br>
          <br> <br>
-         <select id="language-select" onchange="displayData()">
+         <select id="language-select" onchange="displayData()" style="width: 35%;">
           {% for language in languages %}
           <option value="{{ language }}" {% if language == 'Hindi' %}selected{% endif %}>
             {% if language == 'hindi' %}
@@ -523,13 +534,13 @@ for (let i = 0; i < divIds.length; i++) {
     localStorage.setItem('clickedDivId', clickedDivId);
     document.getElementById("selected-div_id").value = clickedDivId;
       if (clickedDivValue === languageValue) {
-        this.style.backgroundColor = "rgb(143, 143, 255)";
-        this.style.border = "3px solid rgb(99, 99, 255)";
+        this.style.backgroundColor =  "#9cbee1";
+        this.style.border = "2px solid #25759e";
         document.getElementById("selected-div").value = clickedDivValue;
         document.getElementById("selected-div-display").textContent = "Selected div: " + clickedDivValue;
       } else {
-        this.style.backgroundColor = "rgb(143, 143, 255)";
-        this.style.border = "3px solid rgb(99, 99, 255)";
+        this.style.backgroundColor =  "#9cbee1";
+        this.style.border = "2px solid #25759e";
         const matchingDivId = localStorage.getItem("matchingDivId");
         if (matchingDivId !== null && matchingDivId !== clickedDivId) {
           const matchingDiv = document.getElementById(matchingDivId);

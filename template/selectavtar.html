@@ -110,7 +110,30 @@
     }
   }
   </style>
+<style>
+  .card {
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    text-align: center;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  }
 
+  .btn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .avatar {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+  }
+</style>
 
   <!-- Button trigger modal -->
   <!-- <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal1">
@@ -130,12 +153,21 @@
                 <text> <b style="font-family: Roboto; font-size: 36px;"> Select Profile </b> </text><br><br>
                 <text class="col-sm-6 col-md-8  col-xs-12 " style=" font-family: Roboto;"> {{ child_name }}</text>
                 <br><br>
-                <button class="btn">
+                <!-- <button class="btn">
                   <div>
   
                     <img src="{{ avatar_url }}" width="200" height="200" alt="Avatar Image"> <br> <br>
                   </div>
-                </button>
+                </button> -->
+                
+                
+                <div class="card">
+                  <button class="btn">
+                    <div>
+                      <img src="{{ avatar_url }}" class="avatar" alt="Avatar Image">
+                    </div>
+                  </button>
+                </div>
   
               </form>
               <form action="/choose_avatar">

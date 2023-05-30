@@ -451,38 +451,6 @@
   </script>
   
 
-
-
-
-<!-- 
-  <script>
-    function sendFluency() {
-      var fluency = document.getElementById('fluency').innerText;
-      localStorage.setItem('fluency', fluency);
-    
-      var xhr = new XMLHttpRequest();
-      xhr.open("POST", "{% url 'next_page' %}", true);
-      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-      xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-          if (xhr.status === 200) {
-            var nomistake = parseInt(xhr.responseText);
-            if (nomistake <= 1) {
-              window.location.href = "{% url 'word_msg' %}";
-            } else {
-              window.location.href = "{% url 'letter' %}";
-            }
-          } else {
-            console.log("Error: " + xhr.status);
-          }
-        }
-      };
-      var data = 'fluency=' + localStorage.getItem('fluency');
-      xhr.send(data);
-    }
-  </script> -->
-
   <script>
     let selectedImagee = null;
 

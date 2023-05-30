@@ -275,7 +275,7 @@ input[type=number] {
            <!-- <a href="#" style="position: absolute; top: 71%; left: 68%;"> Retake</a> <br> <br> <br> <br>  -->
            <div class="container">
             <span style="display: none;">Fluency (wcpm) : <span id="luency">{{ wcpm }}</span> </span>
-            <span id="mistake" style="font-size: 25px; color: #273285; font-family: Roboto ;">Number of mistakes : <span id="fluency" style="background-color: #D97D3A; color: black; padding: 7px 9px; font-weight: bold; border-radius: 10px;">{{ no_mistakes }}</span> </span> <br> <br>
+            <span id="mistake" style="font-size: 25px; color: #273285; font-family: Roboto ; margin-bottom: 25px;">Number of mistakes : <span id="fluency" style="background-color: #D97D3A; color: black; padding: 7px 9px; font-weight: bold; border-radius: 10px;">{{ no_mistakes }}</span> </span>
             <div id="question">
               <span style="color: #273285; font-size: 25px; font-family: Roboto ;">Is this correct?</span>
               <button style="color: black; border-radius: 10px;  border: 1px solid #4294ff; font-family: Roboto ;" id="yes-btn">YES</button>
@@ -357,7 +357,7 @@ input[type=number] {
 yesBtn.addEventListener("click", () => {
   let fluency = parseInt(document.getElementById("fluency").textContent);
   adjustmentInput.value = fluency;
-  questionDiv.style.display = "block";
+  questionDiv;
   adjustmentForm.style.display = "none";
   nextBtn.disabled = false;
 });

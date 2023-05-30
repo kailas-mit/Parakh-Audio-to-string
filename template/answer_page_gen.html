@@ -61,10 +61,12 @@
         border-radius: 10px;
         /* / border: 1px solid; / */
         padding: 10px;
-        width: 300px;
-        height: 230px;
+        /* width: 350px;  */
+        height: auto;
         text-align: justify;
         font-size: 25px;
+        /* margin-left: 40px;
+        margin-right: 40px; */
     }
 
     h4 {
@@ -84,18 +86,19 @@
 </style>
 <style>
     @media screen and (max-width: 767px) {
-    #myModal1 .modal-dialog {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100%;
+        #myModal1 .modal-dialog {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
+        #myModal1 .modal-content {
+            width: 100%;
+        }
     }
-  
-    #myModal1 .modal-content {
-      width: 100%;
-    }
-  }
-  </style>
+</style>
+
 <body>
     <div class="background-image"></div>
     <!--pop up all  Modal 1 -->
@@ -105,27 +108,31 @@
             <div class="modal-content">
 
                 <div class="modal-body">
-                
-                        <a href="{% url 'select_profile' %}">
-                            <img src="{% static 'images/top_user.png' %}" alt="top_user" style="position: absolute; top: 0; left: 0;">
-                          </a>
-                         <img src="{% static 'images/pratham_center.png'%}" style="position: absolute; top: 0; right: 0; padding-right: 5px; padding-top: 5px; width: 80px; height: 50px;" alt="top_user"> <br> <br>
 
-                        <br>
+                    <a href="{% url 'select_profile' %}">
+                        <img src="{% static 'images/top_user.png' %}" alt="top_user"
+                            style="position: absolute; top: 0; left: 0;">
+                    </a>
+                    <img src="{% static 'images/pratham_center.png'%}"
+                        style="position: absolute; top: 0; right: 0; padding-right: 5px; padding-top: 5px; width: 80px; height: 50px;"
+                        alt="top_user"> <br> <br>
+
+                    <br>
                     <br> <br> <br>
                     <center>
-                       <P style=" font-family: Roboto ;"> Congratulations! Your child 
-                            has completed the test! <br> <br>
-                            The estimated reading level 
-                            of your child is '{{ level }}'. 
-                        </P> <br>
+                        <div class="card-body">
+                            <p  style=" font-family: Roboto ;" class="card-text">Congratulations! Your child
+                                has completed the test! <br> <br>
+                                The estimated reading level
+                                of your child is '{{ level }}'.</p>
+                          </div> <br>
                         <p style="display: none;">Phone number: {{ mobile_number }}</p>
 
-                            <form action="/" method="post">
-                                {% csrf_token %}
-                                <input class="a" type="submit" id="search" name="search" value="Next"><br>
+                        <form action="/" method="post">
+                            {% csrf_token %}
+                            <input class="a" type="submit" id="search" name="search" value="Next"><br>
 
-                            </form>
+                        </form>
 
                     </center>
                     <img src="{% static 'images/celb.png'%}" height="181px">
@@ -171,4 +178,4 @@
     window.addEventListener('popstate', function () {
         history.pushState(null, null, document.URL);
     });
-  </script>
+</script>

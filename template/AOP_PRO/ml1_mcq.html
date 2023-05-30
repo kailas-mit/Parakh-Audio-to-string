@@ -174,7 +174,7 @@
   #language-select {
     position: absolute;
     top: 60px;
-    right: 60px;
+    right: 20px;
     width: 150px;
     height: 40px;
     font-size: 20px;
@@ -197,6 +197,17 @@
     width: 100%;
   }
 }
+@media (max-width: 600px) {
+    #language-select {
+      /* / Custom styles for mobile view / */
+    }
+  }
+  
+  @media (min-width: 601px) {
+    #language-select {
+      /* / Custom styles for web view / */
+    }
+  }
 </style>
  <!--pop up all  Modal 1 -->
  <div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
@@ -223,7 +234,7 @@
          <!-- <div onload="setLanguageSelect()"> -->
           <p style="display: none;" id="auto_lan">{{ selected_language }}</p>
 
-        <select  id="language-select" onchange="displayData()">
+        <select  id="language-select" onchange="displayData()" style="width: 35%;">
           <!-- {% for language in languages %} -->
             <option value="{{ language }}" {% if language == selected_language %}selected{% endif %}>
               {% if language == 'hindi' %}
