@@ -108,7 +108,7 @@ def aop_language(request):
     return render(request, 'AOP_PRO/language.html', {'options': options, 'eng_option': eng_option})
 
 
-def aop_num(request,selected_option, selected_options):
+def aop_num(request,selected_options, selected_option):
     print("start_assesment",selected_option)
     print("selected_options",selected_options)
     request.session['selected_option'] = selected_option
@@ -149,8 +149,9 @@ def red_start(request):
         }
         url = reverse('start_assesment', args=[selected_option])
         return redirect(url)
-
-    if selected_options == 'AOP Program':
+        
+    selected_option = request.session.get('selected_option')
+    if selected_option == 'AOP Program':
         if "search" in request.POST:
             selected_option = request.session.get('selected_option')
             print('selected option',selected_option)
@@ -159,7 +160,7 @@ def red_start(request):
             url = f'https://prajeevika.org/apis/aop/children-details.php?phone_number={mobile_number}&token=eyNsWgAdBF0KafwGPwOC9h5rWABTBuAKYxDxv8zRgJyuP'
             response = requests.get(url)
             print("####",response)
-            print("resposne",response.text )
+            print("resposne@@@@@@@@",response.text)
             try:
                 data = response.json()
                 name = data[0]['name']
