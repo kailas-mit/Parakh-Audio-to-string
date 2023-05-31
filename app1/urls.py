@@ -142,7 +142,7 @@ urlpatterns = [
 
 
     path('next_page', views.next_page, name='next_page'),
-    path('aop_num/<str:selected_option>/<str:selected_options>/', views.aop_num, name='aop_num'),
+    path('aop_num/<str:selected_option>/<str:selected_language>/', views.aop_num, name='aop_num'),
     path('next_para', views.next_para, name='next_para'),
     path('save_file', views.save_file, name='save_file'),
     # path('para_skip', views.para_skip, name='para_skip'),

@@ -107,15 +107,111 @@ def aop_language(request):
 
     return render(request, 'AOP_PRO/language.html', {'options': options, 'eng_option': eng_option})
 
-
-def aop_num(request,selected_options, selected_option):
-    print("start_assesment",selected_option)
-    print("selected_options",selected_options)
+def aop_num(request, selected_option, selected_language):
+    print("start_assesment", selected_option)
+    print("selected_language", selected_language)
     request.session['selected_option'] = selected_option
-    request.session['selected_options'] = selected_options
+    request.session['selected_language'] = selected_language
     return render(request, 'AOP_PRO/search_num.html')
 
+
 def red_start(request):
+    selected_option = request.session.get('selected_option')
+    print("selected_option", selected_option)
+    selected_language = request.session.get('selected_language')
+    print("selected_language", selected_language)
+    if request.method == 'GET':
+        enrollment_id = request.GET.get('enrollment_id')
+        print(enrollment_id)
+        phone_number = request.session.get('phone_number')
+        print("ph", phone_number)
+        name = request.session.get('name')
+        print("name", name)
+        data = {}
+        data["name"] = name
+        data["profile_pic"] = ""
+        data["platform"] = 'web'
+        data["phone_number"] = phone_number
+        data["enrollment_id"] = enrollment_id
+        print(data)
+        url = 'https://parakh.pradigi.org/v1/createprofile/'
+        files = []
+        payload = {'data': json.dumps(data)}
+        headers = {}
+        response = requests.request("POST", url, headers=headers, data=payload, files=files)
+        response_data = json.loads(response.text)
+        id_value = response_data["data"][0]["id"]
+        request.session['id_value'] = id_value
+        print("ID value:", id_value)
+        request.session['enrollment_id'] = enrollment_id
+        context = {
+            'processed_data': 'some processed data'
+        }
+        url = reverse('start_assesment', args=[selected_option])
+        return redirect(url)
+
+    if selected_language == 'AOP Program':
+        if "search" in request.POST:
+            selected_option = request.session.get('selected_option')
+            print('selected option', selected_option)
+            mobile_number = request.POST['mobile_number']
+            request.session['phone_number'] = mobile_number
+            url = f'https://prajeevika.org/apis/aop/children-details.php?phone_number={mobile_number}&token=eyNsWgAdBF0KafwGPwOC9h5rWABTBuAKYxDxv8zRgJyuP'
+            response = requests.get(url)
+            print("####", response)
+            print("response@@@@@@@@", response.text)
+            try:
+                data = response.json()
+                name = data[0]['name']
+                request.session['name'] = name
+                status = data[0]['status']
+                request.session['status'] = status
+                context = {
+                    'data': data,
+                    'selected_option': selected_option,
+                }
+                return render(request, 'AOP_PRO/search_num.html', context)
+            except IndexError:
+                context = {'error_message': 'Mobile number not found'}
+                return render(request, 'AOP_PRO/search_num.html', context)
+        return render(request, 'AOP_PRO/search_num.html')
+
+    else:
+        if "search" in request.POST:
+            selected_option = request.session.get('selected_option')
+            print('selected option', selected_option)
+            mobile_number = request.POST['mobile_number']
+            request.session['phone_number'] = mobile_number
+            url = f'https://prajeevika.org/apis/aop/children-details-dev.php?phone_number={mobile_number}&token=eyNsWgAdBF0KafwGPwOC9h5rWABTBuAKYxDxv8zRgJyuP'
+            response = requests.get(url)
+            print("####", response)
+            print("response", response.text)
+            try:
+                data = response.json()
+                name = data[0]['name']
+                request.session['name'] = name
+                status = data[0]['status']
+                request.session['status'] = status
+                context = {
+                    'data': data,
+                    'selected_option': selected_option,
+                }
+                return render(request, 'AOP_PRO/search_num.html', context)
+            except IndexError:
+                context = {'error_message': 'Mobile number not found'}
+                return render(request, 'AOP_PRO/search_num.html', context)
+        return render(request, 'AOP_PRO/search_num.html')
+
+
+
+# def aop_num(request,selected_options, selected_option):
+#     print("start_assesment",selected_option)
+#     print("selected_options",selected_options)
+#     request.session['selected_option'] = selected_option
+#     request.session['selected_options'] = selected_options
+#     return render(request, 'AOP_PRO/search_num.html')
+
+# def red_start(request):
     selected_option = request.session.get('selected_option')
     print("selected_option",selected_option)
     selected_options = request.session.get('selected_options')
@@ -293,8 +389,8 @@ def language(request):
     avatar_image = request.session.get('avatar_url')
     options = MyModel.OPTION_CHOICES
     eng_level = Aop_sub_lan.OPTION_CHOICES
-    selected_options = request.session.get('selected_option')  # Retrieve selected option from session
-    print('selected_option is6767678', selected_options)
+    selected_language = request.session.get('selected_option')  # Retrieve selected language from session
+    print('selected_language is', selected_language)
 
     if request.method == 'POST':
         selected_option = request.POST.get('option')
@@ -305,7 +401,7 @@ def language(request):
 
         choices = ['BL', 'ML1', 'ML2', 'EL']
         if selected_option in choices:
-            url = reverse('aop_num', args=[selected_options, selected_option])
+            url = reverse('aop_num', args=[selected_option, selected_language])
         else:
             url = reverse('start_assesment', args=[selected_option])
 
