@@ -55,6 +55,7 @@
       margin: 4px 2px;
       cursor: pointer;
       border-radius: 10px;
+      margin-bottom: 28px;
     }
 
     a {
@@ -126,6 +127,13 @@
         width: 100%;
       }
     }
+.playicon{
+  width: 50px; 
+  height: 50px; 
+  margin-left: 27px; 
+  cursor: pointer; 
+  margin-bottom: 23px;
+}
   </style>
 
   <!-- Button trigger modal -->
@@ -250,9 +258,9 @@
 
                         <td>
                           <img src="{% static 'images/play.ico'%}"
-                            style="width: 50px; height: 50px; margin-left: 45px; cursor: pointer;"
+                            class="playicon"
                             id="audio-toggle-{{ audio_url }}">
-                          <audio src="{{ audio_url1 }}" id="audio-player-{{ audio_url }}"></audio>
+                          <audio src="{{ audio_url1 }}" id="audio-player-{{ audio_url1 }}"></audio>
                         </td>
                         {% endif %}
 
@@ -267,9 +275,9 @@
 
                         <td>
                           <img src="{% static 'images/play.ico'%}"
-                            style="width: 50px; height: 50px; margin-left: 45px; cursor: pointer;"
+                          class="playicon"
                             id="audio-toggle-{{ audio_url }}">
-                          <audio src="{{ audio_url2 }}" id="audio-player-{{ audio_url }}"></audio>
+                          <audio src="{{ audio_url2 }}" id="audio-player-{{ audio_url2 }}"></audio>
                         </td>
                         {% endif %}
 
@@ -283,9 +291,9 @@
 
                         <td>
                           <img src="{% static 'images/play.ico'%}"
-                            style="width: 50px; height: 50px; margin-left: 45px; cursor: pointer;"
+                          class="playicon"
                             id="audio-toggle-{{ audio_url }}">
-                          <audio src="{{ audio_url3 }}" id="audio-player-{{ audio_url }}"></audio>
+                          <audio src="{{ audio_url3 }}" id="audio-player-{{ audio_url3 }}"></audio>
                         </td>
                         {% endif %}
 
@@ -300,9 +308,9 @@
 
                         <td>
                           <img src="{% static 'images/play.ico'%}"
-                            style="width: 50px; height: 50px; margin-left: 45px; cursor: pointer;"
+                          class="playicon"
                             id="audio-toggle-{{ audio_url }}">
-                          <audio src="{{ audio_url4 }}" id="audio-player-{{ audio_url }}"></audio>
+                          <audio src="{{ audio_url4 }}" id="audio-player-{{ audio_url4 }}"></audio>
                         </td>
                         {% endif %}
 
@@ -317,9 +325,9 @@
 
                         <td>
                           <img src="{% static 'images/play.ico'%}"
-                            style="width: 50px; height: 50px; margin-left: 45px; cursor: pointer;"
+                          class="playicon"
                             id="audio-toggle-{{ audio_url }}">
-                          <audio src="{{ audio_url5 }}" id="audio-player-{{ audio_url }}"></audio>
+                          <audio src="{{ audio_url5 }}" id="audio-player-{{ audio_url5 }}"></audio>
                         </td>
                         {% endif %}
 
@@ -438,33 +446,27 @@
     </div>
   </div>
 
-  <!-- <style>
-    .highlight {
-  background-image: linear-gradient(to right, #cdc7c7ec,#cdc7c7ec,#cdc7c7ec);
-  border-radius: 6px;
-  padding: 3px 27px;
-  justify-content: space-around;
-}
-  </style> -->
-  <!-- 
   <script>
-    var audioPlayer = document.getElementById("audio-player");
-    var audioToggle = document.getElementById("audio-toggle");
-  
-    audioToggle.addEventListener("click", function() {
-      if (audioPlayer.paused) {
-        audioPlayer.play();
-        audioToggle.src = "{% static 'images/pause.ico'%}";
-      } else {
-        audioPlayer.pause();
-        audioToggle.src = "{% static 'images/play.ico'%}";
-      }
-    });
-  
-    audioPlayer.addEventListener("ended", function() {
-      audioToggle.src = "{% static 'images/play.ico'%}";
-    });
-  </script> -->
+    // Get the current date and time
+    // Get the current date and time
+    var currentDate = new Date();
+    var formattedDate = currentDate.toISOString();
+
+    // Append the current date and time to the audio URLs
+    var audioUrl1 = "{{ audio_url1 }}" + "?timestamp=" + formattedDate;
+    var audioUrl2 = "{{ audio_url2 }}" + "?timestamp=" + formattedDate;
+    var audioUrl3 = "{{ audio_url3 }}" + "?timestamp=" + formattedDate;
+    var audioUrl4 = "{{ audio_url4 }}" + "?timestamp=" + formattedDate;
+    var audioUrl5 = "{{ audio_url5 }}" + "?timestamp=" + formattedDate;
+
+    // Update the src attribute of the audio elements
+    document.getElementById("audio-player-{{ audio_url1 }}").src = audioUrl1;
+    document.getElementById("audio-player-{{ audio_url2 }}").src = audioUrl2;
+    document.getElementById("audio-player-{{ audio_url3 }}").src = audioUrl3;
+    document.getElementById("audio-player-{{ audio_url4 }}").src = audioUrl4;
+    document.getElementById("audio-player-{{ audio_url5 }}").src = audioUrl5;
+
+  </script>
   <script>
     var audioPlayers = document.querySelectorAll("audio");
     var audioToggles = document.querySelectorAll("img[id^='audio-toggle']");

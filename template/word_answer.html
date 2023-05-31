@@ -47,28 +47,30 @@
       background-color: #093966;
       border: none;
       color: white;
-      padding: 15px 16px;
+      padding: 16px 16px;
       text-align: center;
       text-decoration: none;
       display: inline-block;
       font-size: 16px;
-      margin: 23px -1px;
+      margin: 21px 0px;
       cursor: pointer;
       border-radius: 10px;
     }
+
     .b {
-            background-color: #a7262a;
-            border: none;
-            color: white;
-            padding: 15px 32px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 10px;
-        }
+      background-color: #a7262a;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 10px;
+    }
+
     text {
       color: #093966;
       font-size: 36px;
@@ -107,37 +109,68 @@
     }
   </style>
 
-<style>
-  .first{
-    background-color: thistle;
-    margin-top: 25px;
-
-  }
-  .second{
-    background-color: thistle;
-    margin-top: 55px;
-  }
-  .third{
-    background-color: thistle;
-    margin-top: 45px;
-
-  }
-  .four{
-    background-color: thistle;
-    margin-top: 55px;
-
-  }
-  .five{
+  <style>
+    .first {
       background-color: thistle;
-    margin-top: 45px;
+      margin-top: 25px;
 
-  }
-</style>
-<style>
-  .row {
-    display: inline-block;
-  }
-</style>
+    }
+
+    .second {
+      background-color: thistle;
+      margin-top: 55px;
+    }
+
+    .third {
+      background-color: thistle;
+      margin-top: 45px;
+
+    }
+
+    .four {
+      background-color: thistle;
+      margin-top: 55px;
+
+    }
+
+    .five {
+      background-color: thistle;
+      margin-top: 45px;
+
+    }
+
+    .word_style {
+
+      text-align: center;
+      height: 81px;
+      background-color: #97d79fa1;
+      /* border: 1px solid #ccc; */
+      box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      border-radius: 5px;
+      /* top: 143px; */
+      /* padding-bottom: 0px; */
+
+    }
+
+    .qword_style {
+
+      text-align: center;
+      height: 81px;
+      width: 15%;
+      background-color: #97d79fa1;
+      /* border: 2px solid #135e1d; */
+      /* box-shadow: 2px 2px 4px rgba(0,0,0,0.2); */
+      border-radius: 15px;
+      /* top: 143px; */
+      /* padding-bottom: 0px; */
+
+    }
+  </style>
+  <style>
+    .row {
+      display: inline-block;
+    }
+  </style>
 
   <!--pop up all  Modal 1 -->
   <div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
@@ -153,10 +186,10 @@
           <a href="{% url 'select_profile' %}">
             <img src="{% static 'images/top_user.png' %}" alt="top_user" style="position: absolute; top: 0; left: 0;">
           </a>
-          
+
           <br> <br>
           <center>
-            <text> <b > Your Answer </b> </text> <br>
+            <text> <b> Your Answer </b> </text> <br>
             <!-- <p>  {{ text }}. <br> </p> <br> <br> -->
 
 
@@ -166,7 +199,7 @@
 
               <div class="col-12" style="display: flex; flex-wrap: wrap; max-width: 100%;">
 
-                <table  style="flex: 1; margin-right: 10px; display: none;">
+                <table style="flex: 1; margin-right: 10px; display: none;">
                   <thead>
                     <tr>
                       <!-- <th style="text-align: center;">Word</th> -->
@@ -175,223 +208,225 @@
                   <tbody>
                     {% for val in mis %}
                     <tr>
-                      <td style="
-                          text-align: center;   
-                          height: 81px;
-                          background-color:#97d79fa1;
-                          /* border: 1px solid #ccc; */
-                          box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-                          border-radius: 5px;
-                          top: 143px;
-                          /* padding-bottom: 0px; */
-                      ">
-                        <b><h4>{{ val }}</h4></b>
+                      <td class="word_style">
+                        <b>
+                          <h4>{{ val }}</h4>
+                        </b>
                       </td>
                     </tr>
-                    
+
                     <tr style="height: 20px; vertical-align: middle;"></tr> <!-- empty row for space -->
                     {% endfor %}
                   </tbody>
                 </table>
                 <div class="col-4">
-                <table style="flex: 1; margin-right: 10px; ">
-                  <thead>
-                    <tr>
-                      <!-- <th style="text-align: center;">Word</th> -->
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for qword in qword %}
-                    <tr>
-                      <td style="
-                          text-align: center;   
-                          height: 81px;
-                          width: 15%;
-                          background-color:#97d79fa1;
-                          /* border: 2px solid #135e1d; */
-                          /* box-shadow: 2px 2px 4px rgba(0,0,0,0.2); */
-                          border-radius: 15px;
-                          top: 143px;
-                          /* padding-bottom: 0px; */
-                      ">
-                        <b><h4>{{ qword }}</h4></b>
-                      </td>
-                    </tr>
-                    <tr style="height: 20px; vertical-align: middle;"></tr> <!-- empty row for space -->
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-              <div class="col-4"> 
-                <table style="flex: 1;  margin-right: 10px;">
-                  <thead>
-                    <tr>
-                      <!-- <th>Audio File</th> -->
-                    </tr>
-                  </thead>
-                 
-                  <tbody style="height: 100px;">
-                    <tr>
-                      {% if audio_url1 %}
+                  <table style="flex: 1; margin-right: 10px; ">
+                    <thead>
+                      <tr>
+                        <!-- <th style="text-align: center;">Word</th> -->
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for qword in qword %}
+                      <tr>
+                        <td class="qword_style" style="padding-top: 10px;">
+                          <b>
+                            <h4>{{ qword }}</h4>
+                          </b>
+                        </td>
+                      </tr>
+                      <tr style="height: 20px; vertical-align: middle;"></tr> <!-- empty row for space -->
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+                <div class="col-4">
+                  <table style="flex: 1;  margin-right: 10px;">
+                    <thead>
+                      <tr>
+                        <!-- <th>Audio File</th> -->
+                      </tr>
+                    </thead>
+
+                    <tbody style="height: 100px;">
+                      <tr>
+                        {% if audio_url1 %}
 
 
-                            <td>
-                              <img src="{% static 'images/play.ico'%}" style="width: 45px; height: 45px; align-items: center; cursor: pointer;" id="audio-toggle-{{ audio_url }}">
-                              <audio src="{{ audio_url1 }}" id="audio-player-{{ audio_url }}"></audio>
-                            </td>
-                      {% endif %}
-                          
-                    </tr>
-                  </tbody>
-                  
-             
-                
-                  <tbody style="height: 100px;">
-                    <tr>
-                      {% if audio_url2 %}
+                        <td>
+                          <img src="{% static 'images/play.ico'%}"
+                            style="width: 45px; height: 45px; align-items: center; cursor: pointer; margin-bottom: 16px;"
+                            id="audio-toggle-{{ audio_url }}">
+                          <audio src="{{ audio_url1 }}" id="audio-player-{{ audio_url }}"></audio>
+                        </td>
+                        {% endif %}
 
-                            <td>
-                              <img src="{% static 'images/play.ico'%}" style="width: 45px; height: 45px; cursor: pointer; align-items: center;" id="audio-toggle-{{ audio_url }}">
-                              <audio src="{{ audio_url2 }}" id="audio-player-{{ audio_url }}"></audio>
-                            </td>
-                      {% endif %}
-                        
-                    </tr>
-                  </tbody>
-                  
-                   
-                  <tbody style="height: 100px;">
-                    <tr>
-                      {% if audio_url3 %}
+                      </tr>
+                    </tbody>
 
-                            <td>
-                              <img src="{% static 'images/play.ico'%}" style="width: 45px; height: 45px; align-items: center; cursor: pointer;" id="audio-toggle-{{ audio_url }}">
-                              <audio src="{{ audio_url3 }}" id="audio-player-{{ audio_url }}"></audio>
-                            </td>
-                      {% endif %}
-                      
-                    </tr>
-                  </tbody>
-                  
-         
-                
-                  <tbody style="height: 100px;">
-                    <tr>
-                      {% if audio_url4 %}
 
-                            <td>
-                              <img src="{% static 'images/play.ico'%}" style="width: 45px; height: 45px; align-items: center; cursor: pointer;" id="audio-toggle-{{ audio_url }}">
-                              <audio src="{{ audio_url4 }}" id="audio-player-{{ audio_url }}"></audio>
-                            </td>
-                      {% endif %}
-                      
-                    </tr>
-                  </tbody>
-                  
-              
-                      
-                  <tbody style="height: 100px;">
-                    <tr>
-                      {% if audio_url5 %}
 
-                            <td>
-                              <img src="{% static 'images/play.ico'%}" style="width: 45px; height: 45px; align-items: center; cursor: pointer;" id="audio-toggle-{{ audio_url }}">
-                              <audio src="{{ audio_url5 }}" id="audio-player-{{ audio_url }}"></audio>
-                      
-                            </td>
-                      {% endif %}
-                 
-                    </tr>
-                  </tbody>
-                  
-                  
-                </table>
-              </div> 
-              <div class="col-4">       
-                <table style="flex: 1; align-items: center;">
-                  <thead>
-                    <tr>
-                      <!-- <th style="text-align: center;">Word</th> -->
-                    </tr>
-                  </thead>
-                  <tbody>
+                    <tbody style="height: 100px;">
+                      <tr>
+                        {% if audio_url2 %}
 
-                           
-                    <tr>
-                      
-                      <form action="/next_word" method="post">
-                        {% csrf_token %}
-    
-                        <td style="text-align: center;" ><input type="button" class="a" id="record"  style="display:none;" name="record" type="submit" value="Retake"></td>
-                        
-    
-                      </form>
-                    </tr>
-                    <tr>
-                      
-                      <form action="/next_word" method="post">
-                        {% csrf_token %}
-    
-                        <td style="text-align: center;" ><input class="a" id="record" name="record" type="submit" value="Retake"></td>
-                        
-    
-                      </form>
-                    </tr>
-                    <tr>
-                      
-                      <form action="/next_word" method="post">
-                        {% csrf_token %}
-    
-                        <td style="text-align: center;" ><input class="a" id="record2" name="record2" type="submit" value="Retake"></td>
-                        
-    
-                      </form>
-                    </tr>
-                    <tr>
-                      
-                      <form action="/next_word" method="post">
-                        {% csrf_token %}
-    
-                        <td style="text-align: center;" ><input class="a" id="record3" name="record3" type="submit" value="Retake"></td>
-                        
-    
-                      </form>
-                    </tr>
-                    <tr>
-                      
-                      <form action="/next_word" method="post">
-                        {% csrf_token %}
-    
-                        <td style="text-align: center;" ><input class="a" id="record4" name="record4" type="submit" value="Retake"></td>
-                        
-    
-                      </form>
-                    </tr>
-                    <tr>
-                      
-                      <form action="/next_word" method="post">
-                        {% csrf_token %}
-    
-                        <td style="text-align: center;" ><input class="a" id="record5" name="record5" type="submit" value="Retake"></td>
-                        
-    
-                      </form>
-                    </tr>
+                        <td>
+                          <img src="{% static 'images/play.ico'%}"
+                            style="width: 45px; height: 45px; cursor: pointer; align-items: center; margin-bottom: 16px"
+                            id="audio-toggle-{{ audio_url }}">
+                          <audio src="{{ audio_url2 }}" id="audio-player-{{ audio_url }}"></audio>
+                        </td>
+                        {% endif %}
 
-                  </tbody>
-                </table>
-              </div>
+                      </tr>
+                    </tbody>
+
+
+                    <tbody style="height: 100px;">
+                      <tr>
+                        {% if audio_url3 %}
+
+                        <td>
+                          <img src="{% static 'images/play.ico'%}"
+                            style="width: 45px; height: 45px; align-items: center; cursor: pointer; margin-bottom: 16px"
+                            id="audio-toggle-{{ audio_url }}">
+                          <audio src="{{ audio_url3 }}" id="audio-player-{{ audio_url }}"></audio>
+                        </td>
+                        {% endif %}
+
+                      </tr>
+                    </tbody>
+
+
+
+                    <tbody style="height: 100px;">
+                      <tr>
+                        {% if audio_url4 %}
+
+                        <td>
+                          <img src="{% static 'images/play.ico'%}"
+                            style="width: 45px; height: 45px; align-items: center; cursor: pointer; margin-bottom: 16px"
+                            id="audio-toggle-{{ audio_url }}">
+                          <audio src="{{ audio_url4 }}" id="audio-player-{{ audio_url }}"></audio>
+                        </td>
+                        {% endif %}
+
+                      </tr>
+                    </tbody>
+
+
+
+                    <tbody style="height: 100px;">
+                      <tr>
+                        {% if audio_url5 %}
+
+                        <td>
+                          <img src="{% static 'images/play.ico'%}"
+                            style="width: 45px; height: 45px; align-items: center; cursor: pointer; margin-bottom: 16px"
+                            id="audio-toggle-{{ audio_url }}">
+                          <audio src="{{ audio_url5 }}" id="audio-player-{{ audio_url }}"></audio>
+
+                        </td>
+                        {% endif %}
+
+                      </tr>
+                    </tbody>
+
+
+                  </table>
+                </div>
+                <div class="col-4">
+                  <table style="flex: 1; align-items: center;">
+                    <thead>
+                      <tr>
+                        <!-- <th style="text-align: center;">Word</th> -->
+                      </tr>
+                    </thead>
+                    <tbody>
+
+
+                      <tr>
+
+                        <form action="/next_word" method="post">
+                          {% csrf_token %}
+
+                          <td style="text-align: center;"><input type="button" class="a" id="record"
+                              style="display:none;" name="record" type="submit" value="Retake"></td>
+
+
+                        </form>
+                      </tr>
+                      <tr>
+
+                        <form action="/next_word" method="post">
+                          {% csrf_token %}
+
+                          <td style="text-align: center;"><input class="a" id="record" name="record" type="submit"
+                              value="Retake"></td>
+
+
+                        </form>
+                      </tr>
+                      <tr>
+
+                        <form action="/next_word" method="post">
+                          {% csrf_token %}
+
+                          <td style="text-align: center;"><input class="a" id="record2" name="record2" type="submit"
+                              value="Retake"></td>
+
+
+                        </form>
+                      </tr>
+                      <tr>
+
+                        <form action="/next_word" method="post">
+                          {% csrf_token %}
+
+                          <td style="text-align: center;"><input class="a" id="record3" name="record3" type="submit"
+                              value="Retake"></td>
+
+
+                        </form>
+                      </tr>
+                      <tr>
+
+                        <form action="/next_word" method="post">
+                          {% csrf_token %}
+
+                          <td style="text-align: center;"><input class="a" id="record4" name="record4" type="submit"
+                              value="Retake"></td>
+
+
+                        </form>
+                      </tr>
+                      <tr>
+
+                        <form action="/next_word" method="post">
+                          {% csrf_token %}
+
+                          <td style="text-align: center;"><input class="a" id="record5" name="record5" type="submit"
+                              value="Retake"></td>
+
+
+                        </form>
+                      </tr>
+
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </form>
-           
-           <span style=" font-size: 25px; color: #273285;">Total number of mistakes :  <span id="fluency" style="background-color: #D97D3A; color: black; padding: 7px 9px; font-weight: bold; border-radius: 10px;">{{ total_mis }}</span>  </span> <br> <br> 
 
-         
+            <span style=" font-size: 25px; color: #273285;">Total number of mistakes : <span id="fluency"
+                style="background-color: #D97D3A; color: black; padding: 7px 9px; font-weight: bold; border-radius: 10px;">{{ total_mis }}</span> </span> <br> <br>
+
+
             <form action="/next_page" method="post">
               {% csrf_token %}
               <input type="hidden" name="total_mis" value="{{ total_mis }}">
 
-              <input class="a"  onclick="sendFluency()" id="next" name="next" type="submit" value="Next">
+              <input class="a" onclick="sendFluency()" id="next" name="next" type="submit" value="Next">
             </form>
           </center>
 
@@ -401,55 +436,55 @@
     </div>
   </div>
 
-<script>
-  var audioPlayers = document.querySelectorAll("audio");
-  var audioToggles = document.querySelectorAll("img[id^='audio-toggle']");
-  
-  audioToggles.forEach(function(audioToggle, i) {
-    var audioPlayer = audioPlayers[i];
-  
-    audioToggle.addEventListener("click", function() {
-      if (audioPlayer.paused) {
-        audioPlayer.play();
-        audioToggle.src = "{% static 'images/pause.ico'%}";
-      } else {
-        audioPlayer.pause();
+  <script>
+    var audioPlayers = document.querySelectorAll("audio");
+    var audioToggles = document.querySelectorAll("img[id^='audio-toggle']");
+
+    audioToggles.forEach(function (audioToggle, i) {
+      var audioPlayer = audioPlayers[i];
+
+      audioToggle.addEventListener("click", function () {
+        if (audioPlayer.paused) {
+          audioPlayer.play();
+          audioToggle.src = "{% static 'images/pause.ico'%}";
+        } else {
+          audioPlayer.pause();
+          audioToggle.src = "{% static 'images/play.ico'%}";
+        }
+      });
+
+      audioPlayer.addEventListener("ended", function () {
         audioToggle.src = "{% static 'images/play.ico'%}";
-      }
+      });
     });
-  
-    audioPlayer.addEventListener("ended", function() {
-      audioToggle.src = "{% static 'images/play.ico'%}";
-    });
-  });
   </script>
 
-<script>
-  let misValues = [];
-  let misCells = document.querySelectorAll("table")[0].querySelectorAll("td");
-  for (let i = 0; i < misCells.length; i++) {
-    misValues.push(parseInt(misCells[i].querySelector("h4").innerHTML));
-  }
-  
-  let misTable = document.querySelectorAll("table")[0];
-  let qwordTable = document.querySelectorAll("table")[1];
-  
-  for (let i = 0; i < misValues.length; i++) {
-    let val = misValues[i];
-    let misCell = misTable.querySelectorAll("td")[i];
-    let qwordCell = qwordTable.querySelectorAll("td")[i];
-  
-    if (val === 0) {
-      misCell.style.backgroundColor = "rgb(148, 255, 168)";
-      qwordCell.style.backgroundColor = "rgb(148, 255, 168)";
-    } else {
-      misCell.style.backgroundColor = "rgb(255, 148, 148)";
-      qwordCell.style.backgroundColor = "rgb(255, 148, 148)";
+  <script>
+    let misValues = [];
+    let misCells = document.querySelectorAll("table")[0].querySelectorAll("td");
+    for (let i = 0; i < misCells.length; i++) {
+      misValues.push(parseInt(misCells[i].querySelector("h4").innerHTML));
     }
-  }
-  
+
+    let misTable = document.querySelectorAll("table")[0];
+    let qwordTable = document.querySelectorAll("table")[1];
+
+    for (let i = 0; i < misValues.length; i++) {
+      let val = misValues[i];
+      let misCell = misTable.querySelectorAll("td")[i];
+      let qwordCell = qwordTable.querySelectorAll("td")[i];
+
+      if (val === 0) {
+        misCell.style.backgroundColor = "rgb(148, 255, 168)";
+        qwordCell.style.backgroundColor = "rgb(148, 255, 168)";
+      } else {
+        misCell.style.backgroundColor = "rgb(255, 148, 148)";
+        qwordCell.style.backgroundColor = "rgb(255, 148, 148)";
+      }
+    }
+
   </script>
-  
+
 
   <script>
     let selectedImagee = null;
