@@ -33,8 +33,6 @@ class MyModel(models.Model):
         ('Tamil', 'Tamil'),
         ('Telugu', 'Telugu'),
         ('Urdu', 'Urdu'),
-
-
     )
     option = models.CharField(max_length=10, choices=OPTION_CHOICES)
 
@@ -61,6 +59,7 @@ class Program(models.Model):
     OPTION_CHOICES = (
         ('General Program', 'General Program'),
         ('AOP Program', 'AOP Program'),
+        ('Advance English Program', 'Advance English Program'),
      
     )
     option = models.CharField(max_length=50, choices=OPTION_CHOICES)

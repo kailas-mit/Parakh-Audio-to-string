@@ -41,36 +41,85 @@ base_path = os.path.join(settings.MEDIA_ROOT, "")
 
 from .models import Program
 
-def first(request):
-    options = Program.OPTION_CHOICES
-    if request.method == 'POST':
-        selected_option = request.POST.get('option')
-        print("selected_option",selected_option)
-        if selected_option == 'General Program':
-            return redirect('login')
-        elif selected_option == 'AOP Program':
-            return redirect('aop_language')
-    return render(request, 'home.html',{'options': options})
+# def first(request):
+#     options = Program.OPTION_CHOICES
+#     if request.method == 'POST':
+#         selected_option = request.POST.get('option')
+#         print("selected_option",selected_option)
+#         if selected_option == 'General Program':
+#             return redirect('login')
+#         elif selected_option == 'AOP Program':
+#             return redirect('aop_language')
+#         elif selected_option == 'Advance English Program':
+#             return redirect('aop_language')
+#     return render(request, 'home.html',{'options': options})
 
 from .models import Aop_lan
 from .models import Aop_sub_lan
 
+# def aop_language(request):
+#     s_option = Program.OPTION_CHOICES
+#     print('soption is',s_option)
+#     if s_option == 'AOP Program':
+#         options = Aop_sub_lan.OPTION_CHOICES
+#         eng_option= Aop_lan.OPTION_CHOICES
+#         if request.method == 'POST':
+#             selected_level = request.POST.get('options')
+#             print("selected_level",selected_level)
+#         return render(request, 'AOP_PRO/language.html',{'options': options, 'eng_option': eng_option})
+#     else:
+#         options = [('BL', 'BL'), ('EL', 'EL')]
+#         eng_option= Aop_lan.OPTION_CHOICES
+#         if request.method == 'POST':
+#             selected_level = request.POST.get('options')
+#             print("selected_level",selected_level)
+#         return render(request, 'AOP_PRO/language.html',{'options': options, 'eng_option': eng_option})
+        
+
+def first(request):
+    options = Program.OPTION_CHOICES
+    if request.method == 'POST':
+        selected_options = request.POST.get('option')
+        request.session['selected_option'] = selected_options  # Save selected option in session
+        if selected_options == 'General Program':
+            return redirect('login')
+        elif selected_options == 'AOP Program':
+            return redirect('aop_language')
+        elif selected_options == 'Advance English Program':
+            return redirect('aop_language')
+    return render(request, 'home.html', {'options': options})
+
+
 def aop_language(request):
-    options = Aop_sub_lan.OPTION_CHOICES
-    eng_option= Aop_lan.OPTION_CHOICES
+    selected_options = request.session.get('selected_option')  # Retrieve selected option from session
+    print('selected_option is', selected_options)
+
+    if selected_options == 'AOP Program':
+        options = Aop_sub_lan.OPTION_CHOICES
+        eng_option = Aop_lan.OPTION_CHOICES
+    else:
+        options = [(option, label) for option, label in Aop_sub_lan.OPTION_CHOICES if option in ['BL', 'EL']]
+        eng_option = Aop_lan.OPTION_CHOICES
+
     if request.method == 'POST':
         selected_level = request.POST.get('options')
-        print("selected_level",selected_level)
-    return render(request, 'AOP_PRO/language.html',{'options': options, 'eng_option': eng_option})
+        print("selected_level", selected_level)
 
-def aop_num(request,selected_option):
+    return render(request, 'AOP_PRO/language.html', {'options': options, 'eng_option': eng_option})
+
+
+def aop_num(request,selected_option, selected_options):
     print("start_assesment",selected_option)
+    print("selected_options",selected_options)
     request.session['selected_option'] = selected_option
+    request.session['selected_options'] = selected_options
     return render(request, 'AOP_PRO/search_num.html')
 
 def red_start(request):
     selected_option = request.session.get('selected_option')
     print("selected_option",selected_option)
+    selected_options = request.session.get('selected_options')
+    print("selected_options",selected_options)
     if request.method == 'GET':
         enrollment_id = request.GET.get('enrollment_id')
         print(enrollment_id)
@@ -101,29 +150,57 @@ def red_start(request):
         url = reverse('start_assesment', args=[selected_option])
         return redirect(url)
 
-    if "search" in request.POST:
-        selected_option = request.session.get('selected_option')
-        mobile_number = request.POST['mobile_number']
-        request.session['phone_number'] = mobile_number
-        url = f'https://prajeevika.org/apis/aop/children-details.php?phone_number={mobile_number}&token=eyNsWgAdBF0KafwGPwOC9h5rWABTBuAKYxDxv8zRgJyuP'
-        response = requests.get(url)
-        print("####",response)
-        print("resposne",response.text )
-        try:
-            data = response.json()
-            name = data[0]['name']
-            request.session['name'] = name
-            status = data[0]['status']
-            request.session['status'] = status
-            context = {
-                'data': data,
-                'selected_option': selected_option,
-            }
-            return render(request, 'AOP_PRO/search_num.html', context)
-        except IndexError:
-            context = {'error_message': 'Mobile number not found'}
-            return render(request, 'AOP_PRO/search_num.html', context)
-    return render(request, 'AOP_PRO/search_num.html')
+    if selected_options == 'AOP Program':
+        if "search" in request.POST:
+            selected_option = request.session.get('selected_option')
+            print('selected option',selected_option)
+            mobile_number = request.POST['mobile_number']
+            request.session['phone_number'] = mobile_number
+            url = f'https://prajeevika.org/apis/aop/children-details.php?phone_number={mobile_number}&token=eyNsWgAdBF0KafwGPwOC9h5rWABTBuAKYxDxv8zRgJyuP'
+            response = requests.get(url)
+            print("####",response)
+            print("resposne",response.text )
+            try:
+                data = response.json()
+                name = data[0]['name']
+                request.session['name'] = name
+                status = data[0]['status']
+                request.session['status'] = status
+                context = {
+                    'data': data,
+                    'selected_option': selected_option,
+                }
+                return render(request, 'AOP_PRO/search_num.html', context)
+            except IndexError:
+                context = {'error_message': 'Mobile number not found'}
+                return render(request, 'AOP_PRO/search_num.html', context)
+        return render(request, 'AOP_PRO/search_num.html')
+    
+    else:
+        if "search" in request.POST:
+            selected_option = request.session.get('selected_option')
+            print('selected option',selected_option)
+            mobile_number = request.POST['mobile_number']
+            request.session['phone_number'] = mobile_number
+            url = f'https://prajeevika.org/apis/aop/children-details-dev.php?phone_number={mobile_number}&token=eyNsWgAdBF0KafwGPwOC9h5rWABTBuAKYxDxv8zRgJyuP'
+            response = requests.get(url)
+            print("####",response)
+            print("resposne",response.text )
+            try:
+                data = response.json()
+                name = data[0]['name']
+                request.session['name'] = name
+                status = data[0]['status']
+                request.session['status'] = status
+                context = {
+                    'data': data,
+                    'selected_option': selected_option,
+                }
+                return render(request, 'AOP_PRO/search_num.html', context)
+            except IndexError:
+                context = {'error_message': 'Mobile number not found'}
+                return render(request, 'AOP_PRO/search_num.html', context)
+        return render(request, 'AOP_PRO/search_num.html')
     
 
 def msg_api(request):
@@ -207,41 +284,76 @@ def select_profile(request):
     avatar_image = request.session.get('avatar_url')
     return render(request, 'selectavtar.html', {'child_name': child_name, 'avatar_url': avatar_image})
 
+from django.shortcuts import render, redirect
+from django.urls import reverse
+
 def language(request):
     child_name = request.session.get('child_name')
     avatar_image = request.session.get('avatar_url')
     options = MyModel.OPTION_CHOICES
     eng_level = Aop_sub_lan.OPTION_CHOICES
+    selected_options = request.session.get('selected_option')  # Retrieve selected option from session
+    print('selected_option is6767678', selected_options)
 
     if request.method == 'POST':
         selected_option = request.POST.get('option')
+        print('@@@@@@@@@@@@@@@@@@@@@@@@', selected_option)
         selected_level = request.POST.get('options')
+        print('#########################', selected_level)
         request.session['selected_level'] = selected_level
 
-        if selected_option == 'option1':
-            with open('1.json') as f:
-                json_data = json.load(f)
-        elif selected_option == 'option2':
-            with open('2.json') as f:
-                json_data = json.load(f)
-        else:
-            pass
-        if selected_option == 'BL':
-            url = reverse('aop_num', args=[selected_option])
-            return redirect(url)
-        elif selected_option == 'ML1':
-            url = reverse('aop_num', args=[selected_option])
-            return redirect(url)
-        elif selected_option == 'ML2':
-            url = reverse('aop_num', args=[selected_option])
-            return redirect(url)
-        elif selected_option == 'EL':
-            url = reverse('aop_num', args=[selected_option])
-            return redirect(url)
+        choices = ['BL', 'ML1', 'ML2', 'EL']
+        if selected_option in choices:
+            url = reverse('aop_num', args=[selected_options, selected_option])
         else:
             url = reverse('start_assesment', args=[selected_option])
-            return redirect(url)
-    return render(request, 'select_lan.html',{'child_name': child_name, 'avatar_url': avatar_image,'options': options,'eng_level':eng_level})
+
+        return redirect(url)
+
+    return render(request, 'select_lan.html', {'child_name': child_name, 'avatar_url': avatar_image, 'options': options, 'eng_level': eng_level})
+
+
+
+
+# def language(request):
+#     child_name = request.session.get('child_name')
+#     avatar_image = request.session.get('avatar_url')
+#     options = MyModel.OPTION_CHOICES
+#     eng_level = Aop_sub_lan.OPTION_CHOICES
+#     selected_options = request.session.get('selected_option')  # Retrieve selected option from session
+#     print('selected_option is6767678', selected_options)
+
+#     if request.method == 'POST':
+#         selected_option = request.POST.get('option')
+#         print('@@@@@@@@@@@@@@@@@@@@@@@@',selected_option)
+#         selected_level = request.POST.get('options')
+#         print('#########################',selected_level)
+#         request.session['selected_level'] = selected_level
+
+#         # if selected_option == 'option1':
+#         #     with open('1.json') as f:
+#         #         json_data = json.load(f)
+#         # elif selected_option == 'option2':
+#         #     with open('2.json') as f:
+#         #         json_data = json.load(f)
+#         # else:
+#         #     pass
+#         if selected_option == 'BL':
+#             url = reverse('aop_num', args=[selected_option])
+#             return redirect(url)
+#         elif selected_option == 'ML1':
+#             url = reverse('aop_num', args=[selected_option])
+#             return redirect(url)
+#         elif selected_option == 'ML2':
+#             url = reverse('aop_num', args=[selected_option])
+#             return redirect(url)
+#         elif selected_option == 'EL':
+#             url = reverse('aop_num', args=[selected_option])
+#             return redirect(url)
+#         else:
+#             url = reverse('start_assesment', args=[selected_option])
+#             return redirect(url)
+#     return render(request, 'select_lan.html',{'child_name': child_name, 'avatar_url': avatar_image,'options': options,'eng_level':eng_level})
 
 def aop_start_assesment(request):
     return render(request, 'AOP_PRO/six_one.html')
