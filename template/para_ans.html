@@ -180,13 +180,21 @@
 
             <input class="a" id="retake" onclick="retake()" name="retake" type="submit" value="Retake"><br>
           </form>
-          
-           <form action="/next_page_para" method="post">
+          {% if my_program == 'Advance English Program' %}
+           <form action="/advance_bl_store" method="post">
              {% csrf_token %}
              <input type="hidden" name="no_mistakes" value="{{ no_mistakes }}">
 
              <input class="a" onclick="sendFluency()"  name="next" type="submit" value="Next"><br>
            </form>
+           {% else %}
+           <form action="/next_page_para" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="no_mistakes" value="{{ no_mistakes }}">
+
+            <input class="a" onclick="sendFluency()"  name="next" type="submit" value="Next"><br>
+          </form>
+          {% endif %}
 
          </center> 
      </div>

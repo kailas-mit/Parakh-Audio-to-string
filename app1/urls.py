@@ -142,7 +142,7 @@ urlpatterns = [
 
 
     path('next_page', views.next_page, name='next_page'),
-    path('aop_num/<str:selected_option>/<str:selected_language>/', views.aop_num, name='aop_num'),
+    path('aop_num/<str:selected_option>/<str:my_program>/', views.aop_num, name='aop_num'),
     path('next_para', views.next_para, name='next_para'),
     path('save_file', views.save_file, name='save_file'),
     # path('para_skip', views.para_skip, name='para_skip'),
@@ -218,6 +218,11 @@ urlpatterns = [
     path('word_ltr', views.word_ltr, name='word_ltr'),
     path('word_beg', views.word_beg, name='word_beg'),
     # path('start_nextpage', views.start_nextpage, name='start_nextpage'),
+
+
+    #advance english
+    path('advance_bl_store', views.advance_bl_store, name='advance_bl_store'),
+
 
     # path('home',views.home, name='home'),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
