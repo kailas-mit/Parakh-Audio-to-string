@@ -870,7 +870,7 @@ def bl_next_store(request):
             
                 context = {
                     'mobile_number': phone_number,
-                    'level' : "Beginer"
+                    'level' : "beginner"
                 }
                 return render(request, "AOP_PRO/ans_page_aop.html", context=context)
             # print(response.text)
