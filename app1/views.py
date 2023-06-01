@@ -4278,7 +4278,7 @@ def next_page_letter(request):
             return render(request,'answer_page_gen.html',{'child_name': child_name, 'level': level})
         else:
             child_name = request.session.get('child_name')
-            level = "Begineer"
+            level = "Beginner"
             return render(request,'answer_page_gen.html',{'child_name': child_name, 'level': level})
 
         
