@@ -12757,7 +12757,7 @@ def advance_bl_store(request):
         # print("nomistake", nomistake)
         
         if no_mistakes == 0:
-            request.session['ans_next_level'] = 'L2'
+            request.session['ans_next_level'] = 'EL'
         else:
             request.session['ans_next_level'] = 'L1'
         enrollment_id = request.session.get('enrollment_id')
