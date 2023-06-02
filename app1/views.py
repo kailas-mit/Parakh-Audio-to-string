@@ -16,9 +16,62 @@ from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
 import time as t
 
+import firebase_admin
+from firebase_admin import credentials
+
+# Initialize Firebase Admin SDK
+cred = credentials.Certificate('E:/Parakh project/Parakh/firebasekey.json')
+firebase_admin.initialize_app(cred)
+
+
+from firebase_admin import firestore
+
+# Get a Firestore client
+db = firestore.client()
+
+
+# Get a reference to the collection
+# collection_ref = db.collection('ParakhApp').document('ParakhData_Advance_English_Program')
+# doc = collection_ref.get()
+
+# if doc.exists:
+#     # Access the document data
+#     data = doc.to_dict()
+#     # Process the data as needed
+#     print(data)
+
+
+# collection_ref = db.collection('ParakhApp')
+
+# # Retrieve all documents in the collection
+# docs = collection_ref.get()
+
+# # Process the documents
+# for doc in docs:
+#     print("doc", doc.id)
+
+
+doc_name = 'ParakhData_English_L1'
+
+# Get a reference to the document
+doc_ref = db.collection('ParakhApp').document(doc_name)
+
+# Retrieve the document
+doc = doc_ref.get()
+
+# Check if the document exists
+if doc.exists:
+    # Access the document data
+    json_l1_data = doc.to_dict()
+    # Process the data as needed
+    print(json_l1_data)
+else:
+    print("Document does not exist")
+
 
 
 json_l1 = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_English_L1.json')
+print("json1121", json_l1)
 json_l2 = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_English_L2.json')
 json_l3 = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_English_L3.json')
 json_l4 = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_English_L4.json')
@@ -369,23 +422,23 @@ def bl_answer_final(request):
     elif selected_option == 'BL':
         data_id = request.session.get('data_id')
         print("data_id",data_id)
-        with open(json_l1, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            paragraph = None
-            for d in data['Paragraph']:
-                if d['id'] == data_id:
-                    val = d['data']
-                    break
+        
+        data = json_l1_data
+        paragraph = None
+        for d in data['Paragraph']:
+            if d['id'] == data_id:
+                val = d['data']
+                break
     else:
         data_id = request.session.get('data_id')
         print("data_id",data_id)
-        with open(json_l1, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            paragraph = None
-            for d in data['Paragraph']:
-                if d['id'] == data_id:
-                    val = d['data']
-                    break
+        
+        data = json_l1_data
+        paragraph = None
+        for d in data['Paragraph']:
+            if d['id'] == data_id:
+                val = d['data']
+                break
 
     if val:
         print("the val",val)
@@ -459,24 +512,24 @@ def bl_answer(request):
     elif selected_option == 'BL':
         data_id = request.session.get('data_id')
         print("data_id",data_id)
-        with open(json_l1, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            paragraph = None
-            for d in data['Paragraph']:
-                if d['id'] == data_id:
-                    val = d['data']
-                    break
+        
+        data = json_l1_data
+        paragraph = None
+        for d in data['Paragraph']:
+            if d['id'] == data_id:
+                val = d['data']
+                break
     
     else: 
         data_id = request.session.get('data_id')
         print("data_id",data_id)
-        with open(json_l1, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            paragraph = None
-            for d in data['Paragraph']:
-                if d['id'] == data_id:
-                    val = d['data']
-                    break
+       
+        data = json_l1_data
+        paragraph = None
+        for d in data['Paragraph']:
+            if d['id'] == data_id:
+                val = d['data']
+                break
 
     if val:
         print("the val",val)
@@ -545,13 +598,13 @@ def bl_retake(request):
         data_id = request.session.get('data_id')
         print("data_id",data_id)
         request.session['audio_recorded'] = True
-        with open(json_l1, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            paragraph = None
-            for d in data['Paragraph']:
-                if d['id'] == data_id:
-                    val = d['data']
-                    break
+       
+        data = json_l1_data
+        paragraph = None
+        for d in data['Paragraph']:
+            if d['id'] == data_id:
+                val = d['data']
+                break
     
 
     # with open(json_eng) as f:
@@ -593,13 +646,13 @@ def bl_skip(request):
     # else:
         data_id = request.session.get('data_id')
         print("data_id",data_id)
-        with open(json_l1, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            paragraph = None
-            for d in data['Paragraph']:
-                if d['id'] == data_id:
-                    val = d['data']
-                    break
+        
+        data = json_l1_data
+        paragraph = None
+        for d in data['Paragraph']:
+            if d['id'] == data_id:
+                val = d['data']
+                break
 
         words = val.split()
         my_list = list(words)
@@ -657,13 +710,13 @@ def bl_skip_next(request):
     # else:
         data_id = request.session.get('data_id')
         print("data_id",data_id)
-        with open(json_l1, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            paragraph = None
-            for d in data['Paragraph']:
-                if d['id'] == data_id:
-                    val = d['data']
-                    break
+       
+        data = json_l1_data
+        paragraph = None
+        for d in data['Paragraph']:
+            if d['id'] == data_id:
+                val = d['data']
+                break
 
         words = val.split()
         my_list = list(words)
@@ -730,13 +783,13 @@ def bl_store(request):
         # print("student_id",id_value)
         data_id = request.session.get('data_id')
         # print("sample_id",data_id)
-        with open(json_l1, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            paragraph = None
-            for d in data['Paragraph']:
-                if d['id'] == data_id:
-                    val = d['data']
-                    break
+        
+        data = json_l1_data
+        paragraph = None
+        for d in data['Paragraph']:
+            if d['id'] == data_id:
+                val = d['data']
+                break
 
         if val:
             print("question",val)
@@ -815,13 +868,13 @@ def bl_next_store(request):
             print("student_id",id_value)
             data_id = request.session.get('data_id')
             print("sample_id",data_id)
-            with open(json_l1, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-                paragraph = None
-                for d in data['Paragraph']:
-                    if d['id'] == data_id:
-                        val = d['data']
-                        break
+           
+            data = json_l1_data
+            paragraph = None
+            for d in data['Paragraph']:
+                if d['id'] == data_id:
+                    val = d['data']
+                    break
 
             if val:
                 print("question",val)
@@ -886,35 +939,34 @@ def get_random_sentence(request):
     selected_option = request.session.get('selected_option')
     print("get_random_sentence",selected_option)
     if selected_option == 'BL':
-        with open(json_l1, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            data1 = random.choice(data['Sentence'])
-            print("the value ",data1['id'])
-            data_id = data1['id']
-            request.session['data_id'] = data_id
-            print(data_id)
-            print("dta",data1['data'])
-            languages = data1['language']
-            return {
-                'data': data1['data'],
-                'data_id': data_id,
-                'languages': languages,
-            }
+       
+        data = json_l1_data
+        data1 = random.choice(data['Sentence'])
+        print("the value ",data1['id'])
+        data_id = data1['id']
+        request.session['data_id'] = data_id
+        print(data_id)
+        print("dta",data1['data'])
+        languages = data1['language']
+        return {
+            'data': data1['data'],
+            'data_id': data_id,
+            'languages': languages,
+        }
     else:
-        with open(json_l1, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            data1 = random.choice(data['Sentence'])
-            print("the value ",data1['id'])
-            data_id = data1['id']
-            request.session['data_id'] = data_id
-            print(data_id)
-            print("dta",data1['data'])
-            languages = data1['language']
-            return {
-                'data': data1['data'],
-                'data_id': data_id,
-                'languages': languages,
-            }
+        data = json_l1_data
+        data1 = random.choice(data['Sentence'])
+        print("the value ",data1['id'])
+        data_id = data1['id']
+        request.session['data_id'] = data_id
+        print(data_id)
+        print("dta",data1['data'])
+        languages = data1['language']
+        return {
+            'data': data1['data'],
+            'data_id': data_id,
+            'languages': languages,
+        }
        
 def bl_mcq_api(request):
     selected_option = request.session.get('selected_option')
@@ -942,13 +994,13 @@ def bl_mcq_api(request):
         print('text:', text)
         print('audio_url:', audio_url)
         print('process_time:', process_time)
-        with open(json_l1, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            Sentence = None
-            for d in data['Sentence']:
-                if d['id'] == data_id:
-                    val = d['data']
-                    break
+        
+        data = json_l1_data
+        Sentence = None
+        for d in data['Sentence']:
+            if d['id'] == data_id:
+                val = d['data']
+                break
         print("@",selected_option)
         if selected_language == 'hindi':
                 print("selected",'hindi')
@@ -959,31 +1011,30 @@ def bl_mcq_api(request):
             request.session['lan'] = selected_language
 
         if selected_language == 'hindi':
-            with open(json_l1, 'r', encoding='utf-8') as f:
-                data = json.load(f)
+           
                 # find the data with matching data_id
-                selected_data = next((item for item in data['Sentence'] if item['id'] == data_id), None)
-                if selected_data:
-                    
-                    languages = selected_data['language']
-                    selected_language = languages.get(selected_language)
-                    options = selected_language.get('options')
-                    answer = selected_language.get('answers')
-                else:
-                    print("Data not found for the given data_id")
+            data = json_l1_data
+            selected_data = next((item for item in data['Sentence'] if item['id'] == data_id), None)
+            if selected_data:
+                
+                languages = selected_data['language']
+                selected_language = languages.get(selected_language)
+                options = selected_language.get('options')
+                answer = selected_language.get('answers')
+            else:
+                print("Data not found for the given data_id")
         elif selected_language == 'marathi':
-            with open(json_l1, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-                # find the data with matching data_id
-                selected_data = next((item for item in data['Sentence'] if item['id'] == data_id), None)
-                if selected_data:
-                    
-                    languages = selected_data['language']
-                    selected_language = languages.get(selected_language)
-                    options = selected_language.get('options')
-                    answer = selected_language.get('answers')
-                else:
-                    print("Data not found for the given data_id")
+            data = json_l1_data
+            # find the data with matching data_id
+            selected_data = next((item for item in data['Sentence'] if item['id'] == data_id), None)
+            if selected_data:
+                
+                languages = selected_data['language']
+                selected_language = languages.get(selected_language)
+                options = selected_language.get('options')
+                answer = selected_language.get('answers')
+            else:
+                print("Data not found for the given data_id")
            
         print("student_id",id_value)
         print("sample_id",data_id)
@@ -1145,18 +1196,18 @@ def error_recording(request):
 
         
         print("data_id", data_id)
-        with open(json_l1, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            paragraph = None
-            for d in data['Paragraph']:
-                if d['id'] == data_id:
-                    paragraph = d['data']
-                    print("data_id", data_id)
-            
-                    break
-            if paragraph:
-                print("hello ",paragraph)
-            request.session['paragraph'] = paragraph
+        
+        data = json_l1_data
+        paragraph = None
+        for d in data['Paragraph']:
+            if d['id'] == data_id:
+                paragraph = d['data']
+                print("data_id", data_id)
+        
+                break
+        if paragraph:
+            print("hello ",paragraph)
+        request.session['paragraph'] = paragraph
 
     return redirect(start)
 
@@ -1691,13 +1742,13 @@ def ml1_store(request):
         print("student_id",id_value)
         data_id = request.session.get('data_id')
         print("sample_id",data_id)
-        with open(json_l1, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            paragraph = None
-            for d in data['Paragraph']:
-                if d['id'] == data_id:
-                    val = d['data']
-                    break
+        
+        data = json_l1_data
+        paragraph = None
+        for d in data['Paragraph']:
+            if d['id'] == data_id:
+                val = d['data']
+                break
 
         if val:
             print("question",val)
@@ -1787,13 +1838,12 @@ def ml1_next_store(request):
         print("student_id",id_value)
         data_id = request.session.get('data_id')
         print("sample_id",data_id)
-        with open(json_l1, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            paragraph = None
-            for d in data['Paragraph']:
-                if d['id'] == data_id:
-                    val = d['data']
-                    break
+        data = json_l1_data
+        paragraph = None
+        for d in data['Paragraph']:
+            if d['id'] == data_id:
+                val = d['data']
+                break
 
         if val:
             print("question",val)
@@ -2513,13 +2563,12 @@ def ml2_store(request):
             print("student_id",id_value)
             data_id = request.session.get('data_id')
             print("sample_id",data_id)
-            with open(json_l1, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-                paragraph = None
-                for d in data['Paragraph']:
-                    if d['id'] == data_id:
-                        val = d['data']
-                        break
+            data = json_l1_data
+            paragraph = None
+            for d in data['Paragraph']:
+                if d['id'] == data_id:
+                    val = d['data']
+                    break
 
             if val:
                 print("question",val)
@@ -2627,13 +2676,12 @@ def ml2_next_store(request):
             print("student_id",id_value)
             data_id = request.session.get('data_id')
             print("sample_id",data_id)
-            with open(json_l1, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-                paragraph = None
-                for d in data['Paragraph']:
-                    if d['id'] == data_id:
-                        val = d['data']
-                        break
+            data = json_l1_data
+            paragraph = None
+            for d in data['Paragraph']:
+                if d['id'] == data_id:
+                    val = d['data']
+                    break
 
             if val:
                 print("question",val)
@@ -3767,15 +3815,14 @@ def get_random_paragraph(request):
             print("dta",data1['data'])
             return data1['data'], data_id
     elif selected_option == 'BL':
-        with open(json_l1, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            data1 = random.choice(data['Paragraph'])
-            print("the value ",data1['id'])
-            data_id = data1['id']
-            request.session['data_id'] = data_id
-            print(data_id)
-            print("dta",data1['data'])
-            return data1['data'], data_id
+        data = json_l1_data
+        data1 = random.choice(data['Paragraph'])
+        print("the value ",data1['id'])
+        data_id = data1['id']
+        request.session['data_id'] = data_id
+        print(data_id)
+        print("dta",data1['data'])
+        return data1['data'], data_id
     elif selected_option == 'ML1':
         with open(json_l2, 'r', encoding='utf-8') as f:
             data = json.load(f)
@@ -3848,13 +3895,13 @@ def answer(request):
     elif selected_option == 'BL':
         data_id = request.session.get('data_id')
         print("data_id",data_id)
-        with open(json_l1, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            paragraph = None
-            for d in data['Paragraph']:
-                if d['id'] == data_id:
-                    val = d['data']
-                    break
+        data = json_l1_data
+        print("data2134214", data)
+        paragraph = None
+        for d in data['Paragraph']:
+            if d['id'] == data_id:
+                val = d['data']
+                break
     elif selected_option == 'Hindi':
         data_id = request.session.get('data_id')
         print("data_id",data_id)
@@ -4032,13 +4079,12 @@ def skip_answer(request):
     elif selected_option == 'BL':
         data_id = request.session.get('data_id')
         print("data_id",data_id)
-        with open(json_l1, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            paragraph = None
-            for d in data['Paragraph']:
-                if d['id'] == data_id:
-                    val = d['data']
-                    break
+        data = json_l1_data
+        paragraph = None
+        for d in data['Paragraph']:
+            if d['id'] == data_id:
+                val = d['data']
+                break
     elif selected_option == 'Hindi':
         data_id = request.session.get('data_id')
         print("data_id",data_id)
@@ -4312,13 +4358,12 @@ def next_para(request):
         data_id = request.session.get('data_id')
         print("data_id",data_id)
         request.session['audio_recorded'] = True
-        with open(json_l1, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            paragraph = None
-            for d in data['Paragraph']:
-                if d['id'] == data_id:
-                    val = d['data']
-                    break
+        data = json_l1_data
+        paragraph = None
+        for d in data['Paragraph']:
+            if d['id'] == data_id:
+                val = d['data']
+                break
     elif selected_option == 'Hindi':
         data_id = request.session.get('data_id')
         print("data_id",data_id)
