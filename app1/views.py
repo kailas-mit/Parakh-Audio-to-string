@@ -39,21 +39,32 @@ json_urdu = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_urdu.jso
 
 base_path = os.path.join(settings.MEDIA_ROOT, "")
 
-from .models import Program
+from .models import Program, Aop_lan, Aop_sub_lan
+
+# def first(request):
+#     options = Program.OPTION_CHOICES
+#     if request.method == 'POST':
+#         selected_option = request.POST.get('option')
+#         print("selected_option",selected_option)
+#         if selected_option == 'General Program':
+#             return redirect('login')
+#         elif selected_option == 'AOP Program':
+#             return redirect('aop_language')
+#     return render(request, 'home.html',{'options': options})
 
 def first(request):
     options = Program.OPTION_CHOICES
     if request.method == 'POST':
-        selected_option = request.POST.get('option')
-        print("selected_option",selected_option)
-        if selected_option == 'General Program':
+        my_program = request.POST.get('option')
+        request.session['my_program'] = my_program  # Save selected option in session
+        if my_program == 'General Program':
             return redirect('login')
-        elif selected_option == 'AOP Program':
+        elif my_program == 'AOP Program':
             return redirect('aop_language')
-    return render(request, 'home.html',{'options': options})
+        elif my_program == 'Advance English Program':
+            return redirect('aop_language')
+    return render(request, 'home.html', {'options': options})
 
-from .models import Aop_lan
-from .models import Aop_sub_lan
 
 def aop_language(request):
     options = Aop_sub_lan.OPTION_CHOICES
@@ -78,12 +89,15 @@ def red_start(request):
         print("ph",phone_number)
         name = request.session.get('name')
         print("name",name)
+        my_program = request.session.get('my_program')
+        print('^^^^^^^^^^^^^^^^^^^^^^',my_program)
         data={}
         data["name"]=name
         data["profile_pic"]= ""
         data["platform"]= 'web'
         data["phone_number"]= phone_number
         data["enrollment_id"]= enrollment_id
+        data["program"]= my_program
         print(data)
         url = 'https://parakh.pradigi.org/v1/createprofile/'
         files = []
@@ -124,7 +138,87 @@ def red_start(request):
             context = {'error_message': 'Mobile number not found'}
             return render(request, 'AOP_PRO/search_num.html', context)
     return render(request, 'AOP_PRO/search_num.html')
-    
+
+#new
+# def red_start(request):
+#     selected_option = request.session.get('selected_option')
+#     if request.method == 'GET':
+#         enrollment_id = request.GET.get('enrollment_id')
+#         phone_number = request.session.get('phone_number')
+#         name = request.session.get('name')
+#         my_program = request.session.get('my_program')
+
+#         data = {
+#             "name": name,
+#             "profile_pic": "",
+#             "platform": 'web',
+#             "phone_number": phone_number,
+#             "enrollment_id": enrollment_id,
+#             "program": my_program  # Include 'selected_option' as 'program'
+#         }
+
+#         url = 'https://parakh.pradigi.org/v1/createprofile/'
+#         headers = {}
+#         response = requests.post(url, headers=headers, json=data)
+#         response_data = response.json()
+#         id_value = response_data["data"][0]["id"]
+#         request.session['id_value'] = id_value
+#         request.session['enrollment_id'] = enrollment_id
+
+#         url = reverse('start_assesment', args=[selected_option])
+#         return redirect(url)
+
+#     if "search" in request.POST:
+#         selected_option = request.session.get('selected_option')
+#         mobile_number = request.POST['mobile_number']
+#         request.session['phone_number'] = mobile_number
+#         url = f'https://prajeevika.org/apis/aop/children-details.php?phone_number={mobile_number}&token=eyNsWgAdBF0KafwGPwOC9h5rWABTBuAKYxDxv8zRgJyuP'
+#         response = requests.get(url)
+        
+#         try:
+#             data = response.json()
+#             name = data[0]['name']
+#             request.session['name'] = name
+#             status = data[0]['status']
+#             request.session['status'] = status
+#             context = {
+#                 'data': data,
+#                 'selected_option': selected_option,
+#             }
+#             return render(request, 'AOP_PRO/search_num.html', context)
+#         except IndexError:
+#             context = {'error_message': 'Mobile number not found'}
+#             return render(request, 'AOP_PRO/search_num.html', context)
+#     return render(request, 'AOP_PRO/search_num.html')
+
+from django.http import HttpResponse
+from django.shortcuts import redirect
+
+def msg_api_for_general_program(request):
+    if "search" in request.POST:
+        now = datetime.now()
+        today_date = now.strftime("%Y-%m-%d")
+        selected_option = request.session.get('selected_option')
+        print('selected option',selected_option)
+        enrollment_id = request.session.get('enrollment_id')
+        print('enrollment_id',enrollment_id)
+        id_value = request.session.get('id_value')
+        print('id_value',id_value)
+        my_program = request.session.get('my_program')
+        print('my program for general program')
+
+        url = f'https://prajeevika.org/apis/aop/update-result.php?token=eyNsWgAdBF0KafwGPwOC9h5rWABTBuAKYxDxv8zRgJyuP&enrollment_id={enrollment_id}&student_id={id_value}&assessment_type={selected_option}&assessment_date={today_date}&assessment_level=L1&program={my_program}'
+        response = requests.get(url)
+        
+        if response.status_code == 200:
+            data = response.json()
+            return redirect('/')
+        else:
+            return HttpResponse("Error: Invalid API response")
+
+
+
+
 
 def msg_api(request):
     if "search" in request.POST:
@@ -133,7 +227,9 @@ def msg_api(request):
         selected_option = request.session.get('selected_option')
         enrollment_id = request.session.get('enrollment_id')
         id_value = request.session.get('id_value')
-        url = f'https://prajeevika.org/apis/aop/update-result.php?token=eyNsWgAdBF0KafwGPwOC9h5rWABTBuAKYxDxv8zRgJyuP&enrollment_id={enrollment_id}&student_id={id_value}&assessment_type={selected_option}&assessment_date={today_date}&assessment_level=L1'
+        my_program = request.session.get('my_program')
+        print('my program is',my_program)
+        url = f'https://prajeevika.org/apis/aop/update-result.php?token=eyNsWgAdBF0KafwGPwOC9h5rWABTBuAKYxDxv8zRgJyuP&enrollment_id={enrollment_id}&student_id={id_value}&assessment_type={selected_option}&assessment_date={today_date}&assessment_level=L1&program={my_program}'
         response = requests.get(url)
         if response.status_code == 200:
             data = response.json()
@@ -171,6 +267,35 @@ def login(request):
         return render(request, 'login.html')
 
 
+# def choose_avatar(request):
+#     if request.method == 'POST':
+#         child_name = request.POST.get('child_name')
+#         if not child_name:
+#             messages.error(request, 'Please enter the child name.')
+#             return redirect('choose_avatar')
+#         selected_image = request.POST['selected_image']
+#         avatar = Avatar(child_name=child_name, avatar_image=selected_image)
+#         avatar.save()
+#         request.session['child_name'] = child_name
+#         request.session['avatar_url'] = selected_image
+#         mobile_number = request.session.get('mobile_number')
+#         data={}
+#         data["name"]=child_name
+#         data["profile_pic"]= selected_image
+#         data["platform"]= 'web'
+#         data["phone_number"]= mobile_number
+#         url = 'https://parakh.pradigi.org/v1/createprofile/'
+#         files = []
+#         payload = {'data': json.dumps(data)}
+#         headers = {}
+#         response = requests.request("POST", url, headers=headers, data=payload, files=files)
+#         return redirect('select_profile')
+
+#     return render(request, 'chooseavtar.html')
+
+import requests
+import json
+
 def choose_avatar(request):
     if request.method == 'POST':
         child_name = request.POST.get('child_name')
@@ -183,19 +308,22 @@ def choose_avatar(request):
         request.session['child_name'] = child_name
         request.session['avatar_url'] = selected_image
         mobile_number = request.session.get('mobile_number')
-        data={}
-        data["name"]=child_name
-        data["profile_pic"]= selected_image
-        data["platform"]= 'web'
-        data["phone_number"]= mobile_number
+        my_program = request.session.get('my_program')  # Retrieve 'my_program' from session
+        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@',my_program)
+        data = {
+            "name": child_name,
+            "profile_pic": selected_image,
+            "platform": 'web',
+            "phone_number": mobile_number,
+            "program": my_program  # Pass 'my_program' as 'program'
+        }
         url = 'https://parakh.pradigi.org/v1/createprofile/'
-        files = []
-        payload = {'data': json.dumps(data)}
         headers = {}
-        response = requests.request("POST", url, headers=headers, data=payload, files=files)
+        response = requests.post(url, headers=headers, json=data)  # Use requests.post() with json parameter
         return redirect('select_profile')
 
     return render(request, 'chooseavtar.html')
+
 
 from .models import MyModel
 from .models import Aop_sub_lan
@@ -730,6 +858,8 @@ def bl_store(request):
         # print("student_id",id_value)
         data_id = request.session.get('data_id')
         # print("sample_id",data_id)
+        my_program = request.session.get('my_program')
+        print('my program is save progress bl next',my_program)
         with open(json_l1, 'r', encoding='utf-8') as f:
             data = json.load(f)
             paragraph = None
@@ -764,6 +894,7 @@ def bl_store(request):
         data["sub_details"]= sub_details
         data["test_type"]= status
         data["next_level"]= ans_next_level
+        data["program"] = my_program
         url = 'https://parakh.pradigi.org/v1/saveprogress/'
         files = []
         payload = {'data': json.dumps(data)}
@@ -815,6 +946,8 @@ def bl_next_store(request):
             print("student_id",id_value)
             data_id = request.session.get('data_id')
             print("sample_id",data_id)
+            my_program = request.session.get('my_program')
+            print('my program is confusing',my_program)
             with open(json_l1, 'r', encoding='utf-8') as f:
                 data = json.load(f)
                 paragraph = None
@@ -851,6 +984,7 @@ def bl_next_store(request):
             data["sub_details"]= sub_details
             data["test_type"]= status
             data["next_level"]= ans_next_level
+            data["program"] = my_program
 
             print(data)
             url = 'https://parakh.pradigi.org/v1/saveprogress/'
@@ -939,6 +1073,8 @@ def bl_mcq_api(request):
         audio_url = transcript_dict.get('audio_url')
         process_time = transcript_dict.get('process_time')
         ans_next_level = request.session.get('ans_next_level')
+        my_program = request.session.get('my_program')
+        print('my program is saveprogress',my_program)
         print('text:', text)
         print('audio_url:', audio_url)
         print('process_time:', process_time)
@@ -1033,6 +1169,7 @@ def bl_mcq_api(request):
         data["correct_answer"]= answer
         data["answer_check_status"]= 'true'
         data["mcq_language"]= lan
+        data["program"] = my_program
 
 
 
@@ -1691,6 +1828,9 @@ def ml1_store(request):
         print("student_id",id_value)
         data_id = request.session.get('data_id')
         print("sample_id",data_id)
+        my_program = request.session.get('my_program')
+        print('my program is saveprogress',my_program)
+
         with open(json_l1, 'r', encoding='utf-8') as f:
             data = json.load(f)
             paragraph = None
@@ -1725,6 +1865,7 @@ def ml1_store(request):
         data["sub_details"]= sub_details
         data["test_type"]= status
         data["next_level"]= ans_next_level
+        data["program"] = my_program
 
 
 
@@ -1787,6 +1928,9 @@ def ml1_next_store(request):
         print("student_id",id_value)
         data_id = request.session.get('data_id')
         print("sample_id",data_id)
+        my_program = request.session.get('my_program')
+        print('my program is saveprogress',my_program)
+
         with open(json_l1, 'r', encoding='utf-8') as f:
             data = json.load(f)
             paragraph = None
@@ -1821,6 +1965,7 @@ def ml1_next_store(request):
         data["sub_details"]= sub_details
         data["test_type"]= status
         data["next_level"]= ans_next_level
+        data["program"] = my_program
 
         print(data)
         url = 'https://parakh.pradigi.org/v1/saveprogress/'
@@ -1928,6 +2073,8 @@ def ml1_mcq_api(request):
         audio_url = transcript_dict.get('audio_url')
         process_time = transcript_dict.get('process_time')
         ans_next_level = request.session.get('ans_next_level')
+        my_program = request.session.get('my_program')
+        print('my program is saveprogress',my_program)
 
 
         print('text:', text)
@@ -2004,6 +2151,7 @@ def ml1_mcq_api(request):
         data["correct_answer"]= answer
         data["answer_check_status"]= 'true'
         data["mcq_language"]= lan
+        data["program"] = my_program
 
 
 
@@ -2513,6 +2661,8 @@ def ml2_store(request):
             print("student_id",id_value)
             data_id = request.session.get('data_id')
             print("sample_id",data_id)
+            my_program = request.session.get('my_program')
+            print('my program is saveprogress',my_program)
             with open(json_l1, 'r', encoding='utf-8') as f:
                 data = json.load(f)
                 paragraph = None
@@ -2563,6 +2713,7 @@ def ml2_store(request):
             data["sub_details"]= sub_details
             data["test_type"]= status
             data["next_level"]= ans_next_level
+            data["program"] = my_program
 
 
 
@@ -2627,6 +2778,8 @@ def ml2_next_store(request):
             print("student_id",id_value)
             data_id = request.session.get('data_id')
             print("sample_id",data_id)
+            my_program = request.session.get('my_program')
+            print('my program is saveprogres',my_program)
             with open(json_l1, 'r', encoding='utf-8') as f:
                 data = json.load(f)
                 paragraph = None
@@ -2677,6 +2830,7 @@ def ml2_next_store(request):
             data["sub_details"]= sub_details
             data["test_type"]= status
             data["next_level"]= ans_next_level
+            data["program"] = my_program
 
 
 
@@ -2741,6 +2895,8 @@ def ml2_mcq_api(request):
         audio_url = transcript_dict.get('audio_url')
         process_time = transcript_dict.get('process_time')
         ans_next_level = request.session.get('ans_next_level')
+        my_program = request.session.get('my_program')
+        print('my program is saveprogres',my_program)
 
 
         print('text:', text)
@@ -2837,6 +2993,7 @@ def ml2_mcq_api(request):
         data["correct_answer"]= answer
         data["answer_check_status"]= 'true'
         data["mcq_language"]= lan
+        data["program"] = my_program
 
 
 
@@ -3380,6 +3537,8 @@ def ml3_store(request):
         print("test_type",selected_option)
         ans_next_level = request.session.get('ans_next_level')
         print("next level",ans_next_level)
+        my_program = request.session.get('my_program')
+        print('my program is saveprogres',my_program)
 
         data={}
         data["student_id"]=id_value
@@ -3400,6 +3559,7 @@ def ml3_store(request):
         data["sub_details"]= sub_details
         data["test_type"]= status
         data["next_level"]= ans_next_level
+        data["program"] = my_program
         print(data)
         url = 'https://parakh.pradigi.org/v1/saveprogress/'
         files = []
@@ -3472,6 +3632,8 @@ def ml3_next_store(request):
         print("test_type",selected_option)
         ans_next_level = request.session.get('ans_next_level')
         print("next level",ans_next_level)
+        my_program = request.session.get('my_program')
+        print('my program is saveprogres',my_program)
 
         data={}
         data["student_id"]=id_value
@@ -3492,6 +3654,7 @@ def ml3_next_store(request):
         data["sub_details"]= sub_details
         data["test_type"]= status
         data["next_level"]= ans_next_level
+        data["program"] = my_program
         print(data)
         url = 'https://parakh.pradigi.org/v1/saveprogress/'
         files = []
@@ -3618,6 +3781,8 @@ def ml3_mcq_api(request):
         print("answer_check_status:", "answer")
         lan = request.session.get('lan')
         print("lan",lan)
+        my_program = request.session.get('my_program')
+        print('my program is saveprogres',my_program)
         data={}
 
 
@@ -3643,6 +3808,7 @@ def ml3_mcq_api(request):
         data["correct_answer"]= answer
         data["answer_check_status"]= 'true'
         data["mcq_language"]= lan
+        data["program"] = my_program
 
 
 

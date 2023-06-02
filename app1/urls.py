@@ -62,6 +62,7 @@ urlpatterns = [
     path('bl_mcq_api', views.bl_mcq_api, name='bl_mcq_api'),
     path('bl_answer_page', views.bl_answer_page, name='bl_answer_page'),
     path('msg_api', views.msg_api, name='msg_api'),
+    path('msg_api_for_general_program', views.msg_api_for_general_program, name='msg_api_for_general_program'),
 
 
     path('start', views.start, name='start'),
