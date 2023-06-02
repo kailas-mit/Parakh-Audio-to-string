@@ -1,230 +1,273 @@
 <!DOCTYPE html>
 <html lang="en">
-{% load static %}
+  {% load static %}
 
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
-    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-    crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
-    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-    crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
-    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-    crossorigin="anonymous"></script>
-  <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
-  <script src="https://cdn.jsdelivr.net/jquery.knob/1.2.13/jquery.knob.min.js"></script>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
+    <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/jquery.knob/1.2.13/jquery.knob.min.js"></script>
 
-  <title>Parakh</title>
-</head>
+    <title>Parakh</title>
+  </head>
 
-<body>
-  <div class="background-image"></div>
+  <body>
+    <div class="background-image"></div>
 
-  <style>
-    .background-image {
-      background-image: url("{% static 'images/parakh 1.png'%}");
-      background-size: cover;
-      background-position: center center;
-      background-attachment: fixed;
-      height: 100%;
-      width: 100%;
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: -1;
-    }
-
-    .a {
-      background-color: #093966;
-      border: none;
-      color: white;
-      padding: 15px 32px;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      font-size: 16px;
-      margin: 4px 2px;
-      cursor: pointer;
-      border-radius: 10px;
-      margin-bottom: 28px;
-    }
-
-    a {
-      background-color: #ffffff;
-      border: none;
-      color: white;
-      padding: 0px 35px;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      /* font-size: 16px; */
-      margin: -4px 0px;
-      cursor: pointer;
-      border-radius: 10px;
-    }
-
-    text {
-      color: #093966;
-      font-size: 36px;
-      font-family: Roboto;
-    }
-
-    .button {
-      background-color: #093966;
-      border: none;
-      color: white;
-      padding: 15px 32px;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      font-size: 16px;
-      margin: 4px 2px;
-      cursor: pointer;
-      border-radius: 10px;
-    }
-
-    table {
-      /* display: inline-block; */
-      margin-right: 10px;
-    }
-
-    tbody,
-    td,
-    tfoot,
-    th,
-    thead,
-    tr {
-      border-color: inherit;
-      border-style: solid;
-      border-width: 0;
-      padding: 0px;
-    }
-  </style>
-
-
-  <style>
-    @media screen and (max-width: 767px) {
-
-      /* Center the modal vertically */
-      #myModal1 .modal-dialog {
-        display: flex;
-        justify-content: center;
-        align-items: center;
+    <style>
+      .background-image {
+        background-image: url("{% static 'images/parakh 1.png'%}");
+        background-size: cover;
+        background-position: center center;
+        background-attachment: fixed;
         height: 100%;
-      }
-
-      /* Set the modal content to full width */
-      #myModal1 .modal-content {
         width: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: -1;
       }
-    }
-.playicon{
-  width: 50px; 
-  height: 50px; 
-  margin-left: 27px; 
-  cursor: pointer; 
-  margin-bottom: 23px;
-}
-  </style>
 
-  <!-- Button trigger modal -->
-  <!-- <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal1">
+      .a {
+        background-color: #093966;
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 10px;
+        margin-bottom: 28px;
+      }
+
+      a {
+        background-color: #ffffff;
+        border: none;
+        color: white;
+        padding: 0px 35px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        /* font-size: 16px; */
+        margin: -4px 0px;
+        cursor: pointer;
+        border-radius: 10px;
+      }
+
+      text {
+        color: #093966;
+        font-size: 36px;
+        font-family: Roboto;
+      }
+
+      .button {
+        background-color: #093966;
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 10px;
+      }
+
+      table {
+        /* display: inline-block; */
+        margin-right: 10px;
+      }
+
+      tbody,
+      td,
+      tfoot,
+      th,
+      thead,
+      tr {
+        border-color: inherit;
+        border-style: solid;
+        border-width: 0;
+        padding: 0px;
+      }
+    </style>
+
+    <style>
+      @media screen and (max-width: 767px) {
+        /* Center the modal vertically */
+        #myModal1 .modal-dialog {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+        }
+
+        /* Set the modal content to full width */
+        #myModal1 .modal-content {
+          width: 100%;
+        }
+      }
+      .playicon {
+        width: 50px;
+        height: 50px;
+        margin-left: 27px;
+        cursor: pointer;
+        margin-bottom: 23px;
+      }
+    </style>
+
+    <!-- Button trigger modal -->
+    <!-- <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal1">
         Open modal
     </button> -->
 
-  <!--pop up all  Modal 1 -->
-  <div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
-    data-backdrop="static">
-    <div class="modal-dialog">
-      <div class="modal-content" style="width: 100%;">
+    <!--pop up all  Modal 1 -->
+    <div
+      class="modal fade"
+      id="myModal1"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="myModalLabel"
+      aria-hidden="true"
+      data-backdrop="static"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content" style="width: 100%">
+          <div class="modal-body">
+            <!-- <img src="{% static 'images/top_user.png'%}" alt="top_user" style="position: absolute; top: 0; left: 0;"> -->
+            <a href="{% url 'select_profile' %}">
+              <img
+                src="{% static 'images/top_user.png' %}"
+                alt="top_user"
+                style="position: absolute; top: 0; left: 0"
+              />
+            </a>
+            <img
+              src="{% static 'images/pratham_center_logo.png'%}"
+              style="
+                position: absolute;
+                top: 0;
+                right: 0;
+                padding-right: 5px;
+                padding-top: 5px;
+                width: 110px;
+                height: 50px;
+              "
+              alt="top_user"
+            />
+            <br />
+            <br />
+            <br />
+            <br />
+            <center>
+              <text> <b> Your Answer </b> </text> <br />
+              <!-- <p>  {{ text }}. <br> </p> <br> <br> -->
 
-        <div class="modal-body">
-          <!-- <img src="{% static 'images/top_user.png'%}" alt="top_user" style="position: absolute; top: 0; left: 0;"> -->
-          <a href="{% url 'select_profile' %}">
-            <img src="{% static 'images/top_user.png' %}" alt="top_user" style="position: absolute; top: 0; left: 0;">
-          </a>
-          <br>
-          <br> <br>
-          <center>
-            <text> <b> Your Answer </b> </text> <br>
-            <!-- <p>  {{ text }}. <br> </p> <br> <br> -->
+              <form action="/word_answer" method="post">
+                {% csrf_token %}
 
+                <div style="display: flex; flex-wrap: wrap; max-width: 100%">
+                  <table style="flex: 1; margin-right: 10px; display: none">
+                    <thead>
+                      <tr>
+                        <!-- <th style="text-align: center;">Word</th> -->
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for val in mis %}
+                      <tr>
+                        <td
+                          style="
+                            text-align: center;
+                            height: 81px;
+                            background-color: #97d79fa1;
+                            border: 1px solid #ccc;
+                            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+                            border-radius: 5px;
+                            top: 143px;
+                            padding-bottom: 0px;
+                          "
+                        >
+                          <b>
+                            <h4>{{ val }}</h4>
+                          </b>
+                        </td>
+                      </tr>
+                      <tr style="height: 20px; vertical-align: middle"></tr>
+                      <!-- empty row for space -->
+                      {% endfor %}
+                    </tbody>
+                  </table>
 
+                  <table style="flex: 1; margin-right: 10px">
+                    <thead>
+                      <tr>
+                        <!-- <th style="text-align: center;">Word</th> -->
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for qletter in qletter %}
+                      <tr>
+                        <td
+                          style="
+                            text-align: center;
+                            height: 81px;
+                            background-color: #97d79fa1;
+                            border: 1px solid #ccc;
+                            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+                            border-radius: 5px;
+                            top: 143px;
+                            padding-bottom: 0px;
+                          "
+                        >
+                          <b>
+                            <h4>{{ qletter }}</h4>
+                          </b>
+                        </td>
+                      </tr>
+                      <tr style="height: 20px; vertical-align: middle"></tr>
+                      <!-- empty row for space -->
+                      {% endfor %}
+                    </tbody>
+                  </table>
 
-            <form action="/word_answer" method="post">
-              {% csrf_token %}
-
-              <div style="display: flex; flex-wrap: wrap; max-width: 100%;">
-
-                <table style="flex: 1; margin-right: 10px; display: none; ">
-                  <thead>
-                    <tr>
-                      <!-- <th style="text-align: center;">Word</th> -->
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for val in mis %}
-                    <tr>
-                      <td style="
-                          text-align: center;   
-                          height: 81px;
-                          background-color:#97d79fa1;
-                          border: 1px solid #ccc;
-                          box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-                          border-radius: 5px;
-                          top: 143px;
-                          padding-bottom: 0px;
-                      ">
-                        <b>
-                          <h4>{{ val }}</h4>
-                        </b>
-                      </td>
-                    </tr>
-                    <tr style="height: 20px; vertical-align: middle;"></tr> <!-- empty row for space -->
-                    {% endfor %}
-                  </tbody>
-                </table>
-
-                <table style="flex: 1; margin-right: 10px; ">
-                  <thead>
-                    <tr>
-                      <!-- <th style="text-align: center;">Word</th> -->
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for qletter in qletter %}
-                    <tr>
-                      <td style="
-                          text-align: center;   
-                          height: 81px;
-                          background-color:#97d79fa1;
-                          border: 1px solid #ccc;
-                          box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-                          border-radius: 5px;
-                          top: 143px;
-                          padding-bottom: 0px;
-                      ">
-                        <b>
-                          <h4>{{ qletter }}</h4>
-                        </b>
-                      </td>
-                    </tr>
-                    <tr style="height: 20px; vertical-align: middle;"></tr> <!-- empty row for space -->
-                    {% endfor %}
-                  </tbody>
-                </table>
-
-                {% if l_copy_audio_files %}
-                <!-- <table style="flex: 1;  margin-right: 10px;">
+                  {% if l_copy_audio_files %}
+                  <!-- <table style="flex: 1;  margin-right: 10px;">
                   <thead>
                     <tr>
                     </tr>
@@ -244,282 +287,328 @@
                     {% endfor %}
                   </tbody>
                 </table> -->
-                <div class="col-4">
-                  <table style="flex: 1;  margin-right: 10px;">
+                  <div class="col-4">
+                    <table style="flex: 1; margin-right: 10px">
+                      <thead>
+                        <tr>
+                          <!-- <th>Audio File</th> -->
+                        </tr>
+                      </thead>
+
+                      <tbody style="height: 100px">
+                        <tr>
+                          {% if audio_url1 %}
+
+                          <td>
+                            <img
+                              src="{% static 'images/play.ico'%}"
+                              class="playicon"
+                              id="audio-toggle-{{ audio_url }}"
+                            />
+                            <audio
+                              src="{{ audio_url1 }}"
+                              id="audio-player-{{ audio_url1 }}"
+                            ></audio>
+                          </td>
+                          {% endif %}
+                        </tr>
+                      </tbody>
+
+                      <tbody style="height: 100px">
+                        <tr>
+                          {% if audio_url2 %}
+
+                          <td>
+                            <img
+                              src="{% static 'images/play.ico'%}"
+                              class="playicon"
+                              id="audio-toggle-{{ audio_url }}"
+                            />
+                            <audio
+                              src="{{ audio_url2 }}"
+                              id="audio-player-{{ audio_url2 }}"
+                            ></audio>
+                          </td>
+                          {% endif %}
+                        </tr>
+                      </tbody>
+
+                      <tbody style="height: 100px">
+                        <tr>
+                          {% if audio_url3 %}
+
+                          <td>
+                            <img
+                              src="{% static 'images/play.ico'%}"
+                              class="playicon"
+                              id="audio-toggle-{{ audio_url }}"
+                            />
+                            <audio
+                              src="{{ audio_url3 }}"
+                              id="audio-player-{{ audio_url3 }}"
+                            ></audio>
+                          </td>
+                          {% endif %}
+                        </tr>
+                      </tbody>
+
+                      <tbody style="height: 100px">
+                        <tr>
+                          {% if audio_url4 %}
+
+                          <td>
+                            <img
+                              src="{% static 'images/play.ico'%}"
+                              class="playicon"
+                              id="audio-toggle-{{ audio_url }}"
+                            />
+                            <audio
+                              src="{{ audio_url4 }}"
+                              id="audio-player-{{ audio_url4 }}"
+                            ></audio>
+                          </td>
+                          {% endif %}
+                        </tr>
+                      </tbody>
+
+                      <tbody style="height: 100px">
+                        <tr>
+                          {% if audio_url5 %}
+
+                          <td>
+                            <img
+                              src="{% static 'images/play.ico'%}"
+                              class="playicon"
+                              id="audio-toggle-{{ audio_url }}"
+                            />
+                            <audio
+                              src="{{ audio_url5 }}"
+                              id="audio-player-{{ audio_url5 }}"
+                            ></audio>
+                          </td>
+                          {% endif %}
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {% endif %}
+
+                  <table style="flex: 1; margin-right: 10px">
                     <thead>
                       <tr>
-                        <!-- <th>Audio File</th> -->
+                        <!-- <th style="text-align: center;">Word</th> -->
                       </tr>
                     </thead>
-
-                    <tbody style="height: 100px;">
+                    <tbody>
                       <tr>
-                        {% if audio_url1 %}
+                        <form action="/next_letter" method="post">
+                          {% csrf_token %}
 
-                        <td>
-                          <img src="{% static 'images/play.ico'%}"
-                            class="playicon"
-                            id="audio-toggle-{{ audio_url }}">
-                          <audio src="{{ audio_url1 }}" id="audio-player-{{ audio_url1 }}"></audio>
-                        </td>
-                        {% endif %}
+                          <td style="text-align: center">
+                            <input
+                              class="a"
+                              id="record"
+                              style="display: none"
+                              name="record"
+                              type="submit"
+                              value="Retake"
+                            />
+                          </td>
+                        </form>
+                      </tr>
+                      <tr>
+                        <form action="/next_letter" method="post">
+                          {% csrf_token %}
 
+                          <td style="text-align: center">
+                            <input
+                              class="a"
+                              id="record"
+                              name="record"
+                              type="submit"
+                              value="Retake"
+                            />
+                          </td>
+                        </form>
+                      </tr>
+                      <tr>
+                        <form action="/next_letter" method="post">
+                          {% csrf_token %}
+
+                          <td style="text-align: center">
+                            <input
+                              class="a"
+                              id="record2"
+                              name="record2"
+                              type="submit"
+                              value="Retake"
+                            />
+                          </td>
+                        </form>
+                      </tr>
+                      <tr>
+                        <form action="/next_letter" method="post">
+                          {% csrf_token %}
+
+                          <td style="text-align: center">
+                            <input
+                              class="a"
+                              id="record3"
+                              name="record3"
+                              type="submit"
+                              value="Retake"
+                            />
+                          </td>
+                        </form>
+                      </tr>
+                      <tr>
+                        <form action="/next_letter" method="post">
+                          {% csrf_token %}
+
+                          <td style="text-align: center">
+                            <input
+                              class="a"
+                              id="record4"
+                              name="record4"
+                              type="submit"
+                              value="Retake"
+                            />
+                          </td>
+                        </form>
+                      </tr>
+                      <tr>
+                        <form action="/next_letter" method="post">
+                          {% csrf_token %}
+
+                          <td style="text-align: center">
+                            <input
+                              class="a"
+                              id="record5"
+                              name="record5"
+                              type="submit"
+                              value="Retake"
+                            />
+                          </td>
+                        </form>
                       </tr>
                     </tbody>
-
-
-
-                    <tbody style="height: 100px;">
-                      <tr>
-                        {% if audio_url2 %}
-
-                        <td>
-                          <img src="{% static 'images/play.ico'%}"
-                          class="playicon"
-                            id="audio-toggle-{{ audio_url }}">
-                          <audio src="{{ audio_url2 }}" id="audio-player-{{ audio_url2 }}"></audio>
-                        </td>
-                        {% endif %}
-
-                      </tr>
-                    </tbody>
-
-
-                    <tbody style="height: 100px;">
-                      <tr>
-                        {% if audio_url3 %}
-
-                        <td>
-                          <img src="{% static 'images/play.ico'%}"
-                          class="playicon"
-                            id="audio-toggle-{{ audio_url }}">
-                          <audio src="{{ audio_url3 }}" id="audio-player-{{ audio_url3 }}"></audio>
-                        </td>
-                        {% endif %}
-
-                      </tr>
-                    </tbody>
-
-
-
-                    <tbody style="height: 100px;">
-                      <tr>
-                        {% if audio_url4 %}
-
-                        <td>
-                          <img src="{% static 'images/play.ico'%}"
-                          class="playicon"
-                            id="audio-toggle-{{ audio_url }}">
-                          <audio src="{{ audio_url4 }}" id="audio-player-{{ audio_url4 }}"></audio>
-                        </td>
-                        {% endif %}
-
-                      </tr>
-                    </tbody>
-
-
-
-                    <tbody style="height: 100px;">
-                      <tr>
-                        {% if audio_url5 %}
-
-                        <td>
-                          <img src="{% static 'images/play.ico'%}"
-                          class="playicon"
-                            id="audio-toggle-{{ audio_url }}">
-                          <audio src="{{ audio_url5 }}" id="audio-player-{{ audio_url5 }}"></audio>
-                        </td>
-                        {% endif %}
-
-                      </tr>
-                    </tbody>
-
-
                   </table>
                 </div>
-
-
-
-
-                {% endif %}
-
-                <table style="flex: 1; margin-right: 10px;">
-                  <thead>
-                    <tr>
-                      <!-- <th style="text-align: center;">Word</th> -->
-                    </tr>
-                  </thead>
-                  <tbody>
-
-
-                    <tr>
-
-                      <form action="/next_letter" method="post">
-                        {% csrf_token %}
-
-                        <td style="text-align: center;"><input class="a" id="record" style="display:none;" name="record"
-                            type="submit" value="Retake"></td>
-
-
-                      </form>
-                    </tr>
-                    <tr>
-
-                      <form action="/next_letter" method="post">
-                        {% csrf_token %}
-
-                        <td style="text-align: center;"><input class="a" id="record" name="record" type="submit"
-                            value="Retake"></td>
-
-
-                      </form>
-                    </tr>
-                    <tr>
-
-                      <form action="/next_letter" method="post">
-                        {% csrf_token %}
-
-                        <td style="text-align: center;"><input class="a" id="record2" name="record2" type="submit"
-                            value="Retake"></td>
-
-
-                      </form>
-                    </tr>
-                    <tr>
-
-                      <form action="/next_letter" method="post">
-                        {% csrf_token %}
-
-                        <td style="text-align: center;"><input class="a" id="record3" name="record3" type="submit"
-                            value="Retake"></td>
-
-
-                      </form>
-                    </tr>
-                    <tr>
-
-                      <form action="/next_letter" method="post">
-                        {% csrf_token %}
-
-                        <td style="text-align: center;"><input class="a" id="record4" name="record4" type="submit"
-                            value="Retake"></td>
-
-
-                      </form>
-                    </tr>
-                    <tr>
-
-                      <form action="/next_letter" method="post">
-                        {% csrf_token %}
-
-                        <td style="text-align: center;"><input class="a" id="record5" name="record5" type="submit"
-                            value="Retake"></td>
-
-
-                      </form>
-                    </tr>
-
-                  </tbody>
-                </table>
-              </div>
-              <!-- <input class="a" id="retake" name="retake" type="submit" value="Retake"><br><br> -->
-            </form>
-            <!-- <a href="#" style="position: absolute; top: 71%; left: 68%;"> Retake</a> <br> <br> <br> <br>  -->
-            <!-- <span>Fluency (wcpm) : {{ total_wcpm }}</span> <br> -->
-            <!-- <span>Total number of mistakes : <span  id="fluency"  style="background-color: yellow; padding: 7px 9px;"> {{ total_mis }}
+                <!-- <input class="a" id="retake" name="retake" type="submit" value="Retake"><br><br> -->
+              </form>
+              <!-- <a href="#" style="position: absolute; top: 71%; left: 68%;"> Retake</a> <br> <br> <br> <br>  -->
+              <!-- <span>Fluency (wcpm) : {{ total_wcpm }}</span> <br> -->
+              <!-- <span>Total number of mistakes : <span  id="fluency"  style="background-color: yellow; padding: 7px 9px;"> {{ total_mis }}
               </span> </span> <br> <br> -->
-            <span style=" font-size: 25px; color: #273285;">Total number of mistakes : <span id="fluency"
-                style="background-color: #D97D3A; color: black; padding: 7px 9px; font-weight: bold; border-radius: 10px;">{{ total_mis }}</span> </span> <br> <br>
-            <!-- <input type="submit" value="Next"> -->
-            <!-- <a href="#"  >Next</a> <br> -->
-            <form action="/next_page_letter" method="post">
-              {% csrf_token %}
-              <input type="hidden" name="total_mis" value="{{ total_mis }}">
+              <span style="font-size: 25px; color: #273285"
+                >Total number of mistakes :
+                <span
+                  id="fluency"
+                  style="
+                    background-color: #d97d3a;
+                    color: black;
+                    padding: 7px 9px;
+                    font-weight: bold;
+                    border-radius: 10px;
+                  "
+                  >{{ total_mis }}</span
+                >
+              </span>
+              <br />
+              <br />
+              <!-- <input type="submit" value="Next"> -->
+              <!-- <a href="#"  >Next</a> <br> -->
+              <form action="/next_page_letter" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="total_mis" value="{{ total_mis }}" />
 
-              <input class="a" onclick="sendFluency()" id="next" name="next" type="submit" value="Next">
-            </form>
-          </center>
-
+                <input
+                  class="a"
+                  onclick="sendFluency()"
+                  id="next"
+                  name="next"
+                  type="submit"
+                  value="Next"
+                />
+              </form>
+            </center>
+          </div>
         </div>
-
       </div>
     </div>
-  </div>
 
-  <script>
-    // Get the current date and time
-    // Get the current date and time
-    var currentDate = new Date();
-    var formattedDate = currentDate.toISOString();
+    <script>
+      // Get the current date and time
+      // Get the current date and time
+      var currentDate = new Date();
+      var formattedDate = currentDate.toISOString();
 
-    // Append the current date and time to the audio URLs
-    var audioUrl1 = "{{ audio_url1 }}" + "?timestamp=" + formattedDate;
-    var audioUrl2 = "{{ audio_url2 }}" + "?timestamp=" + formattedDate;
-    var audioUrl3 = "{{ audio_url3 }}" + "?timestamp=" + formattedDate;
-    var audioUrl4 = "{{ audio_url4 }}" + "?timestamp=" + formattedDate;
-    var audioUrl5 = "{{ audio_url5 }}" + "?timestamp=" + formattedDate;
+      // Append the current date and time to the audio URLs
+      var audioUrl1 = "{{ audio_url1 }}" + "?timestamp=" + formattedDate;
+      var audioUrl2 = "{{ audio_url2 }}" + "?timestamp=" + formattedDate;
+      var audioUrl3 = "{{ audio_url3 }}" + "?timestamp=" + formattedDate;
+      var audioUrl4 = "{{ audio_url4 }}" + "?timestamp=" + formattedDate;
+      var audioUrl5 = "{{ audio_url5 }}" + "?timestamp=" + formattedDate;
 
-    // Update the src attribute of the audio elements
-    document.getElementById("audio-player-{{ audio_url1 }}").src = audioUrl1;
-    document.getElementById("audio-player-{{ audio_url2 }}").src = audioUrl2;
-    document.getElementById("audio-player-{{ audio_url3 }}").src = audioUrl3;
-    document.getElementById("audio-player-{{ audio_url4 }}").src = audioUrl4;
-    document.getElementById("audio-player-{{ audio_url5 }}").src = audioUrl5;
+      // Update the src attribute of the audio elements
+      document.getElementById("audio-player-{{ audio_url1 }}").src = audioUrl1;
+      document.getElementById("audio-player-{{ audio_url2 }}").src = audioUrl2;
+      document.getElementById("audio-player-{{ audio_url3 }}").src = audioUrl3;
+      document.getElementById("audio-player-{{ audio_url4 }}").src = audioUrl4;
+      document.getElementById("audio-player-{{ audio_url5 }}").src = audioUrl5;
+    </script>
+    <script>
+      var audioPlayers = document.querySelectorAll("audio");
+      var audioToggles = document.querySelectorAll("img[id^='audio-toggle']");
 
-  </script>
-  <script>
-    var audioPlayers = document.querySelectorAll("audio");
-    var audioToggles = document.querySelectorAll("img[id^='audio-toggle']");
+      audioToggles.forEach(function (audioToggle, i) {
+        var audioPlayer = audioPlayers[i];
 
-    audioToggles.forEach(function (audioToggle, i) {
-      var audioPlayer = audioPlayers[i];
+        audioToggle.addEventListener("click", function () {
+          if (audioPlayer.paused) {
+            audioPlayer.play();
+            audioToggle.src = "{% static 'images/pause.ico'%}";
+          } else {
+            audioPlayer.pause();
+            audioToggle.src = "{% static 'images/play.ico'%}";
+          }
+        });
 
-      audioToggle.addEventListener("click", function () {
-        if (audioPlayer.paused) {
-          audioPlayer.play();
-          audioToggle.src = "{% static 'images/pause.ico'%}";
-        } else {
-          audioPlayer.pause();
+        audioPlayer.addEventListener("ended", function () {
           audioToggle.src = "{% static 'images/play.ico'%}";
-        }
+        });
       });
+    </script>
 
-      audioPlayer.addEventListener("ended", function () {
-        audioToggle.src = "{% static 'images/play.ico'%}";
-      });
-    });
-  </script>
-
-
- 
-
-  <script>
-    let misValues = [];
-    let misCells = document.querySelectorAll("table")[0].querySelectorAll("td");
-    for (let i = 0; i < misCells.length; i++) {
-      misValues.push(parseInt(misCells[i].querySelector("h4").innerHTML));
-    }
-
-    let misTable = document.querySelectorAll("table")[0];
-    let qwordTable = document.querySelectorAll("table")[1];
-
-    for (let i = 0; i < misValues.length; i++) {
-      let val = misValues[i];
-      let misCell = misTable.querySelectorAll("td")[i];
-      let qwordCell = qwordTable.querySelectorAll("td")[i];
-
-      if (val === 0) {
-        misCell.style.backgroundColor = "rgb(148, 255, 168)";
-        qwordCell.style.backgroundColor = "rgb(148, 255, 168)";
-      } else {
-        misCell.style.backgroundColor = "rgb(255, 148, 148)";
-        qwordCell.style.backgroundColor = "rgb(255, 148, 148)";
+    <script>
+      let misValues = [];
+      let misCells = document
+        .querySelectorAll("table")[0]
+        .querySelectorAll("td");
+      for (let i = 0; i < misCells.length; i++) {
+        misValues.push(parseInt(misCells[i].querySelector("h4").innerHTML));
       }
-    }
 
-  </script>
+      let misTable = document.querySelectorAll("table")[0];
+      let qwordTable = document.querySelectorAll("table")[1];
 
-  <!-- <script>
+      for (let i = 0; i < misValues.length; i++) {
+        let val = misValues[i];
+        let misCell = misTable.querySelectorAll("td")[i];
+        let qwordCell = qwordTable.querySelectorAll("td")[i];
+
+        if (val === 0) {
+          misCell.style.backgroundColor = "rgb(148, 255, 168)";
+          qwordCell.style.backgroundColor = "rgb(148, 255, 168)";
+        } else {
+          misCell.style.backgroundColor = "rgb(255, 148, 148)";
+          qwordCell.style.backgroundColor = "rgb(255, 148, 148)";
+        }
+      }
+    </script>
+
+    <!-- <script>
   const l_valList = [];
   const qletterList = [];
   
@@ -556,116 +645,110 @@
   }
 </script> -->
 
+    <!-- end all popup Modal -->
 
+    <!-- Modal 3 script -->
+    <script>
+      let selectedImagee = null;
 
-
-
-
-
-
-  <!-- end all popup Modal -->
-
-
-  <!-- Modal 3 script -->
-  <script>
-    let selectedImagee = null;
-
-    function selectImages(img) {
-      if (selectedImage !== null) {
-        selectedImage.style.border = "";
+      function selectImages(img) {
+        if (selectedImage !== null) {
+          selectedImage.style.border = "";
+        }
+        selectedImage = img;
+        selectedImage.style.border = "2px solid blue";
       }
-      selectedImage = img;
-      selectedImage.style.border = "2px solid blue";
-    }
 
-    function submitForm() {
-      if (selectedImage === null) {
-        alert("Please select an image");
-        return false;
+      function submitForm() {
+        if (selectedImage === null) {
+          alert("Please select an image");
+          return false;
+        }
+        document.getElementById("selected_image").value = selectedImage.src;
+        return true;
       }
-      document.getElementById("selected_image").value = selectedImage.src;
-      return true;
-    }
-  </script>
+    </script>
 
-  <!-- all popup script -->
-  <script>
-    $("div[id^='myModal']").each(function () {
+    <!-- all popup script -->
+    <script>
+      $("div[id^='myModal']").each(function () {
+        var currentModal = $(this);
 
-      var currentModal = $(this);
-
-      //click next
-      currentModal.find('.btn-next').click(function () {
-        currentModal.modal('hide');
-        currentModal.closest("div[id^='myModal']").nextAll("div[id^='myModal']").first().modal('show');
-      });
-
-      //click prev
-      currentModal.find('.btn-prev').click(function () {
-        currentModal.modal('hide');
-        currentModal.closest("div[id^='myModal']").prevAll("div[id^='myModal']").first().modal('show');
-      });
-
-    });
-
-  </script>
-  <!-- reload and open popup -->
-  <script>
-    $(document).ready(function () {
-
-      $("#myModal1").modal('show');
-      $("myModal1").width(100);
-    });
-
-  </script>
-
-  <!-- modal 8 sound wave  -->
-  <script>
-
-    $(document).ready(function () {
-      $("#fire").modal('show');
-    });
-
-    //    spinner 
-    function showSpinner() {
-      var spinnerDialog = document.getElementById("spinner");
-      spinnerDialog.style.display = "block";
-    }
-
-    window.addEventListener("load", () => {
-      const bar = document.querySelectorAll(".bar");
-      for (let i = 0; i < bar.length; i++) {
-        bar.forEach((item, j) => {
-          // Random move
-          item.style.animationDuration = `${Math.random() * (0.7 - 0.2) + 0.2}s`; // Change the numbers for speed / ( max - min ) + min / ex. ( 0.5 - 0.1 ) + 0.1
+        //click next
+        currentModal.find(".btn-next").click(function () {
+          currentModal.modal("hide");
+          currentModal
+            .closest("div[id^='myModal']")
+            .nextAll("div[id^='myModal']")
+            .first()
+            .modal("show");
         });
+
+        //click prev
+        currentModal.find(".btn-prev").click(function () {
+          currentModal.modal("hide");
+          currentModal
+            .closest("div[id^='myModal']")
+            .prevAll("div[id^='myModal']")
+            .first()
+            .modal("show");
+        });
+      });
+    </script>
+    <!-- reload and open popup -->
+    <script>
+      $(document).ready(function () {
+        $("#myModal1").modal("show");
+        $("myModal1").width(100);
+      });
+    </script>
+
+    <!-- modal 8 sound wave  -->
+    <script>
+      $(document).ready(function () {
+        $("#fire").modal("show");
+      });
+
+      //    spinner
+      function showSpinner() {
+        var spinnerDialog = document.getElementById("spinner");
+        spinnerDialog.style.display = "block";
       }
-    });
-  </script>
 
-  <!-- modal 10 script -->
+      window.addEventListener("load", () => {
+        const bar = document.querySelectorAll(".bar");
+        for (let i = 0; i < bar.length; i++) {
+          bar.forEach((item, j) => {
+            // Random move
+            item.style.animationDuration = `${
+              Math.random() * (0.7 - 0.2) + 0.2
+            }s`; // Change the numbers for speed / ( max - min ) + min / ex. ( 0.5 - 0.1 ) + 0.1
+          });
+        }
+      });
+    </script>
 
-  <script>
-    let selectedImage = null;
+    <!-- modal 10 script -->
 
-    function selectImage(img) {
-      if (selectedImage !== null) {
-        selectedImage.style.border = "";
+    <script>
+      let selectedImage = null;
+
+      function selectImage(img) {
+        if (selectedImage !== null) {
+          selectedImage.style.border = "";
+        }
+        selectedImage = img;
+        selectedImage.style.border = "2px solid blue";
       }
-      selectedImage = img;
-      selectedImage.style.border = "2px solid blue";
-    }
 
-    function submitForm() {
-      if (selectedImage === null) {
-        alert("Please select an image");
-        return false;
+      function submitForm() {
+        if (selectedImage === null) {
+          alert("Please select an image");
+          return false;
+        }
+        document.getElementById("selected_image").value = selectedImage.src;
+        return true;
       }
-      document.getElementById("selected_image").value = selectedImage.src;
-      return true;
-    }
-  </script>
-
-</body>
-
+    </script>
+  </body>
 </html>
