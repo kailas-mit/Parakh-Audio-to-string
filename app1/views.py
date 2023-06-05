@@ -94,6 +94,7 @@ json_data = {}
 for key, doc_name in doc_names.items():
     # Get a reference to the document
     doc_ref = db.collection('ParakhApp').document(doc_name)
+    # print('############################',doc_ref)
     
     # Retrieve the document
     doc = doc_ref.get()
@@ -119,7 +120,7 @@ json_l4_data = json_data.get('json_l4')
 # print('json l4', json_l4_data)
 
 json_ben_data = json_data.get('json_ben')
-print('json bengali', type(json_ben_data))
+# print('json bengali', type(json_ben_data))
 
 json_eng_data = json_data.get('json_eng')
 # print('json english', json_eng_data)
@@ -128,7 +129,7 @@ json_guj_data = json_data.get('json_guj')
 # print('json gujarati', json_guj_data)
 
 json_hin_data = json_data.get('json_hin')
-# print('json hindi', json_hin_data)
+print('json hindi', type(json_hin_data))
 
 json_pun_data = json_data.get('json_pun')
 # print('json punjabi', json_pun_data)
@@ -163,13 +164,14 @@ json_l2 = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_English_L2
 json_l3 = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_English_L3.json')
 json_l4 = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_English_L4.json')
 json_ass = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_Assamese.json')
-# json_ben = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_Bengali.json')
-json_ben = json_ben_data
-print("json1121@@@@@@@@@@@@@@@@@@@@@@@@@", type(json_ben))
+json_ben = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_Bengali.json')
+# json_ben = json_ben_data
+# print("json1121@@@@@@@@@@@@@@@@@@@@@@@@@", type(json_ben))
 
 json_eng = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_English.json')
 json_guj = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_Gujarati.json')
-json_hin = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_Hindi.json')
+# json_hin = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_Hindi.json')
+json_hin = json_hin_data
 json_kan = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_kannada.json')
 json_mal = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_malayalam.json')
 json_mar = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_marathi.json')
@@ -3881,7 +3883,7 @@ def get_random_paragraph(request):
         'English': json_eng,
         'Hindi': json_hin,
         'Assamese': json_ass,
-        'Bengali': json_ben_data,
+        'Bengali': json_ben,
         'Gujarati': json_guj,
         'Marathi': json_mar,
         'Kannada': json_kan,
@@ -3892,17 +3894,19 @@ def get_random_paragraph(request):
         'Telugu': json_tel,
         'Urdu': json_urdu
     }
+    # hindi working
     if selected_option in json_files:
         json_file = json_files[selected_option]
-        with open(json_file, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            data1 = random.choice(data['Paragraph'])
-            print("the value ", data1['id'])
-            data_id = data1['id']
-            request.session['data_id'] = data_id
-            print(data_id)
-            print("data", data1['data'])
-            return data1['data'], data_id
+        data1 = random.choice(json_file['Paragraph'])
+        print("the value ", data1['id'])
+        data_id = data1['id']
+        request.session['data_id'] = data_id
+        print(data_id)
+        print("data", data1['data'])
+        request.session['data_value'] = data1['data']
+        return data1['data'], data_id
+
+    #old
     # if selected_option in json_files:
     #     json_file = json_files[selected_option]
     #     with open(json_file, 'r', encoding='utf-8') as f:
@@ -3997,22 +4001,34 @@ def answer(request):
         data_id = request.session.get('data_id')
         print("data_id",data_id)
         data = json_l1_data
-        print("data2134214", data)
+        print("data", data)
         paragraph = None
         for d in data['Paragraph']:
             if d['id'] == data_id:
                 val = d['data']
                 break
+
     elif selected_option == 'Hindi':
         data_id = request.session.get('data_id')
-        print("data_id",data_id)
-        with open(json_hin, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            paragraph = None
-            for d in data['Paragraph']:
-                if d['id'] == data_id:
-                    val = d['data']
-                    break
+        print("data_id", data_id)
+        json_file = json_files[selected_option]
+        paragraph = None
+        for d in json_file['Paragraph']:
+            if d['id'] == data_id:
+                val = d['data']
+                break
+
+    # old
+    # elif selected_option == 'Hindi':
+    #     data_id = request.session.get('data_id')
+    #     print("data_id",data_id)
+    #     with open(json_hin, 'r', encoding='utf-8') as f:
+    #         data = json.load(f)
+    #         paragraph = None
+    #         for d in data['Paragraph']:
+    #             if d['id'] == data_id:
+    #                 val = d['data']
+    #                 break
     elif selected_option == 'Assamese':
         data_id = request.session.get('data_id')
         print("data_id",data_id)
@@ -4023,6 +4039,16 @@ def answer(request):
                 if d['id'] == data_id:
                     val = d['data']
                     break
+
+    # if selected_option == 'Bengali':
+    #     data_id = request.session.get('data_id')
+    #     print("data_id", data_id)
+    #     json_file = json_files[selected_option]
+    #     paragraph = None
+    #     for d in json_file['Paragraph']:
+    #         if d['id'] == data_id:
+    #             val = d['data']
+    #             break
     elif selected_option == 'Bengali':
         data_id = request.session.get('data_id')
         print("data_id",data_id)
@@ -4465,18 +4491,29 @@ def next_para(request):
             if d['id'] == data_id:
                 val = d['data']
                 break
+
     elif selected_option == 'Hindi':
         data_id = request.session.get('data_id')
-        print("data_id",data_id)
-        request.session['audio_recorded'] = True
+        print("data_id", data_id)
+        json_file = json_files[selected_option]
+        paragraph = None
+        for d in json_file['Paragraph']:
+            if d['id'] == data_id:
+                val = d['data']
+                break
 
-        with open(json_hin, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            paragraph = None
-            for d in data['Paragraph']:
-                if d['id'] == data_id:
-                    val = d['data']
-                    break
+    # elif selected_option == 'Hindi':
+    #     data_id = request.session.get('data_id')
+    #     print("data_id",data_id)
+    #     request.session['audio_recorded'] = True
+
+    #     with open(json_hin, 'r', encoding='utf-8') as f:
+    #         data = json.load(f)
+    #         paragraph = None
+    #         for d in data['Paragraph']:
+    #             if d['id'] == data_id:
+    #                 val = d['data']
+    #                 break
     elif selected_option == 'Assamese':
         data_id = request.session.get('data_id')
         print("data_id",data_id)
@@ -4635,6 +4672,32 @@ def story(request):
 def get_random_story(request):
     selected_option = request.session.get('selected_option')
     print("@",selected_option)
+    json_files = {
+        'English': json_eng,
+        'Hindi': json_hin,
+        'Assamese': json_ass,
+        'Bengali': json_ben,
+        'Gujarati': json_guj,
+        'Marathi': json_mar,
+        'Kannada': json_kan,
+        'Malayalam': json_mal,
+        'Odiya': json_odi,
+        'Punjabi': json_pun,
+        'Tamil': json_tami,
+        'Telugu': json_tel,
+        'Urdu': json_urdu
+    }
+    if selected_option in json_files:
+        json_file = json_files[selected_option]
+        data1 = random.choice(json_file['Story'])
+        print("the value ", data1['id'])
+        data_id = data1['id']
+        request.session['data_id'] = data_id
+        print(data_id)
+        print("data", data1['data'])
+        request.session['data_value'] = data1['data']
+        return data1['data'], data_id
+    
     if selected_option == 'English':
         with open(json_eng, 'r') as f:
             data = json.load(f)
@@ -4645,16 +4708,16 @@ def get_random_story(request):
             print(data_id)
             print("dta",data1['data'])
             return data1['data'], data_id
-    elif selected_option == 'Hindi':
-        with open(json_hin, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            data1 = random.choice(data['Story'])
-            print("the value ",data1['id'])
-            data_id = data1['id']
-            request.session['data_id'] = data_id
-            print(data_id)
-            print("dta",data1['data'])
-            return data1['data'], data_id
+    # elif selected_option == 'Hindi':
+    #     with open(json_hin, 'r', encoding='utf-8') as f:
+    #         data = json.load(f)
+    #         data1 = random.choice(data['Story'])
+    #         print("the value ",data1['id'])
+    #         data_id = data1['id']
+    #         request.session['data_id'] = data_id
+    #         print(data_id)
+    #         print("dta",data1['data'])
+    #         return data1['data'], data_id
     elif selected_option == 'Assamese':
         with open(json_ass, 'r', encoding='utf-8') as f:
             data = json.load(f)
@@ -4818,16 +4881,29 @@ def story_answer(request):
                 if d['id'] == data_id:
                     val = d['data']
                     break
+
+
     elif selected_option == 'Hindi':
         data_id = request.session.get('data_id')
         print("data_id",data_id)
-        with open(json_hin, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            story = None
-            for d in data['Story']:
-                if d['id'] == data_id:
-                    val = d['data']
-                    break
+        data = json_files[selected_option]
+        story = None
+        for d in data['Story']:
+            if d['id'] == data_id:
+                val = d['data']
+                break
+
+    # old
+    # elif selected_option == 'Hindi':
+    #     data_id = request.session.get('data_id')
+    #     print("data_id",data_id)
+    #     with open(json_hin, 'r', encoding='utf-8') as f:
+    #         data = json.load(f)
+    #         story = None
+    #         for d in data['Story']:
+    #             if d['id'] == data_id:
+    #                 val = d['data']
+    #                 break
     elif selected_option == 'Assamese':
         data_id = request.session.get('data_id')
         print("data_id",data_id)
@@ -5153,16 +5229,28 @@ def next_story(request):
                 if d['id'] == data_id:
                     val = d['data']
                     break
+
     elif selected_option == 'Hindi':
         data_id = request.session.get('data_id')
-        request.session['audio_recorded'] = True
-        with open(json_hin, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            Story = None
-            for d in data['Story']:
-                if d['id'] == data_id:
-                    val = d['data']
-                    break
+        print("data_id", data_id)
+        json_file = json_files[selected_option]
+        Story = None
+        for d in json_file['Story']:
+            if d['id'] == data_id:
+                val = d['data']
+                break
+
+    #old
+    # elif selected_option == 'Hindi':
+    #     data_id = request.session.get('data_id')
+    #     request.session['audio_recorded'] = True
+    #     with open(json_hin, 'r', encoding='utf-8') as f:
+    #         data = json.load(f)
+    #         Story = None
+    #         for d in data['Story']:
+    #             if d['id'] == data_id:
+    #                 val = d['data']
+    #                 break
     elif selected_option == 'Assamese':
         data_id = request.session.get('data_id')
         request.session['audio_recorded'] = True
@@ -5475,33 +5563,59 @@ def get_random_word(request):
                 request.session['d_dataid'] = d_dataid
                 word_ids.clear()
             return data1['data'], data_id
+        
     elif selected_option == 'Hindi':
-        with open(json_hin, 'r', encoding='utf-8') as f:
-            data = json.load(f)
+        data = json_hin  # Assuming json_hin contains the actual JSON data for Hindi
+        data1 = random.choice(data['Word'])
+        print("the value ", data1['id'])
+        data_id = data1['id']
+        while data_id in word_ids:
             data1 = random.choice(data['Word'])
-            print("the value ",data1['id'])
             data_id = data1['id']
-            while data_id in word_ids:
-                data1 = random.choice(data['Word'])
-                data_id = data1['id']
+        
+        word_ids.append(data_id)
+        request.session['word_ids'] = word_ids
+
+        print("word_ids", word_ids)
+        
+        request.session['data_id'] = data_id
+        print("dta", data1['data'])
+        if len(word_ids) == 5:
+            d_dataid = word_ids.copy()
+            print(d_dataid)
+            request.session['d_dataid'] = d_dataid
+
+            word_ids.clear()
+        return data1['data'], data_id
+
+        #old
+    # elif selected_option == 'Hindi':
+    #     with open(json_hin, 'r', encoding='utf-8') as f:
+    #         data = json.load(f)
+    #         data1 = random.choice(data['Word'])
+    #         print("the value ",data1['id'])
+    #         data_id = data1['id']
+    #         while data_id in word_ids:
+    #             data1 = random.choice(data['Word'])
+    #             data_id = data1['id']
             
-            word_ids.append(data_id)
-            request.session['word_ids'] = word_ids
+    #         word_ids.append(data_id)
+    #         request.session['word_ids'] = word_ids
 
-            # word_ids.clear()
+    #         # word_ids.clear()
 
-            print("word_ids",word_ids)
+    #         print("word_ids",word_ids)
              
 
-            request.session['data_id'] = data_id
-            print("dta",data1['data'])
-            if len(word_ids) ==5:
-                d_dataid = word_ids.copy()
-                print(d_dataid)
-                request.session['d_dataid'] = d_dataid
+    #         request.session['data_id'] = data_id
+    #         print("dta",data1['data'])
+    #         if len(word_ids) ==5:
+    #             d_dataid = word_ids.copy()
+    #             print(d_dataid)
+    #             request.session['d_dataid'] = d_dataid
 
-                word_ids.clear()
-            return data1['data'], data_id
+    #             word_ids.clear()
+    #         return data1['data'], data_id
     elif selected_option == 'Assamese':
         with open(json_ass, 'r', encoding='utf-8') as f:
             data = json.load(f)
@@ -6269,16 +6383,30 @@ def word_answer(request):
     print("@", selected_option)
 
     if selected_option in json_files:
-        json_file = json_files[selected_option]
-        print('@###############################',json_file)
-        request.session['json_file'] = json_file
+        json_file_path = json_files[selected_option]
+        print('@###############################', json_file_path)
+        # request.session['json_file'] = json_file_path
         data_id = request.session.get('data_id')
         print("data_id", data_id)
-    # json_file = json_files.get(selected_option)
+        data = json_file_path
 
-        with open(json_file, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            word = next((d['data'] for d in data['Word'] if d['id'] == request.session.get('data_id')), None)
+        # with open(json_file_path, 'r', encoding='utf-8') as f:
+        #     data = json.load(f)
+        word = next((d['data'] for d in data['Word'] if d['id'] == request.session.get('data_id')), None)
+
+
+    #old
+    # if selected_option in json_files:
+    #     json_file = json_files[selected_option]
+    #     print('@###############################',json_file)
+    #     request.session['json_file'] = json_file
+    #     data_id = request.session.get('data_id')
+    #     print("data_id", data_id)
+    # # json_file = json_files.get(selected_option)
+
+    #     with open(json_file, 'r', encoding='utf-8') as f:
+    #         data = json.load(f)
+    #         word = next((d['data'] for d in data['Word'] if d['id'] == request.session.get('data_id')), None)
 
     qword = request.session.setdefault('qword', [])
     if word:
@@ -6734,23 +6862,19 @@ def next_word(request):
                     
 
                     return render(request, "retake_word/retake_word1.html", {"recording": True,"val":val })
+                
             elif selected_option == 'Hindi':
-                # data_id = request.session.get('data_id')
-                # print("data_id",data_id)
-                # with open(json_eng) as f:
-                #     data = json.load(f)
-                #     Word = None
-                #     for d in data['Word']:
-                #         if d['id'] == data_id:
-                #             val = d['data']
-                #             break
                 print("d_dataid0",d_dataid[0])
                 request.session['d_dataid[0]'] = d_dataid[0]
-
                 request.session['audio_recorded'] = True
-                
-                with open(json_hin, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
+
+                json_file_path = json_files[selected_option]
+                print('@###############################', json_file_path)
+                # request.session['json_file'] = json_file_path
+                data_id = request.session.get('data_id')
+                print("data_id", data_id)
+                if data_id is not None:
+                    data = json_file_path
                     Word = None
                     for d in data['Word']:
                         if d['id'] == d_dataid[0]:
@@ -6955,8 +7079,12 @@ def next_word(request):
                 print("d_dataid1",d_dataid[1])
                 request.session['d_dataid[1]'] = d_dataid[1]
                 request.session['audio_recorded'] = True
-                with open(json_hin, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
+                json_file_path = json_files[selected_option]
+                print('@###############################', json_file_path)
+                data_id = request.session.get('data_id')
+                print("data_id", data_id)
+                if data_id is not None:
+                    data = json_file_path
                     Word = None
                     for d in data['Word']:
                         if d['id'] == d_dataid[1]:
@@ -7151,12 +7279,18 @@ def next_word(request):
                     if val:
                         print("the val",val)
                     return render(request, "retake_word/retake_word3.html", {"recording": True,"val":val })
+                
+
             elif selected_option == 'Hindi':
                 print("d_dataid2",d_dataid[2])
                 request.session['d_dataid[2]'] = d_dataid[2]
                 request.session['audio_recorded'] = True
-                with open(json_hin, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
+                json_file_path = json_files[selected_option]
+                print('@###############################', json_file_path)
+                data_id = request.session.get('data_id')
+                print("data_id", data_id)
+                if data_id is not None:
+                    data = json_file_path
                     Word = None
                     for d in data['Word']:
                         if d['id'] == d_dataid[2]:
@@ -7165,6 +7299,22 @@ def next_word(request):
                     if val:
                         print("the val",val)
                     return render(request, "retake_word/retake_word3.html", {"recording": True,"val":val })
+                
+            #old
+            # elif selected_option == 'Hindi':
+            #     print("d_dataid2",d_dataid[2])
+            #     request.session['d_dataid[2]'] = d_dataid[2]
+            #     request.session['audio_recorded'] = True
+            #     with open(json_hin, 'r', encoding='utf-8') as f:
+            #         data = json.load(f)
+            #         Word = None
+            #         for d in data['Word']:
+            #             if d['id'] == d_dataid[2]:
+            #                 val = d['data']
+            #                 break
+            #         if val:
+            #             print("the val",val)
+            #         return render(request, "retake_word/retake_word3.html", {"recording": True,"val":val })
             elif selected_option == 'Assamese':
                 print("d_dataid1",d_dataid[2])
                 request.session['d_dataid[2]'] = d_dataid[2]
@@ -7352,12 +7502,17 @@ def next_word(request):
                     if val:
                         print("the val",val)
                     return render(request, "retake_word/retake_word4.html", {"recording": True,"val":val })
+                
             elif selected_option == 'Hindi':
                 print("d_dataid3",d_dataid[3])
                 request.session['d_dataid[3]'] = d_dataid[3]
                 request.session['audio_recorded'] = True
-                with open(json_hin, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
+                json_file_path = json_files[selected_option]
+                print('@###############################', json_file_path)
+                data_id = request.session.get('data_id')
+                print("data_id", data_id)
+                if data_id is not None:
+                    data = json_file_path
                     Word = None
                     for d in data['Word']:
                         if d['id'] == d_dataid[3]:
@@ -7366,6 +7521,22 @@ def next_word(request):
                     if val:
                         print("the val",val)
                     return render(request, "retake_word/retake_word4.html", {"recording": True,"val":val })
+
+            #old
+            # elif selected_option == 'Hindi':
+            #     print("d_dataid3",d_dataid[3])
+            #     request.session['d_dataid[3]'] = d_dataid[3]
+            #     request.session['audio_recorded'] = True
+            #     with open(json_hin, 'r', encoding='utf-8') as f:
+            #         data = json.load(f)
+            #         Word = None
+            #         for d in data['Word']:
+            #             if d['id'] == d_dataid[3]:
+            #                 val = d['data']
+            #                 break
+            #         if val:
+            #             print("the val",val)
+            #         return render(request, "retake_word/retake_word4.html", {"recording": True,"val":val })
             elif selected_option == 'Assamese':
                 print("d_dataid1",d_dataid[3])
                 request.session['d_dataid[3]'] = d_dataid[3]
@@ -7553,12 +7724,17 @@ def next_word(request):
                     if val:
                         print("the val",val)
                     return render(request, "retake_word/retake_word5.html", {"recording": True,"val":val })
+                
             elif selected_option == 'Hindi':
-                print("d_dataid4",d_dataid[4])
+                print("d_dataid3",d_dataid[4])
                 request.session['d_dataid[4]'] = d_dataid[4]
                 request.session['audio_recorded'] = True
-                with open(json_hin, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
+                json_file_path = json_files[selected_option]
+                print('@###############################', json_file_path)
+                data_id = request.session.get('data_id')
+                print("data_id", data_id)
+                if data_id is not None:
+                    data = json_file_path
                     Word = None
                     for d in data['Word']:
                         if d['id'] == d_dataid[4]:
@@ -7567,6 +7743,22 @@ def next_word(request):
                     if val:
                         print("the val",val)
                     return render(request, "retake_word/retake_word5.html", {"recording": True,"val":val })
+
+            # old
+            # elif selected_option == 'Hindi':
+            #     print("d_dataid4",d_dataid[4])
+            #     request.session['d_dataid[4]'] = d_dataid[4]
+            #     request.session['audio_recorded'] = True
+            #     with open(json_hin, 'r', encoding='utf-8') as f:
+            #         data = json.load(f)
+            #         Word = None
+            #         for d in data['Word']:
+            #             if d['id'] == d_dataid[4]:
+            #                 val = d['data']
+            #                 break
+            #         if val:
+            #             print("the val",val)
+            #         return render(request, "retake_word/retake_word5.html", {"recording": True,"val":val })
             elif selected_option == 'Assamese':
                 print("d_dataid1",d_dataid[4])
                 request.session['d_dataid[4]'] = d_dataid[4]
@@ -7779,6 +7971,32 @@ def save_word1(request):
     print(filepath)
     selected_option = request.session.get('selected_option')
     print("@",selected_option)
+
+    request.session['d_dataid[0]'] = d_dataid[0]
+    print("data_id", d_dataid[0])
+    json_file_path = json_files.get(selected_option)
+    print('@###############################', json_file_path)
+    data_id = request.session.get('data_id')
+    print("data_id", data_id)
+    
+    if json_file_path:
+            data = json_file_path
+            if data is not None:
+                Word = None
+                for d in data['Word']:
+                    if d['id'] == d_dataid[0]:
+                        val = d['data']
+                        break
+
+
+# old
+# def save_word1(request):
+#     d_dataid = request.session.setdefault('d_dataid', [])
+    
+#     filepath = request.session.get('filepath')
+#     print(filepath)
+#     selected_option = request.session.get('selected_option')
+#     print("@",selected_option)
     
     if selected_option == 'English':
         request.session['d_dataid[0]'] = d_dataid[0]
@@ -7791,17 +8009,24 @@ def save_word1(request):
                 if d['id'] == d_dataid[0]:
                     val = d['data']
                     break
-    elif selected_option == 'Hindi':
-        request.session['d_dataid[0]'] = d_dataid[0]
 
-        print("data_id",d_dataid[0])
-        with open(json_hin, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            Word = None
-            for d in data['Word']:
-                if d['id'] == d_dataid[0]:
-                    val = d['data']
-                    break
+    # working with firebase
+    # elif selected_option == 'Hindi':
+    #     request.session['d_dataid[0]'] = d_dataid[0]
+
+    #     print("data_id",d_dataid[0])
+    #     json_file_path = json_files[selected_option]
+    #     print('@###############################', json_file_path)
+    #     # request.session['json_file'] = json_file_path
+    #     data_id = request.session.get('data_id')
+    #     print("data_id", data_id)
+    #     if data_id is not None:
+    #         data = json_file_path
+    #         Word = None
+    #         for d in data['Word']:
+    #             if d['id'] == d_dataid[0]:
+    #                 val = d['data']
+    #                 break
     elif selected_option == 'Assamese':
         request.session['d_dataid[0]'] = d_dataid[0]
 
@@ -7998,6 +8223,7 @@ def retake_word2(request):
         request.session['filepath'] = filepath
         return render(request, 'word_answer.html', { 'audio_url': filepath})
     
+
 def save_word2(request):
     d_dataid = request.session.setdefault('d_dataid', [])
     
@@ -8005,6 +8231,31 @@ def save_word2(request):
     print(filepath)
     selected_option = request.session.get('selected_option')
     print("@",selected_option)
+
+    request.session['d_dataid[1]'] = d_dataid[1]
+    print("data_id", d_dataid[1])
+    json_file_path = json_files.get(selected_option)
+    print('@###############################', json_file_path)
+    data_id = request.session.get('data_id')
+    print("data_id", data_id)
+    
+    if json_file_path:
+            data = json_file_path
+            if data is not None:
+                Word = None
+                for d in data['Word']:
+                    if d['id'] == d_dataid[1]:
+                        val = d['data']
+                        break
+
+# old
+# def save_word2(request):
+#     d_dataid = request.session.setdefault('d_dataid', [])
+    
+#     filepath = request.session.get('filepath')
+#     print(filepath)
+#     selected_option = request.session.get('selected_option')
+#     print("@",selected_option)
     
     if selected_option == 'English':
         request.session['d_dataid[1]'] = d_dataid[1]
@@ -8017,17 +8268,35 @@ def save_word2(request):
                 if d['id'] == d_dataid[1]:
                     val = d['data']
                     break
-    elif selected_option == 'Hindi':
-        request.session['d_dataid[1]'] = d_dataid[1]
 
-        print("data_id",d_dataid[1])
-        with open(json_hin, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            Word = None
-            for d in data['Word']:
-                if d['id'] == d_dataid[1]:
-                    val = d['data']
-                    break
+    # working with firebase
+    # elif selected_option == 'Hindi':
+    #     request.session['d_dataid[1]'] = d_dataid[1]
+    #     print("data_id",d_dataid[1])
+    #     json_file_path = json_files[selected_option]
+    #     print('@###############################', json_file_path)
+    #     # request.session['json_file'] = json_file_path
+    #     data_id = request.session.get('data_id')
+    #     print("data_id", data_id)
+    #     if data_id is not None:
+    #         data = json_file_path
+    #         Word = None
+    #         for d in data['Word']:
+    #             if d['id'] == d_dataid[1]:
+    #                 val = d['data']
+    #                 break
+    #old            
+    # elif selected_option == 'Hindi':
+    #     request.session['d_dataid[1]'] = d_dataid[1]
+
+    #     print("data_id",d_dataid[1])
+    #     with open(json_hin, 'r', encoding='utf-8') as f:
+    #         data = json.load(f)
+    #         Word = None
+    #         for d in data['Word']:
+    #             if d['id'] == d_dataid[1]:
+    #                 val = d['data']
+    #                 break
     elif selected_option == 'Assamese':
         request.session['d_dataid[1]'] = d_dataid[1]
 
@@ -8217,7 +8486,8 @@ def retake_word3(request):
 
         request.session['filepath'] = filepath
         return render(request, 'word_answer.html', { 'audio_url': filepath})
-    
+
+
 def save_word3(request):
     d_dataid = request.session.setdefault('d_dataid', [])
     
@@ -8225,6 +8495,34 @@ def save_word3(request):
     print(filepath)
     selected_option = request.session.get('selected_option')
     print("@",selected_option)
+
+    request.session['d_dataid[2]'] = d_dataid[2]
+    print("data_id", d_dataid[2])
+    json_file_path = json_files.get(selected_option)
+    print('@###############################', json_file_path)
+    data_id = request.session.get('data_id')
+    print("data_id", data_id)
+    
+    if json_file_path:
+            data = json_file_path
+            if data is not None:
+                Word = None
+                for d in data['Word']:
+                    if d['id'] == d_dataid[2]:
+                        val = d['data']
+                        break
+
+
+
+
+# old
+# def save_word3(request):
+#     d_dataid = request.session.setdefault('d_dataid', [])
+    
+#     filepath = request.session.get('filepath')
+#     print(filepath)
+#     selected_option = request.session.get('selected_option')
+#     print("@",selected_option)
     
     if selected_option == 'English':
         request.session['d_dataid[2]'] = d_dataid[2]
@@ -8237,17 +8535,36 @@ def save_word3(request):
                 if d['id'] == d_dataid[2]:
                     val = d['data']
                     break
-    elif selected_option == 'Hindi':
-        request.session['d_dataid[2]'] = d_dataid[2]
+    # working with firebase
+    # elif selected_option == 'Hindi':
+    #     request.session['d_dataid[2]'] = d_dataid[2]
+    #     print("data_id",d_dataid[2])
+    #     json_file_path = json_files[selected_option]
+    #     print('@###############################', json_file_path)
+    #     # request.session['json_file'] = json_file_path
+    #     data_id = request.session.get('data_id')
+    #     print("data_id", data_id)
+    #     if data_id is not None:
+    #         data = json_file_path
+    #         Word = None
+    #         for d in data['Word']:
+    #             if d['id'] == d_dataid[2]:
+    #                 val = d['data']
+    #                 break
+    
 
-        print("data_id",d_dataid[2])
-        with open(json_hin, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            Word = None
-            for d in data['Word']:
-                if d['id'] == d_dataid[2]:
-                    val = d['data']
-                    break
+    #old
+    # elif selected_option == 'Hindi':
+    #     request.session['d_dataid[2]'] = d_dataid[2]
+
+    #     print("data_id",d_dataid[2])
+    #     with open(json_hin, 'r', encoding='utf-8') as f:
+    #         data = json.load(f)
+    #         Word = None
+    #         for d in data['Word']:
+    #             if d['id'] == d_dataid[2]:
+    #                 val = d['data']
+    #                 break
     elif selected_option == 'Assamese':
         request.session['d_dataid[2]'] = d_dataid[2]
 
@@ -8439,6 +8756,7 @@ def retake_word4(request):
         request.session['filepath'] = filepath
         return render(request, 'word_answer.html', { 'audio_url': filepath})
     
+
 def save_word4(request):
     d_dataid = request.session.setdefault('d_dataid', [])
     
@@ -8446,7 +8764,49 @@ def save_word4(request):
     print(filepath)
     selected_option = request.session.get('selected_option')
     print("@",selected_option)
+
+    request.session['d_dataid[3]'] = d_dataid[3]
+    print("data_id", d_dataid[3])
+    json_file_path = json_files.get(selected_option)
+    print('@###############################', json_file_path)
+    data_id = request.session.get('data_id')
+    print("data_id", data_id)
     
+    if json_file_path:
+            data = json_file_path
+            if data is not None:
+                Word = None
+                for d in data['Word']:
+                    if d['id'] == d_dataid[3]:
+                        val = d['data']
+                        break
+# old
+# def save_word4(request):
+#     d_dataid = request.session.setdefault('d_dataid', [])
+    
+#     filepath = request.session.get('filepath')
+#     print(filepath)
+#     selected_option = request.session.get('selected_option')
+#     print("@",selected_option)
+
+#     request.session['d_dataid[3]'] = d_dataid[3]
+#     print("data_id", d_dataid[3])
+#     json_file_path = json_files.get(selected_option)
+#     print('@###############################', json_file_path)
+#     data_id = request.session.get('data_id')
+#     print("data_id", data_id)
+    
+#     if json_file_path:
+#         with open(json_file_path, 'r', encoding='utf-8') as f:
+#             data = json.load(f)
+#             if data is not None:
+#                 Word = None
+#                 for d in data['Word']:
+#                     if d['id'] == d_dataid[4]:
+#                         val = d['data']
+#                         break
+    
+    #old
     if selected_option == 'English':
         request.session['d_dataid[3]'] = d_dataid[3]
 
@@ -8458,17 +8818,37 @@ def save_word4(request):
                 if d['id'] == d_dataid[3]:
                     val = d['data']
                     break
-    elif selected_option == 'Hindi':
-        request.session['d_dataid[3]'] = d_dataid[3]
 
-        print("data_id",d_dataid[3])
-        with open(json_hin, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            Word = None
-            for d in data['Word']:
-                if d['id'] == d_dataid[3]:
-                    val = d['data']
-                    break
+    # new working with firebase
+    # elif selected_option == 'Hindi':
+    #     request.session['d_dataid[3]'] = d_dataid[3]
+    #     print("data_id",d_dataid[3])
+    #     json_file_path = json_files[selected_option]
+    #     print('@###############################', json_file_path)
+    #     # request.session['json_file'] = json_file_path
+    #     data_id = request.session.get('data_id')
+    #     print("data_id", data_id)
+    #     if data_id is not None:
+    #         data = json_file_path
+    #         Word = None
+    #         for d in data['Word']:
+    #             if d['id'] == d_dataid[3]:
+    #                 val = d['data']
+    #                 break
+                
+
+    # old
+    # elif selected_option == 'Hindi':
+    #     request.session['d_dataid[3]'] = d_dataid[3]
+
+    #     print("data_id",d_dataid[3])
+    #     with open(json_hin, 'r', encoding='utf-8') as f:
+    #         data = json.load(f)
+    #         Word = None
+    #         for d in data['Word']:
+    #             if d['id'] == d_dataid[3]:
+    #                 val = d['data']
+    #                 break
     elif selected_option == 'Assamese':
         request.session['d_dataid[3]'] = d_dataid[3]
 
@@ -8670,6 +9050,23 @@ def save_word5(request):
     print(filepath)
     selected_option = request.session.get('selected_option')
     print("@",selected_option)
+
+    request.session['d_dataid[4]'] = d_dataid[4]
+    print("data_id", d_dataid[4])
+    json_file_path = json_files[selected_option]
+    print('@###############################', json_file_path)
+    data_id = request.session.get('data_id')
+    print("data_id", data_id)
+    
+    if json_file_path:
+        data = json_file_path
+        if data is not None:
+            Word = None
+            for d in data['Word']:
+                if d['id'] == d_dataid[4]:
+                    val = d['data']
+                    break
+
     
     if selected_option == 'English':
         request.session['d_dataid[4]'] = d_dataid[4]
@@ -8682,17 +9079,35 @@ def save_word5(request):
                 if d['id'] == d_dataid[4]:
                     val = d['data']
                     break
-    elif selected_option == 'Hindi':
-        request.session['d_dataid[4]'] = d_dataid[4]
+    # new working with firebase
+    # elif selected_option == 'Hindi':
+    #     request.session['d_dataid[4]'] = d_dataid[4]
+    #     print("data_id",d_dataid[4])
+    #     json_file_path = json_files[selected_option]
+    #     print('@###############################', json_file_path)
+    #     # request.session['json_file'] = json_file_path
+    #     data_id = request.session.get('data_id')
+    #     print("data_id", data_id)
+    #     if data_id is not None:
+    #         data = json_file_path
+    #         Word = None
+    #         for d in data['Word']:
+    #             if d['id'] == d_dataid[4]:
+    #                 val = d['data']
+    #                 break
 
-        print("data_id",d_dataid[4])
-        with open(json_hin, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            Word = None
-            for d in data['Word']:
-                if d['id'] == d_dataid[4]:
-                    val = d['data']
-                    break
+    # old
+    # elif selected_option == 'Hindi':
+    #     request.session['d_dataid[4]'] = d_dataid[4]
+
+    #     print("data_id",d_dataid[4])
+    #     with open(json_hin, 'r', encoding='utf-8') as f:
+    #         data = json.load(f)
+    #         Word = None
+    #         for d in data['Word']:
+    #             if d['id'] == d_dataid[4]:
+    #                 val = d['data']
+    #                 break
     elif selected_option == 'Assamese':
         request.session['d_dataid[4]'] = d_dataid[4]
 
@@ -8984,27 +9399,51 @@ def get_random_letter(request):
                 request.session['l_dataid'] = l_dataid
                 data_ids.clear()
             return data1['data'], data_id
+        
     elif selected_option == 'Hindi':
-        with open(json_hin, 'r', encoding='utf-8') as f:
-            data = json.load(f)
+        data = json_hin 
+        data1 = random.choice(data['Letter'])
+        print("the value ",data1['id'])
+        data_id = data1['id']
+        
+        while data_id in data_ids:
             data1 = random.choice(data['Letter'])
-            print("the value ",data1['id'])
             data_id = data1['id']
+        
+        data_ids.append(data_id)
+        print("data_ids",data_ids)
+        request.session['data_id'] = data_id
+        print("dta",data1['data'])
+        if len(data_ids) ==5:
+            l_dataid = data_ids.copy()
+            print(l_dataid)
+            request.session['l_dataid'] = l_dataid
+            data_ids.clear()
+        return data1['data'], data_id
+
+
+    # old
+    # elif selected_option == 'Hindi':
+    #     with open(json_hin, 'r', encoding='utf-8') as f:
+    #         data = json.load(f)
+    #         data1 = random.choice(data['Letter'])
+    #         print("the value ",data1['id'])
+    #         data_id = data1['id']
             
-            while data_id in data_ids:
-                data1 = random.choice(data['Letter'])
-                data_id = data1['id']
+    #         while data_id in data_ids:
+    #             data1 = random.choice(data['Letter'])
+    #             data_id = data1['id']
             
-            data_ids.append(data_id)
-            print("data_ids",data_ids)
-            request.session['data_id'] = data_id
-            print("dta",data1['data'])
-            if len(data_ids) ==5:
-                l_dataid = data_ids.copy()
-                print(l_dataid)
-                request.session['l_dataid'] = l_dataid
-                data_ids.clear()
-            return data1['data'], data_id
+    #         data_ids.append(data_id)
+    #         print("data_ids",data_ids)
+    #         request.session['data_id'] = data_id
+    #         print("dta",data1['data'])
+    #         if len(data_ids) ==5:
+    #             l_dataid = data_ids.copy()
+    #             print(l_dataid)
+    #             request.session['l_dataid'] = l_dataid
+    #             data_ids.clear()
+    #         return data1['data'], data_id
     elif selected_option == 'Assamese':
         with open(json_ass, 'r', encoding='utf-8') as f:
             data = json.load(f)
@@ -9786,6 +10225,21 @@ def letter_answer(request):
     print(filepath)
     selected_option = request.session.get('selected_option')
     print("@",selected_option)
+
+    if selected_option in json_files:
+        json_file_path = json_files[selected_option]
+        print('@###############################', json_file_path)
+        # request.session['json_file'] = json_file_path
+        data_id = request.session.get('data_id')
+        print("data_id", data_id)
+        data = json_file_path
+
+        # with open(json_file_path, 'r', encoding='utf-8') as f:
+        #     data = json.load(f)
+        letter = next((d['data'] for d in data['Letter'] if d['id'] == request.session.get('data_id')), None)
+
+
+    #old all remove 
     if selected_option == 'English':
         data_id = request.session.get('data_id')
         print("data_id",data_id)
@@ -9796,16 +10250,16 @@ def letter_answer(request):
                 if d['id'] == data_id:
                     val = d['data']
                     break
-    elif selected_option == 'Hindi':
-        data_id = request.session.get('data_id')
-        print("data_id",data_id)
-        with open(json_hin, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            Letter = None
-            for d in data['Letter']:
-                if d['id'] == data_id:
-                    val = d['data']
-                    break
+    # elif selected_option == 'Hindi':
+    #     data_id = request.session.get('data_id')
+    #     print("data_id",data_id)
+    #     with open(json_hin, 'r', encoding='utf-8') as f:
+    #         data = json.load(f)
+    #         Letter = None
+    #         for d in data['Letter']:
+    #             if d['id'] == data_id:
+    #                 val = d['data']
+    #                 break
     elif selected_option == 'Assamese':
         data_id = request.session.get('data_id')
         print("data_id",data_id)
@@ -9918,18 +10372,20 @@ def letter_answer(request):
                     break
 
     qletter = request.session.setdefault('qletter', [])
-    
+    if letter:
+        qletter.append(letter)
+        request.session['qletter'] = qletter
 
-    if val:
-        print("the val",val)
-        qletter = request.session.get("qletter")
-        qletter.append(val)
-        request.session["qletter"] = qletter
+    # if val:
+    #     print("the val",val)
+    #     qletter = request.session.get("qletter")
+    #     qletter.append(val)
+    #     request.session["qletter"] = qletter
 
         print("qletter",qletter)
     url = 'http://3.7.133.80:8000/gettranscript/'
     files = [('audio', (filepath, open(filepath, 'rb'), 'audio/wav'))]
-    payload = {'language': selected_option ,'question':val}
+    payload = {'language': selected_option ,'question':letter}
     headers = {}
     response = requests.request("POST", url, headers=headers, data=payload, files=files)
 
@@ -10064,13 +10520,18 @@ def next_letter(request):
                     if val:
                         print("the val",val)
                     return render(request, "retake_letter/retake_letter1.html", {"recording": True,"val":val })
+                
             elif selected_option == 'Hindi':
                 print("l_dataid0",l_dataid[0])
                 request.session['l_dataid[0]'] = l_dataid[0]
 
-                request.session['audio_recorded'] = True
-                with open(json_hin, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
+                json_file_path = json_files[selected_option]
+                print('@###############################', json_file_path)
+                # request.session['json_file'] = json_file_path
+                data_id = request.session.get('data_id')
+                print("data_id", data_id)
+                if data_id is not None:
+                    data = json_file_path
                     Letter = None
                     for d in data['Letter']:
                         if d['id'] == l_dataid[0]:
@@ -10079,6 +10540,24 @@ def next_letter(request):
                     if val:
                         print("the val",val)
                     return render(request, "retake_letter/retake_letter1.html", {"recording": True,"val":val })
+
+
+            # old
+            # elif selected_option == 'Hindi':
+            #     print("l_dataid0",l_dataid[0])
+            #     request.session['l_dataid[0]'] = l_dataid[0]
+
+            #     request.session['audio_recorded'] = True
+            #     with open(json_hin, 'r', encoding='utf-8') as f:
+            #         data = json.load(f)
+            #         Letter = None
+            #         for d in data['Letter']:
+            #             if d['id'] == l_dataid[0]:
+            #                 val = d['data']
+            #                 break
+            #         if val:
+            #             print("the val",val)
+            #         return render(request, "retake_letter/retake_letter1.html", {"recording": True,"val":val })
             elif selected_option == 'Assamese':
                 print("l_dataid0",l_dataid[0])
                 request.session['l_dataid[0]'] = l_dataid[0]
@@ -10263,13 +10742,19 @@ def next_letter(request):
                     if val:
                         print("the val",val)
                     return render(request, "retake_letter/retake_letter2.html", {"recording": True,"val":val })
+
+
             elif selected_option == 'Hindi':
-                print("l_dataid0",l_dataid[1])
+                print("l_dataid0",l_dataid[0])
                 request.session['l_dataid[1]'] = l_dataid[1]
 
-                request.session['audio_recorded'] = True
-                with open(json_hin, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
+                json_file_path = json_files[selected_option]
+                print('@###############################', json_file_path)
+                # request.session['json_file'] = json_file_path
+                data_id = request.session.get('data_id')
+                print("data_id", data_id)
+                if data_id is not None:
+                    data = json_file_path
                     Letter = None
                     for d in data['Letter']:
                         if d['id'] == l_dataid[1]:
@@ -10278,6 +10763,24 @@ def next_letter(request):
                     if val:
                         print("the val",val)
                     return render(request, "retake_letter/retake_letter2.html", {"recording": True,"val":val })
+
+
+            # old
+            # elif selected_option == 'Hindi':
+            #     print("l_dataid0",l_dataid[1])
+            #     request.session['l_dataid[1]'] = l_dataid[1]
+
+            #     request.session['audio_recorded'] = True
+            #     with open(json_hin, 'r', encoding='utf-8') as f:
+            #         data = json.load(f)
+            #         Letter = None
+            #         for d in data['Letter']:
+            #             if d['id'] == l_dataid[1]:
+            #                 val = d['data']
+            #                 break
+            #         if val:
+            #             print("the val",val)
+            #         return render(request, "retake_letter/retake_letter2.html", {"recording": True,"val":val })
             elif selected_option == 'Assamese':
                 print("l_dataid0",l_dataid[1])
                 request.session['l_dataid[1]'] = l_dataid[1]
@@ -10462,13 +10965,20 @@ def next_letter(request):
                     if val:
                         print("the val",val)
                     return render(request, "retake_letter/retake_letter3.html", {"recording": True,"val":val })
+                
+
             elif selected_option == 'Hindi':
                 print("l_dataid0",l_dataid[2])
                 request.session['l_dataid[2]'] = l_dataid[2]
 
                 request.session['audio_recorded'] = True
-                with open(json_hin, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
+                json_file_path = json_files[selected_option]
+                print('@###############################', json_file_path)
+                # request.session['json_file'] = json_file_path
+                data_id = request.session.get('data_id')
+                print("data_id", data_id)
+                if data_id is not None:
+                    data = json_file_path
                     Letter = None
                     for d in data['Letter']:
                         if d['id'] == l_dataid[2]:
@@ -10477,6 +10987,24 @@ def next_letter(request):
                     if val:
                         print("the val",val)
                     return render(request, "retake_letter/retake_letter3.html", {"recording": True,"val":val })
+
+
+            # old 
+            # elif selected_option == 'Hindi':
+            #     print("l_dataid0",l_dataid[2])
+            #     request.session['l_dataid[2]'] = l_dataid[2]
+
+            #     request.session['audio_recorded'] = True
+            #     with open(json_hin, 'r', encoding='utf-8') as f:
+            #         data = json.load(f)
+            #         Letter = None
+            #         for d in data['Letter']:
+            #             if d['id'] == l_dataid[2]:
+            #                 val = d['data']
+            #                 break
+            #         if val:
+            #             print("the val",val)
+            #         return render(request, "retake_letter/retake_letter3.html", {"recording": True,"val":val })
             elif selected_option == 'Assamese':
                 print("l_dataid0",l_dataid[2])
                 request.session['l_dataid[2]'] = l_dataid[2]
@@ -10662,13 +11190,20 @@ def next_letter(request):
                     if val:
                         print("the val",val)
                     return render(request, "retake_letter/retake_letter4.html", {"recording": True,"val":val })
+                
+
             elif selected_option == 'Hindi':
                 print("l_dataid0",l_dataid[3])
                 request.session['l_dataid[3]'] = l_dataid[3]
 
                 request.session['audio_recorded'] = True
-                with open(json_hin, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
+                json_file_path = json_files[selected_option]
+                print('@###############################', json_file_path)
+                # request.session['json_file'] = json_file_path
+                data_id = request.session.get('data_id')
+                print("data_id", data_id)
+                if data_id is not None:
+                    data = json_file_path
                     Letter = None
                     for d in data['Letter']:
                         if d['id'] == l_dataid[3]:
@@ -10677,6 +11212,24 @@ def next_letter(request):
                     if val:
                         print("the val",val)
                     return render(request, "retake_letter/retake_letter4.html", {"recording": True,"val":val })
+                
+
+            # old 
+            # elif selected_option == 'Hindi':
+            #     print("l_dataid0",l_dataid[3])
+            #     request.session['l_dataid[3]'] = l_dataid[3]
+
+            #     request.session['audio_recorded'] = True
+            #     with open(json_hin, 'r', encoding='utf-8') as f:
+            #         data = json.load(f)
+            #         Letter = None
+            #         for d in data['Letter']:
+            #             if d['id'] == l_dataid[3]:
+            #                 val = d['data']
+            #                 break
+            #         if val:
+            #             print("the val",val)
+            #         return render(request, "retake_letter/retake_letter4.html", {"recording": True,"val":val })
             elif selected_option == 'Assamese':
                 print("l_dataid0",l_dataid[3])
                 request.session['l_dataid[3]'] = l_dataid[3]
@@ -10861,13 +11414,19 @@ def next_letter(request):
                     if val:
                         print("the val",val)
                     return render(request, "retake_letter/retake_letter5.html", {"recording": True,"val":val })
+                
             elif selected_option == 'Hindi':
                 print("l_dataid0",l_dataid[4])
                 request.session['l_dataid[4]'] = l_dataid[4]
 
                 request.session['audio_recorded'] = True
-                with open(json_hin, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
+                json_file_path = json_files[selected_option]
+                print('@###############################', json_file_path)
+                # request.session['json_file'] = json_file_path
+                data_id = request.session.get('data_id')
+                print("data_id", data_id)
+                if data_id is not None:
+                    data = json_file_path
                     Letter = None
                     for d in data['Letter']:
                         if d['id'] == l_dataid[4]:
@@ -10876,6 +11435,24 @@ def next_letter(request):
                     if val:
                         print("the val",val)
                     return render(request, "retake_letter/retake_letter5.html", {"recording": True,"val":val })
+
+
+            # old code
+            # elif selected_option == 'Hindi':
+            #     print("l_dataid0",l_dataid[4])
+            #     request.session['l_dataid[4]'] = l_dataid[4]
+
+            #     request.session['audio_recorded'] = True
+            #     with open(json_hin, 'r', encoding='utf-8') as f:
+            #         data = json.load(f)
+            #         Letter = None
+            #         for d in data['Letter']:
+            #             if d['id'] == l_dataid[4]:
+            #                 val = d['data']
+            #                 break
+            #         if val:
+            #             print("the val",val)
+            #         return render(request, "retake_letter/retake_letter5.html", {"recording": True,"val":val })
             elif selected_option == 'Assamese':
                 print("l_dataid0",l_dataid[4])
                 request.session['l_dataid[4]'] = l_dataid[4]
@@ -11089,6 +11666,32 @@ def save_letter1(request):
     print(filepath)
     selected_option = request.session.get('selected_option')
     print("@",selected_option)
+
+    request.session['l_dataid[0]'] = l_dataid[0]
+    print("data_id", l_dataid[0])
+    json_file_path = json_files.get(selected_option)
+    print('@###############################', json_file_path)
+    data_id = request.session.get('data_id')
+    print("data_id", data_id)
+    
+    if json_file_path:
+            data = json_file_path
+            if data is not None:
+                Word = None
+                for d in data['Letter']:
+                    if d['id'] == l_dataid[0]:
+                        val = d['data']
+                        break
+
+
+# old remove all upto API
+# def save_letter1(request):
+#     l_dataid = request.session.setdefault('l_dataid', [])
+    
+#     filepath = request.session.get('filepath')
+#     print(filepath)
+#     selected_option = request.session.get('selected_option')
+#     print("@",selected_option)
     if selected_option == 'English':
         request.session['l_dataid[0]'] = l_dataid[0]
         print("data_id",l_dataid[0])
@@ -11099,16 +11702,16 @@ def save_letter1(request):
                 if d['id'] == l_dataid[0]:
                     val = d['data']
                     break
-    elif selected_option == 'Hindi':
-        request.session['l_dataid[0]'] = l_dataid[0]
-        print("data_id",l_dataid[0])
-        with open(json_hin, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            Letter = None
-            for d in data['Letter']:
-                if d['id'] == l_dataid[0]:
-                    val = d['data']
-                    break
+    # elif selected_option == 'Hindi':
+    #     request.session['l_dataid[0]'] = l_dataid[0]
+    #     print("data_id",l_dataid[0])
+    #     with open(json_hin, 'r', encoding='utf-8') as f:
+    #         data = json.load(f)
+    #         Letter = None
+    #         for d in data['Letter']:
+    #             if d['id'] == l_dataid[0]:
+    #                 val = d['data']
+    #                 break
     elif selected_option == 'Assamese':
         request.session['l_dataid[0]'] = l_dataid[0]
         print("data_id",l_dataid[0])
@@ -11285,7 +11888,8 @@ def retake_letter2(request):
 
         request.session['filepath'] = filepath
         return render(request, 'letter_answer.html', { 'audio_url': filepath})
-    
+
+
 def save_letter2(request):
     l_dataid = request.session.setdefault('l_dataid', [])
     
@@ -11293,6 +11897,32 @@ def save_letter2(request):
     print(filepath)
     selected_option = request.session.get('selected_option')
     print("@",selected_option)
+
+    request.session['l_dataid[1]'] = l_dataid[1]
+    print("data_id", l_dataid[1])
+    json_file_path = json_files.get(selected_option)
+    print('@###############################', json_file_path)
+    data_id = request.session.get('data_id')
+    print("data_id", data_id)
+    
+    if json_file_path:
+            data = json_file_path
+            if data is not None:
+                Word = None
+                for d in data['Letter']:
+                    if d['id'] == l_dataid[1]:
+                        val = d['data']
+                        break
+
+
+# old
+# def save_letter2(request):
+#     l_dataid = request.session.setdefault('l_dataid', [])
+    
+#     filepath = request.session.get('filepath')
+#     print(filepath)
+#     selected_option = request.session.get('selected_option')
+#     print("@",selected_option)
     if selected_option == 'English':
         request.session['l_dataid[1]'] = l_dataid[1]
         print("data_id",l_dataid[1])
@@ -11303,16 +11933,16 @@ def save_letter2(request):
                 if d['id'] == l_dataid[1]:
                     val = d['data']
                     break
-    elif selected_option == 'Hindi':
-        request.session['l_dataid[1]'] = l_dataid[1]
-        print("data_id",l_dataid[1])
-        with open(json_hin, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            Letter = None
-            for d in data['Letter']:
-                if d['id'] == l_dataid[1]:
-                    val = d['data']
-                    break
+    # elif selected_option == 'Hindi':
+    #     request.session['l_dataid[1]'] = l_dataid[1]
+    #     print("data_id",l_dataid[1])
+    #     with open(json_hin, 'r', encoding='utf-8') as f:
+    #         data = json.load(f)
+    #         Letter = None
+    #         for d in data['Letter']:
+    #             if d['id'] == l_dataid[1]:
+    #                 val = d['data']
+    #                 break
     elif selected_option == 'Assamese':
         request.session['l_dataid[1]'] = l_dataid[1]
         print("data_id",l_dataid[1])
@@ -11490,6 +12120,7 @@ def retake_letter3(request):
         request.session['filepath'] = filepath
         return render(request, 'letter_answer.html', { 'audio_url': filepath})
     
+
 def save_letter3(request):
     l_dataid = request.session.setdefault('l_dataid', [])
     
@@ -11497,6 +12128,32 @@ def save_letter3(request):
     print(filepath)
     selected_option = request.session.get('selected_option')
     print("@",selected_option)
+
+    request.session['l_dataid[2]'] = l_dataid[2]
+    print("data_id", l_dataid[2])
+    json_file_path = json_files.get(selected_option)
+    print('@###############################', json_file_path)
+    data_id = request.session.get('data_id')
+    print("data_id", data_id)
+    
+    if json_file_path:
+            data = json_file_path
+            if data is not None:
+                Word = None
+                for d in data['Letter']:
+                    if d['id'] == l_dataid[2]:
+                        val = d['data']
+                        break
+
+
+# old can remove upto API
+# def save_letter3(request):
+#     l_dataid = request.session.setdefault('l_dataid', [])
+    
+#     filepath = request.session.get('filepath')
+#     print(filepath)
+#     selected_option = request.session.get('selected_option')
+#     print("@",selected_option)
     if selected_option == 'English':
         request.session['l_dataid[2]'] = l_dataid[2]
         print("data_id",l_dataid[2])
@@ -11507,16 +12164,16 @@ def save_letter3(request):
                 if d['id'] == l_dataid[2]:
                     val = d['data']
                     break
-    elif selected_option == 'Hindi':
-        request.session['l_dataid[2]'] = l_dataid[2]
-        print("data_id",l_dataid[2])
-        with open(json_hin, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            Letter = None
-            for d in data['Letter']:
-                if d['id'] == l_dataid[2]:
-                    val = d['data']
-                    break
+    # elif selected_option == 'Hindi':
+    #     request.session['l_dataid[2]'] = l_dataid[2]
+    #     print("data_id",l_dataid[2])
+    #     with open(json_hin, 'r', encoding='utf-8') as f:
+    #         data = json.load(f)
+    #         Letter = None
+    #         for d in data['Letter']:
+    #             if d['id'] == l_dataid[2]:
+    #                 val = d['data']
+    #                 break
     elif selected_option == 'Assamese':
         request.session['l_dataid[2]'] = l_dataid[2]
         print("data_id",l_dataid[2])
@@ -11694,6 +12351,8 @@ def retake_letter4(request):
         request.session['filepath'] = filepath
         return render(request, 'letter_answer.html', { 'audio_url': filepath})
     
+
+
 def save_letter4(request):
     l_dataid = request.session.setdefault('l_dataid', [])
     
@@ -11701,6 +12360,32 @@ def save_letter4(request):
     print(filepath)
     selected_option = request.session.get('selected_option')
     print("@",selected_option)
+
+    request.session['l_dataid[3]'] = l_dataid[3]
+    print("data_id", l_dataid[3])
+    json_file_path = json_files.get(selected_option)
+    print('@###############################', json_file_path)
+    data_id = request.session.get('data_id')
+    print("data_id", data_id)
+    
+    if json_file_path:
+            data = json_file_path
+            if data is not None:
+                Word = None
+                for d in data['Letter']:
+                    if d['id'] == l_dataid[3]:
+                        val = d['data']
+                        break
+
+
+# old remove upto API
+# def save_letter4(request):
+#     l_dataid = request.session.setdefault('l_dataid', [])
+    
+#     filepath = request.session.get('filepath')
+#     print(filepath)
+#     selected_option = request.session.get('selected_option')
+#     print("@",selected_option)
     if selected_option == 'English':
         request.session['l_dataid[3]'] = l_dataid[3]
         print("data_id",l_dataid[3])
@@ -11711,16 +12396,16 @@ def save_letter4(request):
                 if d['id'] == l_dataid[3]:
                     val = d['data']
                     break
-    elif selected_option == 'Hindi':
-        request.session['l_dataid[3]'] = l_dataid[3]
-        print("data_id",l_dataid[3])
-        with open(json_hin, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            Letter = None
-            for d in data['Letter']:
-                if d['id'] == l_dataid[3]:
-                    val = d['data']
-                    break
+    # elif selected_option == 'Hindi':
+    #     request.session['l_dataid[3]'] = l_dataid[3]
+    #     print("data_id",l_dataid[3])
+    #     with open(json_hin, 'r', encoding='utf-8') as f:
+    #         data = json.load(f)
+    #         Letter = None
+    #         for d in data['Letter']:
+    #             if d['id'] == l_dataid[3]:
+    #                 val = d['data']
+    #                 break
     elif selected_option == 'Assamese':
         request.session['l_dataid[3]'] = l_dataid[3]
         print("data_id",l_dataid[3])
@@ -11905,6 +12590,32 @@ def save_letter5(request):
     print(filepath)
     selected_option = request.session.get('selected_option')
     print("@",selected_option)
+
+    request.session['l_dataid[4]'] = l_dataid[4]
+    print("data_id", l_dataid[4])
+    json_file_path = json_files.get(selected_option)
+    print('@###############################', json_file_path)
+    data_id = request.session.get('data_id')
+    print("data_id", data_id)
+    
+    if json_file_path:
+            data = json_file_path
+            if data is not None:
+                Word = None
+                for d in data['Letter']:
+                    if d['id'] == l_dataid[4]:
+                        val = d['data']
+                        break
+
+
+# old remove upto API
+# def save_letter5(request):
+#     l_dataid = request.session.setdefault('l_dataid', [])
+    
+#     filepath = request.session.get('filepath')
+#     print(filepath)
+#     selected_option = request.session.get('selected_option')
+#     print("@",selected_option)
     if selected_option == 'English':
         request.session['l_dataid[4]'] = l_dataid[4]
         print("data_id",l_dataid[4])
@@ -11915,16 +12626,16 @@ def save_letter5(request):
                 if d['id'] == l_dataid[4]:
                     val = d['data']
                     break
-    elif selected_option == 'Hindi':
-        request.session['l_dataid[4]'] = l_dataid[4]
-        print("data_id",l_dataid[4])
-        with open(json_hin, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            Letter = None
-            for d in data['Letter']:
-                if d['id'] == l_dataid[4]:
-                    val = d['data']
-                    break
+    # elif selected_option == 'Hindi':
+    #     request.session['l_dataid[4]'] = l_dataid[4]
+    #     print("data_id",l_dataid[4])
+    #     with open(json_hin, 'r', encoding='utf-8') as f:
+    #         data = json.load(f)
+    #         Letter = None
+    #         for d in data['Letter']:
+    #             if d['id'] == l_dataid[4]:
+    #                 val = d['data']
+    #                 break
     elif selected_option == 'Assamese':
         request.session['l_dataid[4]'] = l_dataid[4]
         print("data_id",l_dataid[4])
