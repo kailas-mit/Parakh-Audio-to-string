@@ -20,7 +20,7 @@ import firebase_admin
 from firebase_admin import credentials
 
 # Initialize Firebase Admin SDK
-cred = credentials.Certificate('E:/Parakh project/Parakh/firebasekey.json')
+cred = credentials.Certificate('/home/mit/Downloads/Parakh30-05/Parakh/Parakh/firebasekey.json')
 firebase_admin.initialize_app(cred)
 
 
@@ -51,32 +51,122 @@ db = firestore.client()
 #     print("doc", doc.id)
 
 
-doc_name = 'ParakhData_English_L1'
+# doc_name = 'ParakhData_English_L1'
 
-# Get a reference to the document
-doc_ref = db.collection('ParakhApp').document(doc_name)
+# # Get a reference to the document
+# doc_ref = db.collection('ParakhApp').document(doc_name)
 
-# Retrieve the document
-doc = doc_ref.get()
+# # Retrieve the document
+# doc = doc_ref.get()
 
-# Check if the document exists
-if doc.exists:
-    # Access the document data
-    json_l1_data = doc.to_dict()
-    # Process the data as needed
-    print(json_l1_data)
-else:
-    print("Document does not exist")
+# # Check if the document exists
+# if doc.exists:
+#     # Access the document data
+#     json_l1_data = doc.to_dict()
+#     # Process the data as needed
+#     print(json_l1_data)
+# else:
+#     print("Document does not exist")
+
+
+doc_names = {
+    'json_l1': 'ParakhData_English_L1',
+    'json_l2': 'ParakhData_English_L2',
+    'json_l3': 'ParakhData_English_L3',
+    'json_l4': 'ParakhData_English_L4',
+    'json_eng': 'ParakhData_English',
+    'json_ben': 'ParakhData_Bengali',
+    'json_guj': 'ParakhData_Gujarati',
+    'json_hin': 'ParakhData_Hindi',
+    'json_pun': 'ParakhData_Punjabi',
+    'json_tml': 'ParakhData_Tamil',
+    'json_knd': 'ParakhData_kannada',
+    'json_mlm': 'ParakhData_malayalam',
+    'json_mrt': 'ParakhData_marathi',
+    'json_ody': 'ParakhData_odiya',
+    'json_tlg': 'ParakhData_telugu',
+    'json_urd': 'ParakhData_urdu'
+}
+
+# Retrieve the document for each JSON file
+json_data = {}
+
+for key, doc_name in doc_names.items():
+    # Get a reference to the document
+    doc_ref = db.collection('ParakhApp').document(doc_name)
+    
+    # Retrieve the document
+    doc = doc_ref.get()
+    
+    # Check if the document exists
+    if doc.exists:
+        # Access the document data
+        json_data[key] = doc.to_dict()
+    else:
+        print(f"Document '{doc_name}' does not exist")
+
+# Access the JSON data for each file
+json_l1_data = json_data.get('json_l1')
+# print('json l1', json_l1_data)
+
+json_l2_data = json_data.get('json_l2')
+# print('json l2', json_l2_data)
+
+json_l3_data = json_data.get('json_l3')
+# print('json l3', json_l3_data)
+
+json_l4_data = json_data.get('json_l4')
+# print('json l4', json_l4_data)
+
+json_ben_data = json_data.get('json_ben')
+print('json bengali', type(json_ben_data))
+
+json_eng_data = json_data.get('json_eng')
+# print('json english', json_eng_data)
+
+json_guj_data = json_data.get('json_guj')
+# print('json gujarati', json_guj_data)
+
+json_hin_data = json_data.get('json_hin')
+# print('json hindi', json_hin_data)
+
+json_pun_data = json_data.get('json_pun')
+# print('json punjabi', json_pun_data)
+
+json_tml_data = json_data.get('json_tml')
+# print('json tamil', json_tml_data)
+
+json_knd_data = json_data.get('json_knd')
+# print('json kannada', json_knd_data)
+
+json_mlm_data = json_data.get('json_mlm')
+# print('json malayalam', json_mlm_data)
+
+json_mrt_data = json_data.get('json_mrt')
+# print('json marathi', json_mrt_data)
+
+json_ody_data = json_data.get('json_ody')
+# print('json odiya', json_ody_data)
+
+json_tlg_data = json_data.get('json_tlg')
+# print('json telugu', json_tlg_data)
+
+json_urd_data = json_data.get('json_urd')
+# print('json urdu', json_urd_data)
+
 
 
 
 json_l1 = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_English_L1.json')
-print("json1121", json_l1)
+# print("json1121@@@@@@@@@@@@@@@@@@@@@@@@@", type(json_l1))
 json_l2 = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_English_L2.json')
 json_l3 = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_English_L3.json')
 json_l4 = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_English_L4.json')
 json_ass = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_Assamese.json')
-json_ben = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_Bengali.json')
+# json_ben = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_Bengali.json')
+json_ben = json_ben_data
+print("json1121@@@@@@@@@@@@@@@@@@@@@@@@@", type(json_ben))
+
 json_eng = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_English.json')
 json_guj = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_Gujarati.json')
 json_hin = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_Hindi.json')
@@ -3791,7 +3881,7 @@ def get_random_paragraph(request):
         'English': json_eng,
         'Hindi': json_hin,
         'Assamese': json_ass,
-        'Bengali': json_ben,
+        'Bengali': json_ben_data,
         'Gujarati': json_guj,
         'Marathi': json_mar,
         'Kannada': json_kan,
@@ -3805,15 +3895,26 @@ def get_random_paragraph(request):
     if selected_option in json_files:
         json_file = json_files[selected_option]
         with open(json_file, 'r', encoding='utf-8') as f:
-        
             data = json.load(f)
             data1 = random.choice(data['Paragraph'])
-            print("the value ",data1['id'])
+            print("the value ", data1['id'])
             data_id = data1['id']
             request.session['data_id'] = data_id
             print(data_id)
-            print("dta",data1['data'])
+            print("data", data1['data'])
             return data1['data'], data_id
+    # if selected_option in json_files:
+    #     json_file = json_files[selected_option]
+    #     with open(json_file, 'r', encoding='utf-8') as f:
+        
+    #         data = json.load(f)
+    #         data1 = random.choice(data['Paragraph'])
+    #         print("the value ",data1['id'])
+    #         data_id = data1['id']
+    #         request.session['data_id'] = data_id
+    #         print(data_id)
+    #         print("dta",data1['data'])
+    #         return data1['data'], data_id
     elif selected_option == 'BL':
         data = json_l1_data
         data1 = random.choice(data['Paragraph'])
