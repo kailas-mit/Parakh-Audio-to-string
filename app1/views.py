@@ -158,17 +158,19 @@ json_urd_data = json_data.get('json_urd')
 
 
 
-json_l1 = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_English_L1.json')
+# json_l1 = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_English_L1.json')
+json_l1 = json_l1_data
 # print("json1121@@@@@@@@@@@@@@@@@@@@@@@@@", type(json_l1))
-json_l2 = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_English_L2.json')
-json_l3 = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_English_L3.json')
-json_l4 = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_English_L4.json')
+# json_l2 = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_English_L2.json')
+json_l2 = json_l2_data
+json_l3 = json_l3_data
+json_l4 = json_l4_data
 json_ass = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_Assamese.json')
 json_ben = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_Bengali.json')
 # json_ben = json_ben_data
 # print("json1121@@@@@@@@@@@@@@@@@@@@@@@@@", type(json_ben))
 
-json_eng = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_English.json')
+json_eng = json_eng_data
 # json_guj = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_Gujarati.json')
 json_guj = json_guj_data
 # json_hin = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_Hindi.json')
@@ -1314,15 +1316,30 @@ def start(request):
 #############################################################################################
 
 def get_random_ml1(request):
-    with open(json_l2, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            data1 = random.choice(data['Paragraph'])
-            print("the value ",data1['id'])
-            data_id = data1['id']
-            request.session['data_id'] = data_id
-            print(data_id)
-            print("dta",data1['data'])
-            return data1['data'], data_id
+    selected_option = request.session.get('selected_option')
+    # json_file = json_files[selected_option]
+    data = json_l1_data
+    # with open(json_l2, 'r', encoding='utf-8') as f:
+    #         data = json.load(f)
+    data1 = random.choice(data['Paragraph'])
+    print("the value ",data1['id'])
+    data_id = data1['id']
+    request.session['data_id'] = data_id
+    print(data_id)
+    print("dta",data1['data'])
+    return data1['data'], data_id
+
+# old code 
+# def get_random_ml1(request):
+#     with open(json_l2, 'r', encoding='utf-8') as f:
+#             data = json.load(f)
+#             data1 = random.choice(data['Paragraph'])
+#             print("the value ",data1['id'])
+#             data_id = data1['id']
+#             request.session['data_id'] = data_id
+#             print(data_id)
+#             print("dta",data1['data'])
+#             return data1['data'], data_id
             
    
 
@@ -1396,8 +1413,9 @@ def get_random_ml1_sentence(request):
                 'languages': languages,
             }
     else:
-        with open(json_l2, 'r', encoding='utf-8') as f:
-            data = json.load(f)
+            data = json_l2_data
+        # with open(json_l2, 'r', encoding='utf-8') as f:
+        #     data = json.load(f)
             data1 = random.choice(data['Sentence'])
             print("the value ",data1['id'])
             data_id = data1['id']
@@ -1565,13 +1583,14 @@ def ml1_answer(request):
     
     data_id = request.session.get('data_id')
     print("data_id",data_id)
-    with open(json_l2, 'r', encoding='utf-8') as f:
-        data = json.load(f)
-        paragraph = None
-        for d in data['Paragraph']:
-            if d['id'] == data_id:
-                val = d['data']
-                break
+    # with open(json_l2, 'r', encoding='utf-8') as f:
+    #     data = json.load(f)
+    data = json_l1_data
+    paragraph = None
+    for d in data['Paragraph']:
+        if d['id'] == data_id:
+            val = d['data']
+            break
 
     if val:
         print("the val",val)
@@ -1651,13 +1670,14 @@ def ml1_retake(request):
     data_id = request.session.get('data_id')
     print("data_id",data_id)
     request.session['audio_recorded'] = True
-    with open(json_l2, 'r', encoding='utf-8') as f:
-        data = json.load(f)
-        paragraph = None
-        for d in data['Paragraph']:
-            if d['id'] == data_id:
-                val = d['data']
-                break
+    # with open(json_l2, 'r', encoding='utf-8') as f:
+    #     data = json.load(f)
+    data = json_l2_data
+    paragraph = None
+    for d in data['Paragraph']:
+        if d['id'] == data_id:
+            val = d['data']
+            break
 
     if val:
         print("the val",val)
@@ -2076,13 +2096,14 @@ def ml1_mcq_api(request):
         print('text:', text)
         print('audio_url:', audio_url)
         print('process_time:', process_time)
-        with open(json_l2, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            Sentence = None
-            for d in data['Sentence']:
-                if d['id'] == data_id:
-                    val = d['data']
-                    break
+        # with open(json_l2, 'r', encoding='utf-8') as f:
+        #     data = json.load(f)
+        data = json_l2_data
+        Sentence = None
+        for d in data['Sentence']:
+            if d['id'] == data_id:
+                val = d['data']
+                break
         print("@",selected_option)
         if selected_language == 'hindi':
                 print("selected",'hindi')
@@ -2093,8 +2114,9 @@ def ml1_mcq_api(request):
             request.session['lan'] = selected_language
 
         if selected_language == 'hindi':
-            with open(json_l2, 'r', encoding='utf-8') as f:
-                data = json.load(f)
+                data = json_l2_data
+            # with open(json_l2, 'r', encoding='utf-8') as f:
+            #     data = json.load(f)
                 # find the data with matching data_id
                 selected_data = next((item for item in data['Sentence'] if item['id'] == data_id), None)
                 if selected_data:
@@ -2106,8 +2128,9 @@ def ml1_mcq_api(request):
                 else:
                     print("Data not found for the given data_id")
         elif selected_language == 'marathi':
-            with open(json_l2, 'r', encoding='utf-8') as f:
-                data = json.load(f)
+                data = json_l2_data
+            # with open(json_l2, 'r', encoding='utf-8') as f:
+            #     data = json.load(f)
                 # find the data with matching data_id
                 selected_data = next((item for item in data['Sentence'] if item['id'] == data_id), None)
                 if selected_data:
@@ -2186,15 +2209,16 @@ def ml1_mcq_api(request):
 #     return render(request, "AOP_PRO/ml2_startrecording.html")
 
 def get_random_ml2(request):
-    with open(json_l3, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            data1 = random.choice(data['Paragraph'])
-            print("the value ",data1['id'])
-            data_id = data1['id']
-            request.session['data_id'] = data_id
-            print(data_id)
-            print("dta",data1['data'])
-            return data1['data'], data_id
+        data = json_l3_data
+# with open(json_l3, 'r', encoding='utf-8') as f:
+#         data = json.load(f)
+        data1 = random.choice(data['Paragraph'])
+        print("the value ",data1['id'])
+        data_id = data1['id']
+        request.session['data_id'] = data_id
+        print(data_id)
+        print("dta",data1['data'])
+        return data1['data'], data_id
             
    
 
@@ -2236,8 +2260,9 @@ def get_random_ml2_sentence(request):
     selected_option = request.session.get('selected_option')
     print("get_random_sentence",selected_option)
     if selected_option == 'Ml2':
-        with open(json_l3, 'r', encoding='utf-8') as f:
-            data = json.load(f)
+            data = json_l3_data
+        # with open(json_l3, 'r', encoding='utf-8') as f:
+        #     data = json.load(f)
             data1 = random.choice(data['Sentence'])
             print("the value ",data1['id'])
             data_id = data1['id']
@@ -2251,20 +2276,21 @@ def get_random_ml2_sentence(request):
                 'languages': languages,
             }
     else:
-        with open(json_l3, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            data1 = random.choice(data['Sentence'])
-            print("the value ",data1['id'])
-            data_id = data1['id']
-            request.session['data_id'] = data_id
-            print(data_id)
-            print("dta",data1['data'])
-            languages = data1['language']
-            return {
-                'data': data1['data'],
-                'data_id': data_id,
-                'languages': languages,
-            }
+        data = json_l3_data
+        # with open(json_l3, 'r', encoding='utf-8') as f:
+        #     data = json.load(f)
+        data1 = random.choice(data['Sentence'])
+        print("the value ",data1['id'])
+        data_id = data1['id']
+        request.session['data_id'] = data_id
+        print(data_id)
+        print("dta",data1['data'])
+        languages = data1['language']
+        return {
+            'data': data1['data'],
+            'data_id': data_id,
+            'languages': languages,
+        }
 
 
 def start_recording_next_ml2(request):
@@ -2401,13 +2427,14 @@ def ml2_answer(request):
     
     data_id = request.session.get('data_id')
     print("data_id",data_id)
-    with open(json_l2, 'r', encoding='utf-8') as f:
-        data = json.load(f)
-        paragraph = None
-        for d in data['Paragraph']:
-            if d['id'] == data_id:
-                val = d['data']
-                break
+    # with open(json_l2, 'r', encoding='utf-8') as f:
+    #     data = json.load(f)
+    data = json_l2_data
+    paragraph = None
+    for d in data['Paragraph']:
+        if d['id'] == data_id:
+            val = d['data']
+            break
 
     if val:
         print("the val",val)
@@ -2887,13 +2914,14 @@ def ml2_mcq_api(request):
         print('text:', text)
         print('audio_url:', audio_url)
         print('process_time:', process_time)
-        with open(json_l3, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            Sentence = None
-            for d in data['Sentence']:
-                if d['id'] == data_id:
-                    val = d['data']
-                    break
+        # with open(json_l3, 'r', encoding='utf-8') as f:
+        #     data = json.load(f)
+        data = json_l3_data
+        Sentence = None
+        for d in data['Sentence']:
+            if d['id'] == data_id:
+                val = d['data']
+                break
         print("@",selected_option)
         if selected_language == 'hindi':
                 print("selected",'hindi')
@@ -2904,8 +2932,9 @@ def ml2_mcq_api(request):
             request.session['lan'] = selected_language
 
         if selected_language == 'hindi':
-            with open(json_l3, 'r', encoding='utf-8') as f:
-                data = json.load(f)
+                data = json_l3_data
+            # with open(json_l3, 'r', encoding='utf-8') as f:
+            #     data = json.load(f)
                 # find the data with matching data_id
                 selected_data = next((item for item in data['Sentence'] if item['id'] == data_id), None)
                 if selected_data:
@@ -2917,8 +2946,9 @@ def ml2_mcq_api(request):
                 else:
                     print("Data not found for the given data_id")
         elif selected_language == 'marathi':
-            with open(json_l3, 'r', encoding='utf-8') as f:
-                data = json.load(f)
+                data = json_l3_data
+            # with open(json_l3, 'r', encoding='utf-8') as f:
+            #     data = json.load(f)
                 # find the data with matching data_id
                 selected_data = next((item for item in data['Sentence'] if item['id'] == data_id), None)
                 if selected_data:
@@ -3045,8 +3075,9 @@ def ml2_mcq_next(request):
 #############################################################################################
 
 def get_random_ml3(request):
-    with open(json_l4, 'r', encoding='utf-8') as f:
-            data = json.load(f)
+            data = json_l4_data
+    # with open(json_l4, 'r', encoding='utf-8') as f:
+    #         data = json.load(f)
             data1 = random.choice(data['Paragraph'])
             print("the value ",data1['id'])
             data_id = data1['id']
@@ -3256,13 +3287,14 @@ def ml3_answer(request):
     
     data_id = request.session.get('data_id')
     print("data_id",data_id)
-    with open(json_l4, 'r', encoding='utf-8') as f:
-        data = json.load(f)
-        paragraph = None
-        for d in data['Paragraph']:
-            if d['id'] == data_id:
-                val = d['data']
-                break
+    # with open(json_l4, 'r', encoding='utf-8') as f:
+    #     data = json.load(f)
+    data = json_l4_data
+    paragraph = None
+    for d in data['Paragraph']:
+        if d['id'] == data_id:
+            val = d['data']
+            break
 
     if val:
         print("the val",val)
@@ -3339,13 +3371,14 @@ def ml3_retake(request):
     data_id = request.session.get('data_id')
     print("data_id",data_id)
     request.session['audio_recorded'] = True
-    with open(json_l4, 'r', encoding='utf-8') as f:
-        data = json.load(f)
-        paragraph = None
-        for d in data['Paragraph']:
-            if d['id'] == data_id:
-                val = d['data']
-                break
+    # with open(json_l4, 'r', encoding='utf-8') as f:
+    #     data = json.load(f)
+    data = json_l4_data
+    paragraph = None
+    for d in data['Paragraph']:
+        if d['id'] == data_id:
+            val = d['data']
+            break
 
     if val:
         print("the val",val)
