@@ -257,7 +257,7 @@
                           <img src="{% static 'images/play.ico'%}"
                             style="width: 45px; height: 45px; align-items: center; cursor: pointer; margin-bottom: 16px;"
                             id="audio-toggle-{{ audio_url }}">
-                          <audio src="{{ audio_url1 }}" id="audio-player-{{ audio_url }}"></audio>
+                          <audio src="{{ audio_url1 }}" id="audio-player-{{ audio_url1 }}"></audio>
                         </td>
                         {% endif %}
 
@@ -274,7 +274,7 @@
                           <img src="{% static 'images/play.ico'%}"
                             style="width: 45px; height: 45px; cursor: pointer; align-items: center; margin-bottom: 16px"
                             id="audio-toggle-{{ audio_url }}">
-                          <audio src="{{ audio_url2 }}" id="audio-player-{{ audio_url }}"></audio>
+                          <audio src="{{ audio_url2 }}" id="audio-player-{{ audio_url2 }}"></audio>
                         </td>
                         {% endif %}
 
@@ -290,7 +290,7 @@
                           <img src="{% static 'images/play.ico'%}"
                             style="width: 45px; height: 45px; align-items: center; cursor: pointer; margin-bottom: 16px"
                             id="audio-toggle-{{ audio_url }}">
-                          <audio src="{{ audio_url3 }}" id="audio-player-{{ audio_url }}"></audio>
+                          <audio src="{{ audio_url3 }}" id="audio-player-{{ audio_url3 }}"></audio>
                         </td>
                         {% endif %}
 
@@ -307,7 +307,7 @@
                           <img src="{% static 'images/play.ico'%}"
                             style="width: 45px; height: 45px; align-items: center; cursor: pointer; margin-bottom: 16px"
                             id="audio-toggle-{{ audio_url }}">
-                          <audio src="{{ audio_url4 }}" id="audio-player-{{ audio_url }}"></audio>
+                          <audio src="{{ audio_url4 }}" id="audio-player-{{ audio_url4 }}"></audio>
                         </td>
                         {% endif %}
 
@@ -324,7 +324,7 @@
                           <img src="{% static 'images/play.ico'%}"
                             style="width: 45px; height: 45px; align-items: center; cursor: pointer; margin-bottom: 16px"
                             id="audio-toggle-{{ audio_url }}">
-                          <audio src="{{ audio_url5 }}" id="audio-player-{{ audio_url }}"></audio>
+                          <audio src="{{ audio_url5 }}" id="audio-player-{{ audio_url5 }}"></audio>
 
                         </td>
                         {% endif %}
@@ -435,6 +435,28 @@
       </div>
     </div>
   </div>
+
+  <script>
+    // Get the current date and time
+    // Get the current date and time
+    var currentDate = new Date();
+    var formattedDate = currentDate.toISOString();
+
+    // Append the current date and time to the audio URLs
+    var audioUrl1 = "{{ audio_url1 }}" + "?timestamp=" + formattedDate;
+    var audioUrl2 = "{{ audio_url2 }}" + "?timestamp=" + formattedDate;
+    var audioUrl3 = "{{ audio_url3 }}" + "?timestamp=" + formattedDate;
+    var audioUrl4 = "{{ audio_url4 }}" + "?timestamp=" + formattedDate;
+    var audioUrl5 = "{{ audio_url5 }}" + "?timestamp=" + formattedDate;
+
+    // Update the src attribute of the audio elements
+    document.getElementById("audio-player-{{ audio_url1 }}").src = audioUrl1;
+    document.getElementById("audio-player-{{ audio_url2 }}").src = audioUrl2;
+    document.getElementById("audio-player-{{ audio_url3 }}").src = audioUrl3;
+    document.getElementById("audio-player-{{ audio_url4 }}").src = audioUrl4;
+    document.getElementById("audio-player-{{ audio_url5 }}").src = audioUrl5;
+
+  </script>
 
   <script>
     var audioPlayers = document.querySelectorAll("audio");
