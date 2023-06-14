@@ -385,7 +385,7 @@ def start_assesment(request, selected_option):
     status = request.session.get('status')
     selected_level = request.session.get('selected_level')  # Retrieve selected level from session
     if my_program == 'Advance English Program':
-        selected_option = f'{my_program} {selected_option}'  # Combine my_program and selected_option
+        # selected_option = f'{my_program} {selected_option}'  # Combine my_program and selected_option
         return render(request, 'start_assesment.html', {'selected_option': selected_option, 'selected_level': selected_level, 'status': status})
     else:
         request.session['selected_option'] = selected_option
@@ -758,7 +758,85 @@ def bl_skip_next(request):
     
 
 def bl_store(request):
-    if request.method == 'POST':   
+    my_program = request.session.get('my_program')  # Retrieve selected program from session
+    print('my_program is', my_program)
+    if my_program == 'Advance English Program':
+        my_language = request.session.get('my_language')  # Retrieve selected language from session
+        print('my_language is', my_language)
+        fluency_adjustment = request.POST.get('fluency_adjustment')
+        number = int(fluency_adjustment)
+        print("fluency_adjustment", fluency_adjustment)
+        selected_option = my_language
+        if selected_option == 'English':
+            if fluency_adjustment == '0':
+                request.session['ans_next_level'] = 'L2'
+            else:
+                request.session['ans_next_level'] = 'L1'
+            enrollment_id = request.session.get('enrollment_id')
+            status = request.session.get('status')
+            filepath = request.session.get('filepath')
+            bl_rec = request.session.get('transcript')
+            print('BL_res:', bl_rec)
+            transcript_dict = json.loads(bl_rec)
+            no_mistakes = transcript_dict.get('no_mistakes')
+            no_del = transcript_dict.get('no_del')
+            del_details = transcript_dict.get('del_details')
+            sub_details = transcript_dict.get('sub_details')
+            text = transcript_dict.get('text')
+            no_sub = transcript_dict.get('no_sub')
+            audio_url = transcript_dict.get('audio_url')
+            process_time = transcript_dict.get('process_time')
+            id_value = request.session.get('id_value')
+            data_id = request.session.get('data_id')
+            my_program = request.session.get('my_program')
+            print('my program is saveprogress',my_program)
+            data = json_l1_data
+            paragraph = None
+            for d in data['Paragraph']:
+                if d['id'] == data_id:
+                    val = d['data']
+                    break
+
+            if val:
+                print("question",val)
+            ans_next_level = request.session.get('ans_next_level')
+            print("next level",ans_next_level)
+            data={}
+            data["student_id"]=id_value
+            data["sample_id"]= "data_id"
+            data["level"]= 'L2'
+            data["question"]= val
+            data["section "]= 'reading'
+            data["answer"]= text
+            data["audio_url"]= audio_url
+            data["mistakes_count"]= '0'
+            data["no_mistakes"]= no_mistakes
+            data["no_mistakes_edited"]= fluency_adjustment
+            data["api_process_time"]= process_time
+            data["language"]= 'English'
+            data["no_del"]= no_del
+            data["del_details"]= del_details
+            data["no_sub"]= no_sub
+            data["sub_details"]= sub_details
+            data["test_type"]= status
+            data["next_level"]= ans_next_level
+            data["program"] = my_program
+            url = 'https://parakh.pradigi.org/v1/saveprogress/'
+            files = []
+            payload = {'data': json.dumps(data)}
+            headers = {}
+            response = requests.request("POST", url, headers=headers, data=payload, files=files)
+            
+            if number <= 2:
+                return redirect('bl_mcq_next')  # redirect to bl_mcq function
+            else:
+                context = {
+                        'level' : "Paragraph without Exeception"
+                    }
+                return render(request,'answer_page_gen.html', context=context) 
+            
+    else:
+        request.method == 'POST'   
         fluency_adjustment = request.POST.get('fluency_adjustment')
         print("fluency_adjustment", fluency_adjustment)
         # adjustment_from_storage = request.POST.get('adjustment')
