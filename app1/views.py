@@ -18,9 +18,15 @@ import time as t
 
 import firebase_admin
 from firebase_admin import credentials
+from firebase_admin import credentials as fb_credentials
+from dotenv import dotenv_values
 
-# Initialize Firebase Admin SDK
-cred = credentials.Certificate('/home/mit/Downloads/Parakh30-05/Parakh/Parakh/firebasekey.json')
+dotenv_path = "/home/mit/Downloads/Parakh30-05/Parakh/.env"
+env_vars = dotenv_values(dotenv_path)
+
+firebase_path = env_vars.get("Firebase_path")
+
+cred = fb_credentials.Certificate(firebase_path)
 firebase_admin.initialize_app(cred)
 
 
@@ -109,15 +115,8 @@ json_ody_data = json_data.get('json_ody')
 # print('json odiya', json_ody_data)
 
 json_tlg_data = json_data.get('json_tlg')
-# print('json telugu', json_tlg_data)
-
 json_urd_data = json_data.get('json_urd')
-# print('json urdu', json_urd_data)
-
-# json_l1 = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_English_L1.json')
 json_l1 = json_l1_data
-# print("json1121@@@@@@@@@@@@@@@@@@@@@@@@@", type(json_l1))
-# json_l2 = os.path.join(settings.STATICFILES_DIRS[0], 'json/ParakhData_English_L2.json')
 json_l2 = json_l2_data
 json_l3 = json_l3_data
 json_l4 = json_l4_data
