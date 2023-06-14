@@ -245,178 +245,133 @@
                         </td>
                       </tr>
 
-                      <tr style="height: 20px; vertical-align: middle"></tr>
-                      <!-- empty row for space -->
+                    <tr style="height: 20px; vertical-align: middle;"></tr> <!-- empty row for space -->
+                    {% endfor %}
+                  </tbody>
+                </table>
+                <div class="col-4">
+                  <table style="flex: 1; margin-right: 10px; ">
+                    <thead>
+                      <tr>
+                        <!-- <th style="text-align: center;">Word</th> -->
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for qword in qword %}
+                      <tr>
+                        <td class="qword_style" style="padding-top: 10px;">
+                          <b>
+                            <h4>{{ qword }}</h4>
+                          </b>
+                        </td>
+                      </tr>
+                      <tr style="height: 20px; vertical-align: middle;"></tr> <!-- empty row for space -->
                       {% endfor %}
                     </tbody>
                   </table>
-                  <div class="col-4">
-                    <table style="flex: 1; margin-right: 10px">
-                      <thead>
-                        <tr>
-                          <!-- <th style="text-align: center;">Word</th> -->
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {% for qword in qword %}
-                        <tr>
-                          <td class="qword_style" style="padding-top: 10px">
-                            <b>
-                              <h4>{{ qword }}</h4>
-                            </b>
-                          </td>
-                        </tr>
-                        <tr style="height: 20px; vertical-align: middle"></tr>
-                        <!-- empty row for space -->
-                        {% endfor %}
-                      </tbody>
-                    </table>
-                  </div>
-                  <div class="col-4">
-                    <table style="flex: 1; margin-right: 10px">
-                      <thead>
-                        <tr>
-                          <!-- <th>Audio File</th> -->
-                        </tr>
-                      </thead>
+                </div>
+                <div class="col-4">
+                  <table style="flex: 1;  margin-right: 10px;">
+                    <thead>
+                      <tr>
+                        <!-- <th>Audio File</th> -->
+                      </tr>
+                    </thead>
 
                       <tbody style="height: 100px">
                         <tr>
                           {% if audio_url1 %}
 
-                          <td>
-                            <img
-                              src="{% static 'images/play.ico'%}"
-                              style="
-                                width: 45px;
-                                height: 45px;
-                                align-items: center;
-                                cursor: pointer;
-                                margin-bottom: 16px;
-                              "
-                              id="audio-toggle-{{ audio_url }}"
-                            />
-                            <audio
-                              src="{{ audio_url1 }}"
-                              id="audio-player-{{ audio_url }}"
-                            ></audio>
-                          </td>
-                          {% endif %}
-                        </tr>
-                      </tbody>
+
+                        <td>
+                          <img src="{% static 'images/play.ico'%}"
+                            style="width: 45px; height: 45px; align-items: center; cursor: pointer; margin-bottom: 16px;"
+                            id="audio-toggle-{{ audio_url }}">
+                          <audio src="{{ audio_url1 }}" id="audio-player-{{ audio_url }}"></audio>
+                        </td>
+                        {% endif %}
+
+                      </tr>
+                    </tbody>
 
                       <tbody style="height: 100px">
                         <tr>
                           {% if audio_url2 %}
 
-                          <td>
-                            <img
-                              src="{% static 'images/play.ico'%}"
-                              style="
-                                width: 45px;
-                                height: 45px;
-                                cursor: pointer;
-                                align-items: center;
-                                margin-bottom: 16px;
-                              "
-                              id="audio-toggle-{{ audio_url }}"
-                            />
-                            <audio
-                              src="{{ audio_url2 }}"
-                              id="audio-player-{{ audio_url }}"
-                            ></audio>
-                          </td>
-                          {% endif %}
-                        </tr>
-                      </tbody>
+                        <td>
+                          <img src="{% static 'images/play.ico'%}"
+                            style="width: 45px; height: 45px; cursor: pointer; align-items: center; margin-bottom: 16px"
+                            id="audio-toggle-{{ audio_url }}">
+                          <audio src="{{ audio_url2 }}" id="audio-player-{{ audio_url }}"></audio>
+                        </td>
+                        {% endif %}
+
+                      </tr>
+                    </tbody>
 
                       <tbody style="height: 100px">
                         <tr>
                           {% if audio_url3 %}
 
-                          <td>
-                            <img
-                              src="{% static 'images/play.ico'%}"
-                              style="
-                                width: 45px;
-                                height: 45px;
-                                align-items: center;
-                                cursor: pointer;
-                                margin-bottom: 16px;
-                              "
-                              id="audio-toggle-{{ audio_url }}"
-                            />
-                            <audio
-                              src="{{ audio_url3 }}"
-                              id="audio-player-{{ audio_url }}"
-                            ></audio>
-                          </td>
-                          {% endif %}
-                        </tr>
-                      </tbody>
+                        <td>
+                          <img src="{% static 'images/play.ico'%}"
+                            style="width: 45px; height: 45px; align-items: center; cursor: pointer; margin-bottom: 16px"
+                            id="audio-toggle-{{ audio_url }}">
+                          <audio src="{{ audio_url3 }}" id="audio-player-{{ audio_url }}"></audio>
+                        </td>
+                        {% endif %}
+
+                      </tr>
+                    </tbody>
 
                       <tbody style="height: 100px">
                         <tr>
                           {% if audio_url4 %}
 
-                          <td>
-                            <img
-                              src="{% static 'images/play.ico'%}"
-                              style="
-                                width: 45px;
-                                height: 45px;
-                                align-items: center;
-                                cursor: pointer;
-                                margin-bottom: 16px;
-                              "
-                              id="audio-toggle-{{ audio_url }}"
-                            />
-                            <audio
-                              src="{{ audio_url4 }}"
-                              id="audio-player-{{ audio_url }}"
-                            ></audio>
-                          </td>
-                          {% endif %}
-                        </tr>
-                      </tbody>
+                        <td>
+                          <img src="{% static 'images/play.ico'%}"
+                            style="width: 45px; height: 45px; align-items: center; cursor: pointer; margin-bottom: 16px"
+                            id="audio-toggle-{{ audio_url }}">
+                          <audio src="{{ audio_url4 }}" id="audio-player-{{ audio_url }}"></audio>
+                        </td>
+                        {% endif %}
+
+                      </tr>
+                    </tbody>
 
                       <tbody style="height: 100px">
                         <tr>
                           {% if audio_url5 %}
 
-                          <td>
-                            <img
-                              src="{% static 'images/play.ico'%}"
-                              style="
-                                width: 45px;
-                                height: 45px;
-                                align-items: center;
-                                cursor: pointer;
-                                margin-bottom: 16px;
-                              "
-                              id="audio-toggle-{{ audio_url }}"
-                            />
-                            <audio
-                              src="{{ audio_url5 }}"
-                              id="audio-player-{{ audio_url }}"
-                            ></audio>
-                          </td>
-                          {% endif %}
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                  <div class="col-4">
-                    <table style="flex: 1; align-items: center">
-                      <thead>
-                        <tr>
-                          <!-- <th style="text-align: center;">Word</th> -->
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <form action="/next_word" method="post">
-                            {% csrf_token %}
+                        <td>
+                          <img src="{% static 'images/play.ico'%}"
+                            style="width: 45px; height: 45px; align-items: center; cursor: pointer; margin-bottom: 16px"
+                            id="audio-toggle-{{ audio_url }}">
+                          <audio src="{{ audio_url5 }}" id="audio-player-{{ audio_url }}"></audio>
+
+                        </td>
+                        {% endif %}
+
+                      </tr>
+                    </tbody>
+
+
+                  </table>
+                </div>
+                <div class="col-4">
+                  <table style="flex: 1; align-items: center;">
+                    <thead>
+                      <tr>
+                        <!-- <th style="text-align: center;">Word</th> -->
+                      </tr>
+                    </thead>
+                    <tbody>
+
+
+                      <tr>
+
+                        <form action="/next_word" method="post">
+                          {% csrf_token %}
 
                             <td style="text-align: center">
                               <input
@@ -548,9 +503,9 @@
       </div>
     </div>
 
-    <script>
-      var audioPlayers = document.querySelectorAll("audio");
-      var audioToggles = document.querySelectorAll("img[id^='audio-toggle']");
+  <script>
+    var audioPlayers = document.querySelectorAll("audio");
+    var audioToggles = document.querySelectorAll("img[id^='audio-toggle']");
 
       audioToggles.forEach(function (audioToggle, i) {
         var audioPlayer = audioPlayers[i];
