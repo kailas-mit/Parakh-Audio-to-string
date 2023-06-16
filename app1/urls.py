@@ -56,6 +56,10 @@ urlpatterns = [
     path('bl_final_mcq', views.bl_final_mcq, name='bl_final_mcq'),
 
     path('bl_mcq_next', views.bl_mcq_next, name='bl_mcq_next'),
+    path('bl_mcq_next_mcq', views.bl_mcq_next_mcq, name='bl_mcq_next_mcq'),
+    path('bl_mcq_last', views.bl_mcq_last, name='bl_mcq_last'),
+    path('bl_story_mcq_last', views.bl_story_mcq_last, name='bl_story_mcq_last'),
+    path('bl_story_mcq_next_mcq', views.bl_story_mcq_next_mcq, name='bl_story_mcq_next_mcq'),
 
     path('error_recording', views.error_recording, name='error_recording'),
 

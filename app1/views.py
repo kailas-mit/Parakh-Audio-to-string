@@ -83,6 +83,7 @@ json_ody_data = json_data.get('json_ody')
 json_tlg_data = json_data.get('json_tlg')
 json_urd_data = json_data.get('json_urd')
 json_advance_eng_data = json_data.get('json_advance_eng')
+# print('json Advance english', json_advance_eng_data)
 
 json_l1 = json_l1_data
 json_l2 = json_l2_data
@@ -264,35 +265,74 @@ def msg_api_for_general_program(request):
 
 
 def msg_api(request):
-    if "search" in request.POST:
-        now = datetime.now()
-        today_date = now.strftime("%Y-%m-%d")
-        selected_option = request.session.get('selected_option')
-        enrollment_id = request.session.get('enrollment_id')
-        id_value = request.session.get('id_value')
-        my_program = request.session.get('my_program')
-        print('my program is',my_program)
-        url = f'https://prajeevika.org/apis/aop/update-result.php?token=eyNsWgAdBF0KafwGPwOC9h5rWABTBuAKYxDxv8zRgJyuP&enrollment_id={enrollment_id}&student_id={id_value}&assessment_type={selected_option}&assessment_date={today_date}&assessment_level=L1&program={my_program}'
-        response = requests.get(url)
-        if response.status_code == 200:
-            data = response.json()
-        mobile_number = request.POST['mobile_number']
-        request.session['phone_number'] = mobile_number
-        url = f'https://prajeevika.org/apis/aop/children-details.php?phone_number={mobile_number}&token=eyNsWgAdBF0KafwGPwOC9h5rWABTBuAKYxDxv8zRgJyuP'
-        response = requests.get(url)
-        if response.status_code == 200:
-            data = response.json()
-            name = data[0]['name']
-            request.session['name'] = name
-            status = data[0]['status']  
-            request.session['status'] = status
-            context = {
-                'data': data,
-                'selected_option': selected_option,
-            }
-            return render(request, 'AOP_PRO/search_num.html', context)
-        else:
-            return render(request, 'Error/pages-500.html' )
+    my_program = request.session.get('my_program')
+    if my_program == 'Advance English Program':
+        if "search" in request.POST:
+            now = datetime.now()
+            today_date = now.strftime("%Y-%m-%d")
+            selected_option = request.session.get('selected_option')
+            enrollment_id = request.session.get('enrollment_id')
+            id_value = request.session.get('id_value')
+            my_program = request.session.get('my_program')
+            print('my program is',my_program)
+            url = f'https://prajeevika.org/apis/aop/update-result.php?token=eyNsWgAdBF0KafwGPwOC9h5rWABTBuAKYxDxv8zRgJyuP&enrollment_id={enrollment_id}&student_id={id_value}&assessment_type={selected_option}&assessment_date={today_date}&assessment_level=L1&program={my_program}'
+            response = requests.get(url)
+            if response.status_code == 200:
+                data = response.json()
+            # mobile_number = request.POST['mobile_number']
+            # request.session['phone_number'] = mobile_number
+            mobile_number = request.session.get('phone_number')
+            print('mobile number',mobile_number)
+            url = f'https://prajeevika.org/apis/aop/children-details-dev.php?phone_number={mobile_number}&token=eyNsWgAdBF0KafwGPwOC9h5rWABTBuAKYxDxv8zRgJyuP'
+            response = requests.get(url)
+            
+            if response.status_code == 200:
+                data = response.json()
+                data_result = json.loads(data['result'])
+                name = data_result[0]['name']
+                request.session['name'] = name
+                status = data_result[0]['status']
+                request.session['status'] = status
+                
+                context = {
+                    'data': data_result,
+                    'selected_option': selected_option,
+                }
+                print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', context)
+                return render(request, 'AOP_PRO/search_num.html', context)
+            else:
+                return render(request, 'Error/pages-500.html' )
+    else:
+        if "search" in request.POST:
+            now = datetime.now()
+            today_date = now.strftime("%Y-%m-%d")
+            selected_option = request.session.get('selected_option')
+            enrollment_id = request.session.get('enrollment_id')
+            id_value = request.session.get('id_value')
+            my_program = request.session.get('my_program')
+            print('my program is',my_program)
+            url = f'https://prajeevika.org/apis/aop/update-result.php?token=eyNsWgAdBF0KafwGPwOC9h5rWABTBuAKYxDxv8zRgJyuP&enrollment_id={enrollment_id}&student_id={id_value}&assessment_type={selected_option}&assessment_date={today_date}&assessment_level=L1&program={my_program}'
+            response = requests.get(url)
+            if response.status_code == 200:
+                data = response.json()
+            mobile_number = request.POST['mobile_number']
+            request.session['phone_number'] = mobile_number
+            url = f'https://prajeevika.org/apis/aop/children-details.php?phone_number={mobile_number}&token=eyNsWgAdBF0KafwGPwOC9h5rWABTBuAKYxDxv8zRgJyuP'
+            response = requests.get(url)
+            if response.status_code == 200:
+                data = response.json()
+                name = data[0]['name']
+                request.session['name'] = name
+                status = data[0]['status']  
+                request.session['status'] = status
+                context = {
+                    'data': data,
+                    'selected_option': selected_option,
+                }
+                print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', context)
+                return render(request, 'AOP_PRO/search_num.html', context)
+            else:
+                return render(request, 'Error/pages-500.html' )
 
 
 def login(request):
@@ -377,6 +417,8 @@ def language(request):
 def aop_start_assesment(request):
     return render(request, 'AOP_PRO/six_one.html')
 
+from django.contrib.sessions.backends.db import SessionStore
+session = SessionStore()
 
 def start_assesment(request, selected_option):
     my_program = request.session.get('my_program')  # Retrieve selected program from session
@@ -385,7 +427,9 @@ def start_assesment(request, selected_option):
     status = request.session.get('status')
     selected_level = request.session.get('selected_level')  # Retrieve selected level from session
     if my_program == 'Advance English Program':
-        # selected_option = f'{my_program} {selected_option}'  # Combine my_program and selected_option
+        selected_option = f'{my_program} {selected_option}'  # Combine my_program and selected_option
+        session['selected_option'] = selected_option 
+        print('selected option is in start assesment',selected_option)
         return render(request, 'start_assesment.html', {'selected_option': selected_option, 'selected_level': selected_level, 'status': status})
     else:
         request.session['selected_option'] = selected_option
@@ -560,7 +604,21 @@ def bl_answer(request):
     filepath = request.session.get('filepath')
     filename = request.session.get('filename')
     selected_option = request.session.get('selected_option')
-    if selected_option == 'English':
+    my_program = request.session.get('my_program')  # Retrieve selected option from session
+    print('my_program is', my_program)
+    if my_program == 'Advance English Program' and selected_option == 'BL':
+        json_file = json_advance_eng
+        print(json_file)
+        data_id = request.session.get('data_id')
+        print("data_id", data_id)
+        data = json_file  # Assuming the desired data is directly under the 'json_file' variable
+        para = None
+
+        for d in data['Para']:  # Assuming the data is stored under the 'Paragraph' key
+            if d['id'] == data_id:
+                val = d['data']
+                break
+    elif selected_option == 'English':
         data_id = request.session.get('data_id')
         data = json_eng
         paragraph = None
@@ -670,12 +728,27 @@ def bl_skip(request):
     print("@", selected_option)
     data_id = request.session.get('data_id')
     print("data_id", data_id)
-    data = json_l1_data
-    paragraph = None
-    for d in data['Paragraph']:
-        if d['id'] == data_id:
-            val = d['data']
-            break
+    my_program = request.session.get('my_program')  # Retrieve selected option from session
+    print('my_program is', my_program)
+    if my_program == 'Advance English Program':
+        json_file = json_advance_eng
+        data = json_file  # Assuming the desired data is directly under the 'json_file' variable
+        para = None
+
+        for d in data['Para']:  # Assuming the data is stored under the 'Paragraph' key
+            if d['id'] == data_id:
+                request.session['data_id'] = data_id 
+                print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@',data_id)
+                val = d['data']
+                break
+        
+    else:
+        data = json_l1_data
+        paragraph = None
+        for d in data['Paragraph']:
+            if d['id'] == data_id:
+                val = d['data']
+                break
 
     words = val.split()
     my_list = list(words)
@@ -790,9 +863,9 @@ def bl_store(request):
             data_id = request.session.get('data_id')
             my_program = request.session.get('my_program')
             print('my program is saveprogress',my_program)
-            data = json_l1_data
-            paragraph = None
-            for d in data['Paragraph']:
+            data = json_advance_eng
+            para = None
+            for d in data['Para']:
                 if d['id'] == data_id:
                     val = d['data']
                     break
@@ -833,7 +906,7 @@ def bl_store(request):
                 context = {
                         'level' : "Paragraph without Exeception"
                     }
-                return render(request,'answer_page_gen.html', context=context) 
+                return render(request,"AOP_PRO/ans_page_aop.html", context=context) 
             
     else:
         request.method == 'POST'   
@@ -1008,9 +1081,41 @@ def bl_next_store(request):
 
     
 def get_random_sentence(request):
+    
     selected_option = request.session.get('selected_option')
     print("get_random_sentence",selected_option)
-    if selected_option == 'BL':
+    my_program = request.session.get('my_program')  # Retrieve selected program from session
+    print('my_program is', my_program)
+    if my_program == 'Advance English Program' and selected_option == 'BL':
+        data = json_advance_eng
+        data_id = request.session.get('data_id')
+        print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^data id new', data_id)
+        selected_para = None  # Variable to store the selected paragraph
+        for d in data['Para']:
+            if d['id'] == data_id:  # Check if the current data_id matches the desired data_id
+                print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^data id new', data_id)
+                selected_para = d
+                break
+        
+        if selected_para:
+            # Continue with the selected paragraph and its associated data
+            data_question = selected_para['questions']
+            languages = data_question[0]['language']
+            print('languages@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', languages)
+            question = data_question[0]['ques']
+            print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@1st question for the para',question)
+            # Update the data_id with the new value
+            request.session['index'] = 0 
+            data_id = selected_para['id']
+            request.session['data_id'] = data_id
+            print('data id updated', data_id)
+
+            return {
+                'data': question,
+                'data_id': data_id,
+                'languages': languages,
+            }
+    elif selected_option == 'BL':
         data = json_l1_data
         data1 = random.choice(data['Sentence'])
         print("the value ",data1['id'])
@@ -1019,6 +1124,7 @@ def get_random_sentence(request):
         print(data_id)
         print("dta",data1['data'])
         languages = data1['language']
+        print('language in aop',languages)
         return {
             'data': data1['data'],
             'data_id': data_id,
@@ -1039,10 +1145,10 @@ def get_random_sentence(request):
             'languages': languages,
         }
        
-
 def bl_mcq_api(request):
     selected_option = request.session.get('selected_option')
     selected_level = request.session.get('selected_level')
+    
     if request.method == 'POST':
         selected_lan = request.POST.get('selected_language_input')
         selecteddiv = request.session.get('selected-div')
@@ -1062,101 +1168,395 @@ def bl_mcq_api(request):
         process_time = transcript_dict.get('process_time')
         ans_next_level = request.session.get('ans_next_level')
         my_program = request.session.get('my_program')
-        print('my program is saveprogress',my_program)
+        print('my program is saveprogress', my_program)
         print('text:', text)
         print('audio_url:', audio_url)
         print('process_time:', process_time)
-        data = json_l1_data
-        Sentence = None
-        for d in data['Sentence']:
-            if d['id'] == data_id:
-                val = d['data']
-                break
-        print("@",selected_option)
-        if selected_language == 'hindi':
-                print("selected",'hindi')
+        if my_program == 'Advance English Program' and selected_option == 'BL':
+            data = json_advance_eng
+            val = request.session.get('question')
+            for d in data['Para']:
+                if d['id'] == data_id:
+                    print('data_id#######################################', data_id)
+                    val = d['data']
+                    break
+            selected_data = next((item for item in data['Para'] if item['id'] == data_id), None)
+            print('selected_data#######################################', selected_data)
+
+            if selected_data:
+                question = selected_data['questions']
+                question = question[0]
+
+                if selected_language == 'hindi':
+                    print("selected", 'hindi')
+                    request.session['lan'] = selected_language
+                elif selected_language == 'marathi':
+                    print('selected', 'marathi')
+                    request.session['lan'] = selected_language
+                elif selected_language == 'English':
+                    print('selected', 'English')
+                    request.session['lan'] = selected_language
+                else:
+                    print("Invalid selected language")
+
+                if selected_language in ['hindi', 'marathi', 'English']:
+                    answer = question['language'][selected_language]['answers']
+                    print('answer is $$$$$$$$$$$$$$$$$$$$$$', answer)
+                else:
+                    print("Invalid selected language")
+            else:
+                print("Data not found for the given data_id")
+            print("student_id", id_value)
+            print("sample_id", data_id)
+            print("level")
+            print("section")
+            print("question", val)
+            print("answer", selected_div)
+            print('audio_url:', audio_url)
+            print('mistakes_count', audio_url)
+            print('no_mistakes:', no_mistakes)
+            print('no_mistakes_edited', no_mistakes)
+            print('process_time:', process_time)
+            print('language:', 'English')
+            print('no_del:', no_del)
+            print('del_details:', del_details)
+            print('no_sub:', "no_sub")
+            print('sub_details:', sub_details)
+            print("test_type", status)
+            print("next level", ans_next_level)
+            print("correct_answer:", answer)
+            print("answer_check_status:", "answer")
+            lan = request.session.get('lan')
+            print("lan", lan)
+            data = {}
+            data["student_id"] = id_value
+            data["sample_id"] = "data_id"
+            data["level"] = 'L1'
+            data["question"] = val
+            data["section "] = 'MCQ'
+            data["answer"] = selected_div
+            data["audio_url"] = ''
+            data["mistakes_count"] = '0'
+            data["no_mistakes"] = '0'
+            data["no_mistakes_edited"] = '0'
+            data["api_process_time"] = '0'
+            data["language"] = 'English'
+            data["no_del"] = '0'
+            data["del_details"] = '0'
+            data["no_sub"] = '0'
+            data["sub_details"] = '0'
+            data["test_type"] = status
+            data["next_level"] = ans_next_level
+            data["correct_answer"] = answer
+            data["answer_check_status"] = 'true'
+            data["mcq_language"] = lan
+            data["program"] = my_program
+            print(data)
+            url = 'https://parakh.pradigi.org/v1/saveprogress/'
+            files = []
+            payload = {'data': json.dumps(data)}
+            headers = {}
+            response = requests.request("POST", url, headers=headers, data=payload, files=files)
+            print('student_id', response.text)
+            response_data = json.loads(response.text)
+            print(response.text)
+            index = request.session.get('index')
+            indexing = request.session.get('indexing')
+
+            if index == 0:
+                request.session['index'] = 1
+                return redirect('bl_mcq_next_mcq')
+            if indexing == 1:
+                request.session['indexing'] = 2
+                return redirect('bl_mcq_last')
+            mcq_complete = request.session.get('mcq_complete')
+            if mcq_complete:
+                return redirect('story')
+
+            # del request.session['data_id']
+
+            # Check if all three MCQs are completed
+            # if response_data.get('status') == 'success' and response_data.get('msg') == 'completed':
+            #     # Redirect to the story page
+            #     return redirect('story_page')
+
+            # Redirect to the next MCQ
+            # return redirect('bl_mcq_next_mcq')
+
+
+# def bl_mcq_api(request):
+#     selected_option = request.session.get('selected_option')
+#     selected_level = request.session.get('selected_level')
+#     if request.method == 'POST':
+#         selected_lan = request.POST.get('selected_language_input')
+#         selecteddiv = request.session.get('selected-div')
+#         status = request.session.get('status')
+#         selected_language = request.POST.get('selected_language')
+#         selected_div = request.POST.get('selected-div')
+#         data_id = request.session.get('data_id')
+#         id_value = request.session.get('id_value')
+#         transcript = request.session.get('transcript')
+#         transcript_dict = json.loads(transcript)
+#         no_mistakes = transcript_dict.get('no_mistakes')
+#         no_del = transcript_dict.get('no_del')
+#         del_details = transcript_dict.get('del_details')
+#         sub_details = transcript_dict.get('sub_details')
+#         text = transcript_dict.get('text')
+#         audio_url = transcript_dict.get('audio_url')
+#         process_time = transcript_dict.get('process_time')
+#         ans_next_level = request.session.get('ans_next_level')
+#         my_program = request.session.get('my_program')
+#         print('my program is saveprogress',my_program)
+#         print('text:', text)
+#         print('audio_url:', audio_url)
+#         print('process_time:', process_time)
+#         if my_program == 'Advance English Program' and selected_option == 'BL':
+#             data = json_advance_eng
+#             val = request.session.get('question')
+#             for d in data['Para']:
+#                 if d['id'] == data_id:
+#                     val = d['data']
+#                     break
+#             selected_data = next((item for item in data['Para'] if item['id'] == data_id), None)
+#             print('selected_data#######################################',selected_data)
+
+#             if selected_data:
+#                 question = selected_data['questions']
+#                 question = question[0]
+
+#                 if selected_language == 'hindi':
+#                     print("selected", 'hindi')
+#                     request.session['lan'] = selected_language
+#                 elif selected_language == 'marathi':
+#                     print('selected', 'marathi')
+#                     request.session['lan'] = selected_language
+#                 elif selected_language == 'English':
+#                     print('selected', 'english')
+#                     request.session['lan'] = selected_language
+#                 else:
+#                     print("Invalid selected language")
+
+#                 if selected_language in ['hindi', 'marathi', 'English']:
+#                     answer = question['language'][selected_language]['answers']
+#                     print('answer is $$$$$$$$$$$$$$$$$$$$$$', answer)
+#                 else:
+#                     print("Invalid selected language")
+#             else:
+#                 print("Data not found for the given data_id")
+
+            # data = json_advance_eng
+            # val = request.session.get('question')
+            # for d in data['Para']:
+            #     if d['id'] == data_id:
+            #         val = d['data']
+            #         break
+            
+            # if selected_language == 'hindi':
+            #         print("selected",'hindi')
+            #         request.session['lan'] = selected_language
+            # elif selected_language == 'marathi':
+            #     print('selected','marathi')
+            #     request.session['lan'] = selected_language
+
+            # data = json_advance_eng
+            # selected_data = next((item for item in data['Para'] if item['id'] == data_id), None)
+            # print('selected_data#######################################',selected_data)
+
+            # if selected_data:
+            #     question = selected_data['questions']
+            #     question = question[0]
+                
+            #     if selected_language == 'hindi' or selected_language == 'marathi':
+            #         answer = question['language'][selected_language]['answers']
+            #         print('answer is $$$$$$$$$$$$$$$$$$$$$$', answer)
+            #     else:
+            #         print("Invalid selected language")
+            # else:
+            #     print("Data not found for the given data_id")
+
+            # if selected_language == 'hindi':
+            #         # find the data with matching data_id
+            #     data = json_advance_eng
+            #     selected_data = next((item for item in data['Para'] if item['id'] == data_id), None)
+            #     print('selected_data#######################################',selected_data)
+            #     if selected_data:
+            #         question = selected_data['questions']
+            #         # languages = selected_data['language']
+            #         # selected_language = languages.get(selected_language)
+            #         # options = selected_language.get('options')
+            #         # answer = selected_language.get('answers')
+            #         question = question[0]
+            #         answer = question['language'][selected_language]['answers']
+            #         print('answer is $$$$$$$$$$$$$$$$$$$$$$', answer)
+            #     else:
+            #         print("Data not found for the given data_id")
+            # elif selected_language == 'marathi':
+            #     data = json_advance_eng
+            #     # find the data with matching data_id
+            #     selected_data = next((item for item in data['Para'] if item['id'] == data_id), None)
+            #     print('selected_data##############################################',selected_data)
+            #     if selected_data:
+            #         question = selected_data['questions']
+            #         print('question is $$$$$$$$$$$$$$$$$$$$$$',question)
+            #         # languages = selected_data['language']
+            #         # selected_language = languages.get(selected_language)
+            #         # options = selected_language.get('options')
+            #         # answer = selected_language.get('answers')
+            #         question = question[0]
+            #         answer = question['language'][selected_language]['answers']
+            #         print('answer is $$$$$$$$$$$$$$$$$$$$$$', answer)
+
+            #     else:
+            #         print("Data not found for the given data_id")
+            # print("student_id",id_value)
+            # print("sample_id",data_id)
+            # print("level")
+            # print("section")
+            # print("question",val)
+            # print("answer",selected_div) 
+            # print('audio_url:', audio_url)
+            # print('mistakes_count', audio_url)
+            # print('no_mistakes:', no_mistakes)
+            # print('no_mistakes_edited', no_mistakes)
+            # print('process_time:', process_time)
+            # print('language:', 'English')
+            # print('no_del:', no_del)
+            # print('del_details:', del_details)
+            # print('no_sub:', "no_sub")
+            # print('sub_details:', sub_details)
+            # print("test_type",status)
+            # print("next level",ans_next_level)
+            # print("correct_answer:", answer)
+            # print("answer_check_status:", "answer")
+            # lan = request.session.get('lan')
+            # print("lan",lan)
+            # data={}
+            # data["student_id"]=id_value
+            # data["sample_id"]= "data_id"
+            # data["level"]= 'L1'
+            # data["question"]= val
+            # data["section "]= 'MCQ'
+            # data["answer"]= selected_div
+            # data["audio_url"]= ''
+            # data["mistakes_count"]= '0'
+            # data["no_mistakes"]= '0'
+            # data["no_mistakes_edited"]= '0'
+            # data["api_process_time"]= '0'
+            # data["language"]= 'English'
+            # data["no_del"]= '0'
+            # data["del_details"]= '0'
+            # data["no_sub"]= '0'
+            # data["sub_details"]= '0'
+            # data["test_type"]= status
+            # data["next_level"]= ans_next_level
+            # data["correct_answer"]= answer
+            # data["answer_check_status"]= 'true'
+            # data["mcq_language"]= lan
+            # data["program"] = my_program
+            # print(data)
+            # url = 'https://parakh.pradigi.org/v1/saveprogress/'
+            # files = []
+            # payload = {'data': json.dumps(data)}
+            # headers = {}
+            # response = requests.request("POST", url, headers=headers, data=payload, files=files)
+            # print('student_id', response.text)
+            # response_data = json.loads(response.text)
+            # print(response.text)
+            # del request.session['data_id']
+            # return redirect('bl_mcq1')
+
+        else:
+            data = json_l1_data
+            Sentence = None
+            for d in data['Sentence']:
+                if d['id'] == data_id:
+                    val = d['data']
+                    break
+            print("@",selected_option)
+            if selected_language == 'hindi':
+                    print("selected",'hindi')
+                    request.session['lan'] = selected_language
+            elif selected_language == 'marathi':
+                print('selected','marathi')
                 request.session['lan'] = selected_language
-        elif selected_language == 'marathi':
-            print('selected','marathi')
-            request.session['lan'] = selected_language
-        if selected_language == 'hindi':
+            if selected_language == 'hindi':
+                    # find the data with matching data_id
+                data = json_l1_data
+                selected_data = next((item for item in data['Sentence'] if item['id'] == data_id), None)
+                if selected_data:
+                    languages = selected_data['language']
+                    selected_language = languages.get(selected_language)
+                    options = selected_language.get('options')
+                    answer = selected_language.get('answers')
+                else:
+                    print("Data not found for the given data_id")
+            elif selected_language == 'marathi':
+                data = json_l1_data
                 # find the data with matching data_id
-            data = json_l1_data
-            selected_data = next((item for item in data['Sentence'] if item['id'] == data_id), None)
-            if selected_data:
-                languages = selected_data['language']
-                selected_language = languages.get(selected_language)
-                options = selected_language.get('options')
-                answer = selected_language.get('answers')
-            else:
-                print("Data not found for the given data_id")
-        elif selected_language == 'marathi':
-            data = json_l1_data
-            # find the data with matching data_id
-            selected_data = next((item for item in data['Sentence'] if item['id'] == data_id), None)
-            if selected_data:
-                languages = selected_data['language']
-                selected_language = languages.get(selected_language)
-                options = selected_language.get('options')
-                answer = selected_language.get('answers')
-            else:
-                print("Data not found for the given data_id")
-        print("student_id",id_value)
-        print("sample_id",data_id)
-        print("level")
-        print("section")
-        print("question",val)
-        print("answer",selected_div) 
-        print('audio_url:', audio_url)
-        print('mistakes_count', audio_url)
-        print('no_mistakes:', no_mistakes)
-        print('no_mistakes_edited', no_mistakes)
-        print('process_time:', process_time)
-        print('language:', 'English')
-        print('no_del:', no_del)
-        print('del_details:', del_details)
-        print('no_sub:', "no_sub")
-        print('sub_details:', sub_details)
-        print("test_type",status)
-        print("next level",ans_next_level)
-        print("correct_answer:", answer)
-        print("answer_check_status:", "answer")
-        lan = request.session.get('lan')
-        print("lan",lan)
-        data={}
-        data["student_id"]=id_value
-        data["sample_id"]= "data_id"
-        data["level"]= 'L1'
-        data["question"]= val
-        data["section "]= 'MCQ'
-        data["answer"]= selected_div
-        data["audio_url"]= ''
-        data["mistakes_count"]= '0'
-        data["no_mistakes"]= '0'
-        data["no_mistakes_edited"]= '0'
-        data["api_process_time"]= '0'
-        data["language"]= 'English'
-        data["no_del"]= '0'
-        data["del_details"]= '0'
-        data["no_sub"]= '0'
-        data["sub_details"]= '0'
-        data["test_type"]= status
-        data["next_level"]= ans_next_level
-        data["correct_answer"]= answer
-        data["answer_check_status"]= 'true'
-        data["mcq_language"]= lan
-        data["program"] = my_program
-        print(data)
-        url = 'https://parakh.pradigi.org/v1/saveprogress/'
-        files = []
-        payload = {'data': json.dumps(data)}
-        headers = {}
-        response = requests.request("POST", url, headers=headers, data=payload, files=files)
-        print('student_id', response.text)
-        response_data = json.loads(response.text)
-        print(response.text)
-        del request.session['data_id']
-        return redirect('ml1')
+                selected_data = next((item for item in data['Sentence'] if item['id'] == data_id), None)
+                if selected_data:
+                    languages = selected_data['language']
+                    selected_language = languages.get(selected_language)
+                    options = selected_language.get('options')
+                    answer = selected_language.get('answers')
+                else:
+                    print("Data not found for the given data_id")
+            print("student_id",id_value)
+            print("sample_id",data_id)
+            print("level")
+            print("section")
+            print("question",val)
+            print("answer",selected_div) 
+            print('audio_url:', audio_url)
+            print('mistakes_count', audio_url)
+            print('no_mistakes:', no_mistakes)
+            print('no_mistakes_edited', no_mistakes)
+            print('process_time:', process_time)
+            print('language:', 'English')
+            print('no_del:', no_del)
+            print('del_details:', del_details)
+            print('no_sub:', "no_sub")
+            print('sub_details:', sub_details)
+            print("test_type",status)
+            print("next level",ans_next_level)
+            print("correct_answer:", answer)
+            print("answer_check_status:", "answer")
+            lan = request.session.get('lan')
+            print("lan",lan)
+            data={}
+            data["student_id"]=id_value
+            data["sample_id"]= "data_id"
+            data["level"]= 'L1'
+            data["question"]= val
+            data["section "]= 'MCQ'
+            data["answer"]= selected_div
+            data["audio_url"]= ''
+            data["mistakes_count"]= '0'
+            data["no_mistakes"]= '0'
+            data["no_mistakes_edited"]= '0'
+            data["api_process_time"]= '0'
+            data["language"]= 'English'
+            data["no_del"]= '0'
+            data["del_details"]= '0'
+            data["no_sub"]= '0'
+            data["sub_details"]= '0'
+            data["test_type"]= status
+            data["next_level"]= ans_next_level
+            data["correct_answer"]= answer
+            data["answer_check_status"]= 'true'
+            data["mcq_language"]= lan
+            data["program"] = my_program
+            print(data)
+            url = 'https://parakh.pradigi.org/v1/saveprogress/'
+            files = []
+            payload = {'data': json.dumps(data)}
+            headers = {}
+            response = requests.request("POST", url, headers=headers, data=payload, files=files)
+            print('student_id', response.text)
+            response_data = json.loads(response.text)
+            print(response.text)
+            del request.session['data_id']
+            return redirect('ml1')
        
 
 def bl_final_mcq(request):
@@ -1172,9 +1572,122 @@ def bl_final_mcq(request):
         selected_language = request.POST.get('selected_language')
         context['selected_language'] = selected_language
         print('selected_language', selected_language)
+
+        my_program = request.session.get('my_program')  # Retrieve selected program from session
+        print('my_program is', my_program)
+        if my_program == 'Advance English Program':
+            return render(request, "Advance/bl_mcq_next.html", context)
         return render(request, "AOP_PRO/bl_mcq.html", context)
     context['selected_div'] = context.get('selected_div')  # Add selected_div to context
     return render(request, "AOP_PRO/bl_mcq.html", context)
+
+
+def bl_mcq_next_mcq(request):
+    # selected_option = request.session.get('selected_option')
+    # print("@",selected_option)
+    # selected_level = request.session.get('selected_level')
+    # print("@",selected_level)
+    data = get_random_sentence1(request)
+    context = {"val": data['data'], "recording": True, "data_id": data['data_id'], "languages": data['languages']}
+    request.session['my_context'] = context
+    phone_number = request.session.get('phone_number')
+    print("ph", phone_number)
+    enrollment_id = request.session.get('enrollment_id')
+    print("enrollment_id",enrollment_id)
+    my_program = request.session.get('my_program')  # Retrieve selected program from session
+    print('my_program is', my_program)
+    if my_program == 'Advance English Program':
+        return render(request, "Advance/bl_mcq.html", context)
+    # if request.method == 'POST':
+    return redirect('bl_mcq_last')
+    # return render(request, "AOP_PRO/bl_mcq_next.html", context)
+
+def get_random_sentence1(request):
+    selected_option = request.session.get('selected_option')
+    print("get_random_sentence",selected_option)
+    my_program = request.session.get('my_program')  # Retrieve selected program from session
+    print('my_program is', my_program)
+    if my_program == 'Advance English Program' and selected_option == 'BL':
+        data = json_advance_eng
+        data_id = request.session.get('data_id')
+        print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^data id new', data_id)
+        selected_para = None  # Variable to store the selected paragraph
+        for d in data['Para']:
+            if d['id'] == data_id:  # Check if the current data_id matches the desired data_id
+                print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^data id new', data_id)
+                selected_para = d
+                break
+        
+        if selected_para:
+            # Continue with the selected paragraph and its associated data
+            data_question = selected_para['questions']
+            languages = data_question[1]['language']
+            print('languages@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', languages)
+            question = data_question[1]['ques']
+            print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@1st question for the para',question)
+            # Update the data_id with the new value
+            data_id = selected_para['id']
+            request.session['indexing'] = 1 
+            request.session['data_id'] = data_id
+            print('data id updated', data_id)
+
+            return {
+                'data': question,
+                'data_id': data_id,
+                'languages': languages,
+            }
+        
+def bl_mcq_last(request):
+    data = get_random_sentence2(request)
+    context = {"val": data['data'], "recording": True, "data_id": data['data_id'], "languages": data['languages']}
+    request.session['my_context'] = context
+    phone_number = request.session.get('phone_number')
+    print("ph", phone_number)
+    enrollment_id = request.session.get('enrollment_id')
+    print("enrollment_id",enrollment_id)
+    my_program = request.session.get('my_program')  # Retrieve selected program from session
+    print('my_program is', my_program)
+    if my_program == 'Advance English Program':
+        return render(request, "Advance/bl_mcq.html", context)
+    # if request.method == 'POST':
+    return redirect('bl_mcq_last')
+
+
+def get_random_sentence2(request):
+    selected_option = request.session.get('selected_option')
+    print("get_random_sentence",selected_option)
+    my_program = request.session.get('my_program')  # Retrieve selected program from session
+    print('my_program is', my_program)
+    if my_program == 'Advance English Program' and selected_option == 'BL':
+        data = json_advance_eng
+        data_id = request.session.get('data_id')
+        print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^data id new', data_id)
+        selected_para = None  # Variable to store the selected paragraph
+        for d in data['Para']:
+            if d['id'] == data_id:  # Check if the current data_id matches the desired data_id
+                print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^data id new', data_id)
+                selected_para = d
+                break
+        
+        if selected_para:
+            # Continue with the selected paragraph and its associated data
+            data_question = selected_para['questions']
+            languages = data_question[2]['language']
+            print('languages@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', languages)
+            question = data_question[2]['ques']
+            print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@1st question for the para',question)
+            # Update the data_id with the new value
+            data_id = selected_para['id']
+            request.session['data_id'] = data_id
+            print('data id updated', data_id)
+            mcq_complete = 3
+            request.session['mcq_complete'] = mcq_complete
+
+            return {
+                'data': question,
+                'data_id': data_id,
+                'languages': languages,
+            }
 
 
 def bl_mcq(request):
@@ -1211,6 +1724,10 @@ def bl_mcq_next(request):
     print("ph", phone_number)
     enrollment_id = request.session.get('enrollment_id')
     print("enrollment_id",enrollment_id)
+    my_program = request.session.get('my_program')  # Retrieve selected program from session
+    print('my_program is', my_program)
+    if my_program == 'Advance English Program':
+        return render(request, "Advance/bl_mcq.html", context)
     if request.method == 'POST':
         return redirect('ml1')
     return render(request, "AOP_PRO/bl_mcq_next.html", context)
@@ -1317,7 +1834,38 @@ def ml1_next(request):
 def get_random_ml1_sentence(request):
     selected_option = request.session.get('selected_option')
     print("get_random_sentence",selected_option)
-    if selected_option == 'ML1':
+    my_program = request.session.get('my_program')  # Retrieve selected program from session
+    print('my_program is', my_program)
+    if my_program == 'Advance English Program' and selected_option == 'BL':
+        data = json_advance_eng
+        data_id = request.session.get('data_id')
+        print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^data id new', data_id)
+        selected_para = None  # Variable to store the selected paragraph
+        for d in data['Story']:
+            if d['id'] == data_id:  # Check if the current data_id matches the desired data_id
+                print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^data id new', data_id)
+                selected_para = d
+                break
+        
+        if selected_para:
+            # Continue with the selected paragraph and its associated data
+            data_question = selected_para['questions']
+            languages = data_question[0]['language']
+            print('languages@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', languages)
+            question = data_question[0]['ques']
+            print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@1st question for the para',question)
+            # Update the data_id with the new value
+            request.session['index'] = 0 
+            data_id = selected_para['id']
+            request.session['data_id'] = data_id
+            print('data id updated', data_id)
+
+            return {
+                'data': question,
+                'data_id': data_id,
+                'languages': languages,
+            }
+    elif selected_option == 'ML1':
         data = json_l2
         data1 = random.choice(data['Sentence'])
         print("the value ",data1['id'])
@@ -1457,27 +2005,6 @@ def ml1_answer(request):
     print(filename)
     selected_option = request.session.get('selected_option')
     print("@",selected_option)
-    
-    # if selected_option == 'English':
-    #     data_id = request.session.get('data_id')
-    #     print("data_id",data_id)
-    #     with open(json_eng) as f:
-    #         data = json.load(f)
-    #         paragraph = None
-    #         for d in data['Paragraph']:
-    #             if d['id'] == data_id:
-    #                 val = d['data']
-    #                 break
-    # elif selected_option == 'ML1':
-    #     data_id = request.session.get('data_id')
-    #     print("data_id",data_id)
-    #     with open(json_l2, 'r', encoding='utf-8') as f:
-    #         data = json.load(f)
-    #         paragraph = None
-    #         for d in data['Paragraph']:
-    #             if d['id'] == data_id:
-    #                 val = d['data']
-    #                 break
     
     data_id = request.session.get('data_id')
     print("data_id",data_id)
@@ -1717,94 +2244,195 @@ def ml1_skip_next(request):
 
 def ml1_store(request):
   if request.method == 'POST':
-    try:
-        fluency_adjustment = request.POST.get('fluency_adjustment')
-        print("fluency_adjustment", fluency_adjustment)
-        # adjustment_from_storage = request.POST.get('adjustment')
-        # print('adjustment_from_storage',adjustment_from_storage)
-        # Store the value in the session
-        # request.session['adjustment'] = adjustment_from_storage
-        # nomistake_list = []
-        # nomistake_list.append(str(request.session['adjustment']))
-        # nomistake = nomistake_list[0]
-        # print("nomistake", nomistake)
-        
-        if fluency_adjustment == '0':
-            request.session['ans_next_level'] = 'L3'
-        else:
-            request.session['ans_next_level'] = 'L2'
+    my_program = request.session.get('my_program')
+    if my_program == 'Advance English Program':
+        data = json_advance_eng
+        try:
+            fluency_adjustment = request.POST.get('fluency_adjustment')
+            number = int(fluency_adjustment)
+            print("fluency_adjustment", fluency_adjustment)
+            # adjustment_from_storage = request.POST.get('adjustment')
+            # print('adjustment_from_storage',adjustment_from_storage)
+            # Store the value in the session
+            # request.session['adjustment'] = adjustment_from_storage
+            # nomistake_list = []
+            # nomistake_list.append(str(request.session['adjustment']))
+            # nomistake = nomistake_list[0]
+            # print("nomistake", nomistake)
+            
+            if fluency_adjustment == '0':
+                request.session['ans_next_level'] = 'L3'
+            else:
+                request.session['ans_next_level'] = 'L2'
 
-        enrollment_id = request.session.get('enrollment_id')
-        status = request.session.get('status')
-        filepath = request.session.get('filepath')
-        ml1_res = request.session.get('ml1_res')
-        print('ml1_res:', ml1_res)
-        transcript_dict = json.loads(ml1_res)
-        no_mistakes = transcript_dict.get('no_mistakes')
-        print("no_mistakes",no_mistakes)
-        no_del = transcript_dict.get('no_del')
-        del_details = transcript_dict.get('del_details')
-        sub_details = transcript_dict.get('sub_details')
-        text = transcript_dict.get('text')
-        audio_url = transcript_dict.get('audio_url')
-        no_sub = transcript_dict.get('no_sub')
-        process_time = transcript_dict.get('process_time')
-        id_value = request.session.get('id_value')
-        print("student_id",id_value)
-        data_id = request.session.get('data_id')
-        print("sample_id",data_id)
-        my_program = request.session.get('my_program')
-        print('my program is saveprogress',my_program)
-        
-        data = json_l1_data
-        paragraph = None
-        for d in data['Paragraph']:
-            if d['id'] == data_id:
-                val = d['data']
-                break
+            enrollment_id = request.session.get('enrollment_id')
+            status = request.session.get('status')
+            filepath = request.session.get('filepath')
+            ml1_res = request.session.get('ml1_res')
+            print('ml1_res:', ml1_res)
+            transcript_dict = json.loads(ml1_res)
+            no_mistakes = transcript_dict.get('no_mistakes')
+            print("no_mistakes",no_mistakes)
+            no_del = transcript_dict.get('no_del')
+            del_details = transcript_dict.get('del_details')
+            sub_details = transcript_dict.get('sub_details')
+            text = transcript_dict.get('text')
+            audio_url = transcript_dict.get('audio_url')
+            no_sub = transcript_dict.get('no_sub')
+            process_time = transcript_dict.get('process_time')
+            id_value = request.session.get('id_value')
+            print("student_id",id_value)
+            data_id = request.session.get('data_id')
+            print("sample_id",data_id)
+            my_program = request.session.get('my_program')
+            print('my program is saveprogress',my_program)
+            
+            data = json_advance_eng
+            Story = None
+            for d in data['Story']:
+                if d['id'] == data_id:
+                    val = d['data']
+                    break
 
-        if val:
-            print("question",val)
+            if val:
+                print("question",val)
 
-        selected_option = request.session.get('selected_option')
-        print("test_type",selected_option)
-        print(status)
-        ans_next_level = request.session.get('ans_next_level')
-        data={}
-        data["student_id"]=id_value
-        data["sample_id"]= "data_id"
-        data["level"]= 'L2'
-        data["question"]= val
-        data["section "]= 'reading'
-        data["answer"]= text
-        data["audio_url"]= audio_url
-        data["mistakes_count"]= '0'
-        data["no_mistakes"]= no_mistakes
-        data["no_mistakes_edited"]= fluency_adjustment
-        data["api_process_time"]= process_time
-        data["language"]= 'English'
-        data["no_del"]= no_del
-        data["del_details"]= del_details
-        data["no_sub"]= no_sub
-        data["sub_details"]= sub_details
-        data["test_type"]= status
-        data["next_level"]= ans_next_level
-        data["program"] = my_program
-        print(data)
-        url = 'https://parakh.pradigi.org/v1/saveprogress/'
-        files = []
-        payload = {'data': json.dumps(data)}
-        headers = {}
-        response = requests.request("POST", url, headers=headers, data=payload, files=files)
-        response_data = json.loads(response.text)
-        print(response.text)
-        print(fluency_adjustment)
-        if fluency_adjustment == '0':
-            return redirect('ml1_mcq_next')  # redirect to bl_mcq function
-        else:
-            return redirect('ml1_next')
-    except TypeError:
-        return HttpResponse("Invalid adjustment value")
+            selected_option = request.session.get('selected_option')
+            print("test_type",selected_option)
+            print(status)
+            ans_next_level = request.session.get('ans_next_level')
+            data={}
+            data["student_id"]=id_value
+            data["sample_id"]= "data_id"
+            data["level"]= 'L2'
+            data["question"]= val
+            data["section "]= 'reading'
+            data["answer"]= text
+            data["audio_url"]= audio_url
+            data["mistakes_count"]= '0'
+            data["no_mistakes"]= no_mistakes
+            data["no_mistakes_edited"]= fluency_adjustment
+            data["api_process_time"]= process_time
+            data["language"]= 'English'
+            data["no_del"]= no_del
+            data["del_details"]= del_details
+            data["no_sub"]= no_sub
+            data["sub_details"]= sub_details
+            data["test_type"]= status
+            data["next_level"]= ans_next_level
+            data["program"] = my_program
+            print(data)
+            url = 'https://parakh.pradigi.org/v1/saveprogress/'
+            files = []
+            payload = {'data': json.dumps(data)}
+            headers = {}
+            response = requests.request("POST", url, headers=headers, data=payload, files=files)
+            response_data = json.loads(response.text)
+            print(response_data)
+            print(fluency_adjustment)
+            # if fluency_adjustment == '0':
+            #     return redirect('ml1_mcq_next')  # redirect to bl_mcq function
+            # else:
+            #     return redirect('ml1_next')
+
+            if number <= 2:
+                return redirect('ml1_mcq_next')  # redirect to bl_mcq function
+            else:
+                context = {
+                        'level' : "Story without Exeception"
+                    }
+                return render(request,"AOP_PRO/ans_page_aop.html", context=context) 
+        except TypeError:
+            return HttpResponse("Invalid adjustment value")
+    else:    
+        try:
+            fluency_adjustment = request.POST.get('fluency_adjustment')
+            print("fluency_adjustment", fluency_adjustment)
+            # adjustment_from_storage = request.POST.get('adjustment')
+            # print('adjustment_from_storage',adjustment_from_storage)
+            # Store the value in the session
+            # request.session['adjustment'] = adjustment_from_storage
+            # nomistake_list = []
+            # nomistake_list.append(str(request.session['adjustment']))
+            # nomistake = nomistake_list[0]
+            # print("nomistake", nomistake)
+            
+            if fluency_adjustment == '0':
+                request.session['ans_next_level'] = 'L3'
+            else:
+                request.session['ans_next_level'] = 'L2'
+
+            enrollment_id = request.session.get('enrollment_id')
+            status = request.session.get('status')
+            filepath = request.session.get('filepath')
+            ml1_res = request.session.get('ml1_res')
+            print('ml1_res:', ml1_res)
+            transcript_dict = json.loads(ml1_res)
+            no_mistakes = transcript_dict.get('no_mistakes')
+            print("no_mistakes",no_mistakes)
+            no_del = transcript_dict.get('no_del')
+            del_details = transcript_dict.get('del_details')
+            sub_details = transcript_dict.get('sub_details')
+            text = transcript_dict.get('text')
+            audio_url = transcript_dict.get('audio_url')
+            no_sub = transcript_dict.get('no_sub')
+            process_time = transcript_dict.get('process_time')
+            id_value = request.session.get('id_value')
+            print("student_id",id_value)
+            data_id = request.session.get('data_id')
+            print("sample_id",data_id)
+            my_program = request.session.get('my_program')
+            print('my program is saveprogress',my_program)
+            
+            data = json_l1_data
+            paragraph = None
+            for d in data['Paragraph']:
+                if d['id'] == data_id:
+                    val = d['data']
+                    break
+
+            if val:
+                print("question",val)
+
+            selected_option = request.session.get('selected_option')
+            print("test_type",selected_option)
+            print(status)
+            ans_next_level = request.session.get('ans_next_level')
+            data={}
+            data["student_id"]=id_value
+            data["sample_id"]= "data_id"
+            data["level"]= 'L2'
+            data["question"]= val
+            data["section "]= 'reading'
+            data["answer"]= text
+            data["audio_url"]= audio_url
+            data["mistakes_count"]= '0'
+            data["no_mistakes"]= no_mistakes
+            data["no_mistakes_edited"]= fluency_adjustment
+            data["api_process_time"]= process_time
+            data["language"]= 'English'
+            data["no_del"]= no_del
+            data["del_details"]= del_details
+            data["no_sub"]= no_sub
+            data["sub_details"]= sub_details
+            data["test_type"]= status
+            data["next_level"]= ans_next_level
+            data["program"] = my_program
+            print(data)
+            url = 'https://parakh.pradigi.org/v1/saveprogress/'
+            files = []
+            payload = {'data': json.dumps(data)}
+            headers = {}
+            response = requests.request("POST", url, headers=headers, data=payload, files=files)
+            response_data = json.loads(response.text)
+            print(response.text)
+            print(fluency_adjustment)
+            if fluency_adjustment == '0':
+                return redirect('ml1_mcq_next')  # redirect to bl_mcq function
+            else:
+                return redirect('ml1_next')
+        except TypeError:
+            return HttpResponse("Invalid adjustment value")
 
 
 def ml1_next_store(request):
@@ -1922,10 +2550,124 @@ def ml1_final_mcq(request):
         selected_language = request.POST.get('selected_language')
         context['selected_language'] = selected_language
         print('selected_language',selected_language)
+        my_program = request.session.get('my_program')
+        if my_program == 'Advance English Program':
+            return render(request, "Advance/ml1_mcq_next.html", context)
         return render(request, "AOP_PRO/ml1_mcq.html", context)
     return render(request, "AOP_PRO/ml1_mcq.html", context)
 
+####################################################################################################################
 
+def bl_story_mcq_next_mcq(request):
+    # selected_option = request.session.get('selected_option')
+    # print("@",selected_option)
+    # selected_level = request.session.get('selected_level')
+    # print("@",selected_level)
+    data = get_random_sentence4(request)
+    context = {"val": data['data'], "recording": True, "data_id": data['data_id'], "languages": data['languages']}
+    request.session['my_context'] = context
+    phone_number = request.session.get('phone_number')
+    print("ph", phone_number)
+    enrollment_id = request.session.get('enrollment_id')
+    print("enrollment_id",enrollment_id)
+    my_program = request.session.get('my_program')  # Retrieve selected program from session
+    print('my_program is', my_program)
+    if my_program == 'Advance English Program':
+        return render(request, "Advance/ml1_mcq.html", context)
+    # if request.method == 'POST':
+    return redirect('bl_mcq_last')
+    # return render(request, "AOP_PRO/bl_mcq_next.html", context)
+
+def get_random_sentence4(request):
+    selected_option = request.session.get('selected_option')
+    print("get_random_sentence",selected_option)
+    my_program = request.session.get('my_program')  # Retrieve selected program from session
+    print('my_program is', my_program)
+    if my_program == 'Advance English Program' and selected_option == 'BL':
+        data = json_advance_eng
+        data_id = request.session.get('data_id')
+        print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^data id new', data_id)
+        selected_para = None  # Variable to store the selected paragraph
+        for d in data['Story']:
+            if d['id'] == data_id:  # Check if the current data_id matches the desired data_id
+                print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^data id new', data_id)
+                selected_para = d
+                break
+        
+        if selected_para:
+            # Continue with the selected paragraph and its associated data
+            data_question = selected_para['questions']
+            languages = data_question[1]['language']
+            print('languages@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', languages)
+            question = data_question[1]['ques']
+            print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@1st question for the para',question)
+            # Update the data_id with the new value
+            data_id = selected_para['id']
+            request.session['indexing'] = 1 
+            request.session['data_id'] = data_id
+            print('data id updated', data_id)
+
+            return {
+                'data': question,
+                'data_id': data_id,
+                'languages': languages,
+            }
+        
+def bl_story_mcq_last(request):
+    data = get_random_sentence5(request)
+    context = {"val": data['data'], "recording": True, "data_id": data['data_id'], "languages": data['languages']}
+    request.session['my_context'] = context
+    phone_number = request.session.get('phone_number')
+    print("ph", phone_number)
+    enrollment_id = request.session.get('enrollment_id')
+    print("enrollment_id",enrollment_id)
+    my_program = request.session.get('my_program')  # Retrieve selected program from session
+    print('my_program is', my_program)
+    if my_program == 'Advance English Program':
+        return render(request, "Advance/ml1_mcq.html", context)
+    # if request.method == 'POST':
+    return redirect('bl_mcq_last')
+
+
+def get_random_sentence5(request):
+    selected_option = request.session.get('selected_option')
+    print("get_random_sentence",selected_option)
+    my_program = request.session.get('my_program')  # Retrieve selected program from session
+    print('my_program is', my_program)
+    if my_program == 'Advance English Program' and selected_option == 'BL':
+        data = json_advance_eng
+        data_id = request.session.get('data_id')
+        print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^data id new', data_id)
+        selected_para = None  # Variable to store the selected paragraph
+        for d in data['Story']:
+            if d['id'] == data_id:  # Check if the current data_id matches the desired data_id
+                print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^data id new', data_id)
+                selected_para = d
+                break
+        
+        if selected_para:
+            # Continue with the selected paragraph and its associated data
+            data_question = selected_para['questions']
+            languages = data_question[2]['language']
+            print('languages@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', languages)
+            question = data_question[2]['ques']
+            print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@1st question for the para',question)
+            # Update the data_id with the new value
+            data_id = selected_para['id']
+            request.session['data_id'] = data_id
+            print('data id updated', data_id)
+            mcq_complete = 3
+            request.session['mcq_complete'] = mcq_complete
+
+            return {
+                'data': question,
+                'data_id': data_id,
+                'languages': languages,
+            }
+
+
+
+##########################################################################################################################
 def ml1_mcq(request):
     selected_option = request.session.get('selected_option')
     print("@",selected_option)
@@ -1948,6 +2690,10 @@ def ml1_mcq_next(request):
     data = get_random_ml1_sentence(request)
     context = {"val": data['data'], "recording": True, "data_id": data['data_id'], "languages": data['languages']}
     request.session['ml1_context'] = context
+    my_program = request.session.get('my_program')  # Retrieve selected program from session
+    print('my_program is', my_program)
+    if my_program == 'Advance English Program':
+        return render(request, "Advance/ml1_mcq.html", context)
 
     if request.method == 'POST':
         transcript = request.session.get('transcript')
@@ -1987,80 +2733,182 @@ def ml1_mcq_api(request):
         print('text:', text)
         print('audio_url:', audio_url)
         print('process_time:', process_time)
-        data = json_l2_data
-        Sentence = None
-        for d in data['Sentence']:
-            if d['id'] == data_id:
-                val = d['data']
-                break
-        print("@",selected_option)
-        if selected_language == 'hindi':
-                print("selected",'hindi')
+
+        if my_program == 'Advance English Program' and selected_option == 'BL':
+            data = json_advance_eng
+            val = request.session.get('question')
+            for d in data['Story']:
+                if d['id'] == data_id:
+                    print('data_id#######################################', data_id)
+                    val = d['data']
+                    break
+            selected_data = next((item for item in data['Story'] if item['id'] == data_id), None)
+            print('selected_data#######################################', selected_data)
+
+            if selected_data:
+                question = selected_data['questions']
+                question = question[0]
+
+                if selected_language == 'hindi':
+                    print("selected", 'hindi')
+                    request.session['lan'] = selected_language
+                elif selected_language == 'marathi':
+                    print('selected', 'marathi')
+                    request.session['lan'] = selected_language
+                elif selected_language == 'English':
+                    print('selected', 'English')
+                    request.session['lan'] = selected_language
+                else:
+                    print("Invalid selected language")
+
+                if selected_language in ['hindi', 'marathi', 'English']:
+                    answer = question['language'][selected_language]['answers']
+                    print('answer is $$$$$$$$$$$$$$$$$$$$$$', answer)
+                else:
+                    print("Invalid selected language")
+            else:
+                print("Data not found for the given data_id")
+            print("student_id", id_value)
+            print("sample_id", data_id)
+            print("level")
+            print("section")
+            print("question", val)
+            print("answer", selected_div)
+            print('audio_url:', audio_url)
+            print('mistakes_count', audio_url)
+            print('no_mistakes:', no_mistakes)
+            print('no_mistakes_edited', no_mistakes)
+            print('process_time:', process_time)
+            print('language:', 'English')
+            print('no_del:', no_del)
+            print('del_details:', del_details)
+            print('no_sub:', "no_sub")
+            print('sub_details:', sub_details)
+            print("test_type", status)
+            print("next level", ans_next_level)
+            print("correct_answer:", answer)
+            print("answer_check_status:", "answer")
+            lan = request.session.get('lan')
+            print("lan", lan)
+            data = {}
+            data["student_id"] = id_value
+            data["sample_id"] = "data_id"
+            data["level"] = 'L1'
+            data["question"] = val
+            data["section "] = 'MCQ'
+            data["answer"] = selected_div
+            data["audio_url"] = ''
+            data["mistakes_count"] = '0'
+            data["no_mistakes"] = '0'
+            data["no_mistakes_edited"] = '0'
+            data["api_process_time"] = '0'
+            data["language"] = 'English'
+            data["no_del"] = '0'
+            data["del_details"] = '0'
+            data["no_sub"] = '0'
+            data["sub_details"] = '0'
+            data["test_type"] = status
+            data["next_level"] = ans_next_level
+            data["correct_answer"] = answer
+            data["answer_check_status"] = 'true'
+            data["mcq_language"] = lan
+            data["program"] = my_program
+            print(data)
+            url = 'https://parakh.pradigi.org/v1/saveprogress/'
+            files = []
+            payload = {'data': json.dumps(data)}
+            headers = {}
+            response = requests.request("POST", url, headers=headers, data=payload, files=files)
+            print('student_id', response.text)
+            response_data = json.loads(response.text)
+            print(response.text)
+            index = request.session.get('index')
+            indexing = request.session.get('indexing')
+
+            if index == 0:
+                request.session['index'] = 1
+                return redirect('bl_story_mcq_next_mcq')
+            if indexing == 1:
+                request.session['indexing'] = 2
+                return redirect('bl_story_mcq_last')
+            mcq_complete = request.session.get('mcq_complete')
+            if mcq_complete:
+                return HttpResponse('flow completed for story')
+        else:    
+            data = json_l2_data
+            Sentence = None
+            for d in data['Sentence']:
+                if d['id'] == data_id:
+                    val = d['data']
+                    break
+            print("@",selected_option)
+            if selected_language == 'hindi':
+                    print("selected",'hindi')
+                    request.session['lan'] = selected_language
+
+            elif selected_language == 'marathi':
+                print('selected','marathi')
                 request.session['lan'] = selected_language
 
-        elif selected_language == 'marathi':
-            print('selected','marathi')
-            request.session['lan'] = selected_language
-
-        if selected_language == 'hindi':
-                data = json_l2_data
-                # find the data with matching data_id
-                selected_data = next((item for item in data['Sentence'] if item['id'] == data_id), None)
-                if selected_data:
-                    languages = selected_data['language']
-                    selected_language = languages.get(selected_language)
-                    options = selected_language.get('options')
-                    answer = selected_language.get('answers')
-                else:
-                    print("Data not found for the given data_id")
-        elif selected_language == 'marathi':
-                data = json_l2_data
-                # find the data with matching data_id
-                selected_data = next((item for item in data['Sentence'] if item['id'] == data_id), None)
-                if selected_data:
-                    
-                    languages = selected_data['language']
-                    selected_language = languages.get(selected_language)
-                    options = selected_language.get('options')
-                    answer = selected_language.get('answers')
-                else:
-                    print("Data not found for the given data_id")
-     
-        lan = request.session.get('lan')
-        print("lan",lan)
-        data={}
-        data["student_id"]=id_value
-        data["sample_id"]= "data_id"
-        data["level"]= 'L1'
-        data["question"]= val
-        data["section "]= 'MCQ'
-        data["answer"]= selected_div
-        data["audio_url"]= ''
-        data["mistakes_count"]= '0'
-        data["no_mistakes"]= '0'
-        data["no_mistakes_edited"]= '0'
-        data["api_process_time"]= '0'
-        data["language"]= 'English'
-        data["no_del"]= '0'
-        data["del_details"]= '0'
-        data["no_sub"]= '0'
-        data["sub_details"]= '0'
-        data["test_type"]= status
-        data["next_level"]= ans_next_level
-        data["correct_answer"]= answer
-        data["answer_check_status"]= 'true'
-        data["mcq_language"]= lan
-        data["program"] = my_program
-        print(data)
-        url = 'https://parakh.pradigi.org/v1/saveprogress/'
-        files = []
-        payload = {'data': json.dumps(data)}
-        headers = {}
-        response = requests.request("POST", url, headers=headers, data=payload, files=files)
-        print('student_id', response.text)
-        response_data = json.loads(response.text)
-        print(response.text)
-        return redirect('ml2')
+            if selected_language == 'hindi':
+                    data = json_l2_data
+                    # find the data with matching data_id
+                    selected_data = next((item for item in data['Sentence'] if item['id'] == data_id), None)
+                    if selected_data:
+                        languages = selected_data['language']
+                        selected_language = languages.get(selected_language)
+                        options = selected_language.get('options')
+                        answer = selected_language.get('answers')
+                    else:
+                        print("Data not found for the given data_id")
+            elif selected_language == 'marathi':
+                    data = json_l2_data
+                    # find the data with matching data_id
+                    selected_data = next((item for item in data['Sentence'] if item['id'] == data_id), None)
+                    if selected_data:
+                        
+                        languages = selected_data['language']
+                        selected_language = languages.get(selected_language)
+                        options = selected_language.get('options')
+                        answer = selected_language.get('answers')
+                    else:
+                        print("Data not found for the given data_id")
+        
+            lan = request.session.get('lan')
+            print("lan",lan)
+            data={}
+            data["student_id"]=id_value
+            data["sample_id"]= "data_id"
+            data["level"]= 'L1'
+            data["question"]= val
+            data["section "]= 'MCQ'
+            data["answer"]= selected_div
+            data["audio_url"]= ''
+            data["mistakes_count"]= '0'
+            data["no_mistakes"]= '0'
+            data["no_mistakes_edited"]= '0'
+            data["api_process_time"]= '0'
+            data["language"]= 'English'
+            data["no_del"]= '0'
+            data["del_details"]= '0'
+            data["no_sub"]= '0'
+            data["sub_details"]= '0'
+            data["test_type"]= status
+            data["next_level"]= ans_next_level
+            data["correct_answer"]= answer
+            data["answer_check_status"]= 'true'
+            data["mcq_language"]= lan
+            data["program"] = my_program
+            print(data)
+            url = 'https://parakh.pradigi.org/v1/saveprogress/'
+            files = []
+            payload = {'data': json.dumps(data)}
+            headers = {}
+            response = requests.request("POST", url, headers=headers, data=payload, files=files)
+            print('student_id', response.text)
+            response_data = json.loads(response.text)
+            print(response.text)
+            return redirect('ml2')
   
     
 #############################################################################################
@@ -3455,7 +4303,11 @@ def start_recording(request):
 def paragraph(request):
     selected_option = request.session.get('selected_option')
     print("@",selected_option)
-    if request.method == 'POST':
+    my_program = request.session.get('my_program')  # Retrieve selected option from session
+    print('my_program is', my_program)
+    if my_program == 'Advance English Program':
+        return redirect('start_recording_bl')
+    elif request.method == 'POST':
         return redirect('start_recording')
     return render(request, 'para_start.html')
 
@@ -3480,10 +4332,27 @@ def get_random_paragraph(request):
         'BL' : json_l1_data,
         'ML1': json_l2,
         'ML2' : json_l3,
-        'EL' : json_l4
+        'EL' : json_l4,
+        'Advance English Program BL' : json_advance_eng
     }
-    if selected_option in json_files:
+    my_program = request.session.get('my_program')  # Retrieve selected option from session
+    print('my_program is', my_program)
+    request.session['my_language'] = 'English'
+    if my_program == 'Advance English Program' and selected_option == 'BL' :
+        json_file = json_advance_eng
+        print(json_file)
+        data1 = random.choice(json_file['Para'])
+        print("the value ", data1['id'])
+        data_id = data1['id']
+        request.session['data_id'] = data_id
+        print(data_id)
+        print("data", data1['data'])
+        request.session['data_value'] = data1['data']
+        return data1['data'], data_id
+    else:
+        selected_option in json_files
         json_file = json_files[selected_option]
+        print(json_file)
         data1 = random.choice(json_file['Paragraph'])
         print("the value ", data1['id'])
         data_id = data1['id']
@@ -3870,13 +4739,19 @@ def next_para(request):
 #                   Story Recording
 def story(request):
     if request.method == 'POST':
+        # my_program = request.session.get('my_program')
+        # if my_program == 'Advance English Program':
+        #     return redirect('start_recording_ml1')
         return redirect('story_recording')
     return render(request, 'story_start.html')
 
 
 def get_random_story(request):
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
+    print("@selected option",selected_option)
+    my_program = request.session.get('my_program')
+    if my_program == 'Advance English Program':
+        selected_option = 'Advance English Program'
     json_files = {
         'English': json_eng,
         'Hindi': json_hin,
@@ -3894,7 +4769,8 @@ def get_random_story(request):
         'BL' : json_l1_data,
         'ML1': json_l2,
         'ML2' : json_l3,
-        'EL' : json_l4
+        'EL' : json_l4,
+        'Advance English Program' : json_advance_eng
     }
     if selected_option in json_files:
         json_file = json_files[selected_option]
@@ -3935,8 +4811,63 @@ def story_answer(request):
     print(filepath)
     selected_option = request.session.get('selected_option')
     print("@",selected_option)
+    my_program = request.session.get('my_program')
+    if my_program == 'Advance English Program':
+        filepath = request.session.get('filepath')
+        filename = request.session.get('filename')
+        print(filename)
+        selected_option = request.session.get('selected_option')
+        print("@",selected_option)
+        
+        data_id = request.session.get('data_id')
+        print("data_id",data_id)
+        data = json_advance_eng
+        paragraph = None
+        for d in data['Story']:
+            if d['id'] == data_id:
+                val = d['data']
+                break
 
-    if selected_option is not None:
+        if val:
+            print("the val",val)
+        url = 'http://3.7.133.80:8000/gettranscript/'
+        files = [('audio', (filepath, open(filepath, 'rb'), 'audio/wav'))]
+        payload = {'language': 'English' ,'question':val}
+        headers = {}
+        response = requests.request("POST", url, headers=headers, data=payload, files=files)
+        print('***', response.text)
+        request.session['ml1_res'] = response.text
+        phone_number = request.session.get('phone_number')
+        print("ph", phone_number)
+        enrollment_id = request.session.get('enrollment_id')
+        print("enrollment_id",enrollment_id)
+        if response.status_code == 200:
+            print("text",val)
+            data_string = response.json().get('text')
+            mistake = response.json().get('no_mistakes')
+            fluency = response.json().get('wcpm') 
+            index = response.json().get('sub_details') 
+            deld = response.json().get('del_details') 
+            # Format wcpm to have only two decimal places
+            wcpm_formatted = '{:.2f}'.format(float(fluency)) if fluency else None              
+            filepath = request.session.get('filepath')
+            audio_url = None
+            if filepath:
+                # Check if the file exists
+                if os.path.exists(filepath):
+                    # Get the file name from the file path
+                    filename = os.path.basename(filepath)
+                    audio_url = request.build_absolute_uri(settings.MEDIA_URL + filename)
+                else:
+                    filepath = None  
+            return render(request, 'AOP_PRO/ml1_answer.html', {'transcript': data_string, 'text':data_string, 'originaltext':val , 'sub_details':index,'del_details':deld, 'audio_url': audio_url, 'no_mistakes': mistake, 'wcpm': wcpm_formatted,'mobile_number': phone_number})
+        else:
+            return render(request, 'Error/pages-500.html' )
+        
+    
+
+    else:
+        selected_option is not None
         data_id = request.session.get('data_id')
         print("data_id",data_id)
         data = json_files[selected_option]
@@ -3946,37 +4877,37 @@ def story_answer(request):
                 val = d['data']
                 break
 
-    if val:
-        print("the val",val)
-    url = 'http://3.7.133.80:8000/gettranscript/'
-    files = [('audio', (filepath, open(filepath, 'rb'), 'audio/wav'))]
-    payload = {'language': selected_option,'question':val}
-    headers = {}
-    response = requests.request("POST", url, headers=headers, data=payload, files=files)
-    print('***', response.text)
+        if val:
+            print("the val",val)
+        url = 'http://3.7.133.80:8000/gettranscript/'
+        files = [('audio', (filepath, open(filepath, 'rb'), 'audio/wav'))]
+        payload = {'language': selected_option,'question':val}
+        headers = {}
+        response = requests.request("POST", url, headers=headers, data=payload, files=files)
+        print('***', response.text)
 
-    if response.status_code == 200: 
-        filepath = request.session.get('filepath')
-        print("filepath",filepath)
-        data_string = response.json().get('text')
-        mistake = response.json().get('no_mistakes')
-        fluency = response.json().get('wcpm') 
-        index = response.json().get('sub_details') 
-        deld = response.json().get('del_details')
-        wcpm_formatted = '{:.2f}'.format(float(fluency)) if fluency else None  
-        audio_url = None
-        if filepath:
-            # Check if the file exists
-            if os.path.exists(filepath):
-                # Get the file name from the file path
-                filename = os.path.basename(filepath)
-                audio_url = request.build_absolute_uri(settings.MEDIA_URL + filename)
-            else:
-                filepath = None                
+        if response.status_code == 200: 
+            filepath = request.session.get('filepath')
+            print("filepath",filepath)
+            data_string = response.json().get('text')
+            mistake = response.json().get('no_mistakes')
+            fluency = response.json().get('wcpm') 
+            index = response.json().get('sub_details') 
+            deld = response.json().get('del_details')
+            wcpm_formatted = '{:.2f}'.format(float(fluency)) if fluency else None  
+            audio_url = None
+            if filepath:
+                # Check if the file exists
+                if os.path.exists(filepath):
+                    # Get the file name from the file path
+                    filename = os.path.basename(filepath)
+                    audio_url = request.build_absolute_uri(settings.MEDIA_URL + filename)
+                else:
+                    filepath = None                
 
-        return render(request, 'story_ans.html', {'transcript': data_string, 'text':data_string , 'originaltext':val ,'sub_details':index,'del_details':deld,'audio_url': audio_url, 'no_mistakes': mistake, 'wcpm': wcpm_formatted})
-    else:
-        return render(request, 'Error/pages-500.html' )
+            return render(request, 'story_ans.html', {'transcript': data_string, 'text':data_string , 'originaltext':val ,'sub_details':index,'del_details':deld,'audio_url': audio_url, 'no_mistakes': mistake, 'wcpm': wcpm_formatted})
+        else:
+            return render(request, 'Error/pages-500.html' )
    
 def skip_story_answer(request):
     selected_option = request.session.get('selected_option')
@@ -3985,6 +4916,16 @@ def skip_story_answer(request):
         data_id = request.session.get('data_id')
         print("data_id",data_id)
         data = json_eng
+        story = None
+        for d in data['Story']:
+            if d['id'] == data_id:
+                val = d['data']
+                break
+
+    elif selected_option == 'BL':
+        data_id = request.session.get('data_id')
+        print("data_id",data_id)
+        data = json_advance_eng
         story = None
         for d in data['Story']:
             if d['id'] == data_id:
@@ -4105,6 +5046,9 @@ def skip_story_answer(request):
     words = val.split()
     my_list = list(words)
     last_index = len(my_list) 
+    my_program = request.session.get('my_program')
+    if my_program == 'Advance English Program':
+        return render(request, 'AOP_PRO/ml1_answer.html', {'originaltext': val, 'wcpm': None, 'no_mistakes': last_index})
     return render(request, 'story_ans.html', {'originaltext': val, 'wcpm': None, 'no_mistakes': last_index})
 
 
