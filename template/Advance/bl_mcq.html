@@ -645,8 +645,11 @@
 
                 {% csrf_token %}
                 <input style="display: none;" type="hidden" name="selected_language" id="selected-language" value="">
+                <input  type="hidden" name="language_value" id="language-value" value="">
+
                 <input style="display: none;" type="text" id="selected-div" name="selected-div" readonly>
                 <input style="display: none;" type="text" id="selected-div_id" name="selected-div_id" readonly>
+                
 
                 <input type="hidden" name="selected_language_input" id="selected-language-input" value="">
                 <p style="display: none;"  id="selected-language-display"></p>

@@ -429,7 +429,7 @@ def start_assesment(request, selected_option):
     if my_program == 'Advance English Program':
         selected_option = f'{my_program} {selected_option}'  # Combine my_program and selected_option
         session['selected_option'] = selected_option 
-        print('selected option is in start assesment',selected_option)
+        # print('selected option is in start assesment',selected_option)
         return render(request, 'start_assesment.html', {'selected_option': selected_option, 'selected_level': selected_level, 'status': status})
     else:
         request.session['selected_option'] = selected_option
@@ -608,7 +608,7 @@ def bl_answer(request):
     print('my_program is', my_program)
     if my_program == 'Advance English Program' and selected_option == 'BL':
         json_file = json_advance_eng
-        print(json_file)
+        # print(json_file)
         data_id = request.session.get('data_id')
         print("data_id", data_id)
         data = json_file  # Assuming the desired data is directly under the 'json_file' variable
@@ -695,8 +695,32 @@ def bl_retake(request):
                 os.remove(file_path)
         except Exception as e:
             print(e)
+
+    my_program = request.session.get('my_program')
+    if my_program == 'Advance English Program' :
+        # data_id = request.session.get('data_id')
+        # print("data_id",data_id)
+        # request.session['audio_recorded'] = True
+        # data = json_advance_eng
+        # Para = None
+        # for d in data['Para']:
+        #     if d['id'] == data_id:
+        #         val = d['data']
+        #         break
+
+        json_file = json_advance_eng
+        # print(json_file)
+        data_id = request.session.get('data_id')
+        print("data_id", data_id)
+        data = json_file  # Assuming the desired data is directly under the 'json_file' variable
+        para = None
+
+        for d in data['Para']:  # Assuming the data is stored under the 'Paragraph' key
+            if d['id'] == data_id:
+                val = d['data']
+                break
     
-    if selected_option == 'English':
+    elif selected_option == 'English':
         data_id = request.session.get('data_id')
         print("data_id",data_id)
         request.session['audio_recorded'] = True
@@ -1109,6 +1133,7 @@ def get_random_sentence(request):
             data_id = selected_para['id']
             request.session['data_id'] = data_id
             print('data id updated', data_id)
+            request.session['question'] = question 
 
             return {
                 'data': question,
@@ -1152,10 +1177,16 @@ def bl_mcq_api(request):
     if request.method == 'POST':
         selected_lan = request.POST.get('selected_language_input')
         selecteddiv = request.session.get('selected-div')
+        print('selecteddivtesting',selecteddiv)
         status = request.session.get('status')
         selected_language = request.POST.get('selected_language')
-        selected_div = request.POST.get('selected-div')
+        # selected_div = request.POST.get('selected-div')
+        selected_div = request.session.get('selected-ans')
+        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@selected_div',selected_div)
         data_id = request.session.get('data_id')
+        # request.session['answer'] = answer
+        answer = request.session.get('answer')
+        print('###%%%%%%%%%%%%%%%#######################',answer)
         id_value = request.session.get('id_value')
         transcript = request.session.get('transcript')
         transcript_dict = json.loads(transcript)
@@ -1174,18 +1205,17 @@ def bl_mcq_api(request):
         print('process_time:', process_time)
         if my_program == 'Advance English Program' and selected_option == 'BL':
             data = json_advance_eng
+            # request.session['question'] = question 
             val = request.session.get('question')
-            for d in data['Para']:
-                if d['id'] == data_id:
-                    print('data_id#######################################', data_id)
-                    val = d['data']
-                    break
+            print('question added new is bhvfghf',val)
+
+     
             selected_data = next((item for item in data['Para'] if item['id'] == data_id), None)
-            print('selected_data#######################################', selected_data)
+            # print('selected_data#######################################', selected_data)
 
             if selected_data:
-                question = selected_data['questions']
-                question = question[0]
+                # question = val
+                # question = question[1]
 
                 if selected_language == 'hindi':
                     print("selected", 'hindi')
@@ -1200,8 +1230,9 @@ def bl_mcq_api(request):
                     print("Invalid selected language")
 
                 if selected_language in ['hindi', 'marathi', 'English']:
-                    answer = question['language'][selected_language]['answers']
-                    print('answer is $$$$$$$$$$$$$$$$$$$$$$', answer)
+                    pass
+                    # answer = question['language'][selected_language]['answers']
+                    # print('answer is $$$$$$$$$$$$$$$$$$$$$$', answer)
                 else:
                     print("Invalid selected language")
             else:
@@ -1262,6 +1293,10 @@ def bl_mcq_api(request):
             print(response.text)
             index = request.session.get('index')
             indexing = request.session.get('indexing')
+            my_result = request.session.get('my_result')
+            print('###############myresult',my_result)
+            my_result = sum(my_result)
+            print('###############myresultsum',my_result)
 
             if index == 0:
                 request.session['index'] = 1
@@ -1270,8 +1305,15 @@ def bl_mcq_api(request):
                 request.session['indexing'] = 2
                 return redirect('bl_mcq_last')
             mcq_complete = request.session.get('mcq_complete')
-            if mcq_complete:
+            # if mcq_complete:
+            #     return redirect('story')
+            if my_result == 3:
                 return redirect('story')
+            else:
+                context = {
+                        'level' : "Paragraph without Exeception"
+                    }
+                return render(request,"AOP_PRO/ans_page_aop.html", context=context) 
 
             # del request.session['data_id']
 
@@ -1569,15 +1611,32 @@ def bl_final_mcq(request):
         print('selected-div', selected_divid)
         context['selected_div'] = selected_div
         print('selected-div', selected_div)
+        request.session['selected-ans'] = selected_div
         selected_language = request.POST.get('selected_language')
         context['selected_language'] = selected_language
         print('selected_language', selected_language)
+        if selected_language in ['English', 'hindi', 'marathi']:
+            data = context['val']
+            languages = context['languages']
+            
+            # Get the answer for the selected language
+            answer = languages[selected_language]['answers']
+            
+            print('answer is', answer)
+            request.session['answer'] = answer
+        else:
+            print('Invalid selected language')
+
+        my_result = request.session.get('my_result', []) # Retrieve existing my_result from session
+        if selected_div == answer:
+            my_result.append(1)
+        print('my_result**********************',my_result)
+        request.session['my_result'] = my_result 
 
         my_program = request.session.get('my_program')  # Retrieve selected program from session
         print('my_program is', my_program)
         if my_program == 'Advance English Program':
             return render(request, "Advance/bl_mcq_next.html", context)
-        return render(request, "AOP_PRO/bl_mcq.html", context)
     context['selected_div'] = context.get('selected_div')  # Add selected_div to context
     return render(request, "AOP_PRO/bl_mcq.html", context)
 
@@ -1589,7 +1648,9 @@ def bl_mcq_next_mcq(request):
     # print("@",selected_level)
     data = get_random_sentence1(request)
     context = {"val": data['data'], "recording": True, "data_id": data['data_id'], "languages": data['languages']}
+    print('##########context###############',context)
     request.session['my_context'] = context
+    
     phone_number = request.session.get('phone_number')
     print("ph", phone_number)
     enrollment_id = request.session.get('enrollment_id')
@@ -1630,6 +1691,13 @@ def get_random_sentence1(request):
             request.session['indexing'] = 1 
             request.session['data_id'] = data_id
             print('data id updated', data_id)
+            request.session['question'] = question
+            # selected_language = 'English'  # Replace with your logic to get the selected language
+
+            # if selected_language in languages:
+            #     answer = languages[selected_language]['answers']
+            #     print('answer is $$$$$$$$$$$$$$$$$$$$$$', answer)
+            #     request.session['answer'] = answer 
 
             return {
                 'data': question,
@@ -1680,8 +1748,16 @@ def get_random_sentence2(request):
             data_id = selected_para['id']
             request.session['data_id'] = data_id
             print('data id updated', data_id)
+            request.session['question'] = question
             mcq_complete = 3
             request.session['mcq_complete'] = mcq_complete
+            # selected_language = 'English'  # Replace with your logic to get the selected language
+
+            # if selected_language in languages:
+            #     answer = languages[selected_language]['answers']
+            #     print('answer is $$$$$$$$$$$$$$$$$$$$$$', answer)
+            #     request.session['answer'] = answer 
+            
 
             return {
                 'data': question,
@@ -1719,6 +1795,10 @@ def bl_mcq_next(request):
     # print("@",selected_level)
     data = get_random_sentence(request)
     context = {"val": data['data'], "recording": True, "data_id": data['data_id'], "languages": data['languages']}
+    print('val:', context['val'])
+    print('recording:', context['recording'])
+    print('data_id:', context['data_id'])
+    print('languages:', context['languages'])
     request.session['my_context'] = context
     phone_number = request.session.get('phone_number')
     print("ph", phone_number)
@@ -1859,6 +1939,7 @@ def get_random_ml1_sentence(request):
             data_id = selected_para['id']
             request.session['data_id'] = data_id
             print('data id updated', data_id)
+            request.session['question'] = question
 
             return {
                 'data': question,
@@ -2008,12 +2089,22 @@ def ml1_answer(request):
     
     data_id = request.session.get('data_id')
     print("data_id",data_id)
-    data = json_l1_data
-    paragraph = None
-    for d in data['Paragraph']:
-        if d['id'] == data_id:
-            val = d['data']
-            break
+    my_program = request.session.get('my_program')
+    if my_program == 'Advance English Program':
+        data = json_advance_eng
+        Story = None
+        for d in data['Story']:
+            if d['id'] == data_id:
+                val = d['data']
+                print('Val@@@@@@@@@@@@@@@@@@@@val',val)
+                break
+    else:
+        data = json_l1_data
+        paragraph = None
+        for d in data['Paragraph']:
+            if d['id'] == data_id:
+                val = d['data']
+                break
 
     if val:
         print("the val",val)
@@ -2089,14 +2180,24 @@ def ml1_retake(request):
     data_id = request.session.get('data_id')
     print("data_id",data_id)
     request.session['audio_recorded'] = True
+    my_program = request.session.get('my_program')
+    if my_program == 'Advance English Program' :
+        data = json_advance_eng
+        paragraph = None
+        for d in data['Story']:
+            if d['id'] == data_id:
+                val = d['data']
+                break
+
     # with open(json_l2, 'r', encoding='utf-8') as f:
     #     data = json.load(f)
-    data = json_l2_data
-    paragraph = None
-    for d in data['Paragraph']:
-        if d['id'] == data_id:
-            val = d['data']
-            break
+    else:
+        data = json_l2_data
+        paragraph = None
+        for d in data['Paragraph']:
+            if d['id'] == data_id:
+                val = d['data']
+                break
 
     if val:
         print("the val",val)
@@ -2540,6 +2641,7 @@ def ml1_next_store(request):
 
 def ml1_final_mcq(request):
     context = request.session.get('ml1_context', {})
+    print("contextWWWWWWWWWWWWWWWWWWW", context)
     if request.method == 'POST':
         selected_div = request.POST.get('selected-div')
         selected_divid = request.POST.get('selected-div_id')
@@ -2550,6 +2652,25 @@ def ml1_final_mcq(request):
         selected_language = request.POST.get('selected_language')
         context['selected_language'] = selected_language
         print('selected_language',selected_language)
+        request.session['selected-ans'] = selected_div
+        if selected_language in ['English', 'hindi', 'marathi']:
+            data = context['val']
+            languages = context['languages']
+            
+            # Get the answer for the selected language
+            answer = languages[selected_language]['answers']
+            
+            print('answer isdfgdskmgskdngksdgsdvfaf', answer)
+            request.session['answer'] = answer
+        else:
+            print('Invalid selected language')
+
+        my_story_result = request.session.get('my_story_result', []) # Retrieve existing my_result from session
+        if selected_div == answer:
+            my_story_result.append(1)
+        print('my_story_result**********************',my_story_result)
+        request.session['my_story_result'] = my_story_result
+
         my_program = request.session.get('my_program')
         if my_program == 'Advance English Program':
             return render(request, "Advance/ml1_mcq_next.html", context)
@@ -2565,7 +2686,7 @@ def bl_story_mcq_next_mcq(request):
     # print("@",selected_level)
     data = get_random_sentence4(request)
     context = {"val": data['data'], "recording": True, "data_id": data['data_id'], "languages": data['languages']}
-    request.session['my_context'] = context
+    request.session['ml1_context'] = context
     phone_number = request.session.get('phone_number')
     print("ph", phone_number)
     enrollment_id = request.session.get('enrollment_id')
@@ -2606,6 +2727,7 @@ def get_random_sentence4(request):
             request.session['indexing'] = 1 
             request.session['data_id'] = data_id
             print('data id updated', data_id)
+            request.session['question'] = question 
 
             return {
                 'data': question,
@@ -2616,7 +2738,7 @@ def get_random_sentence4(request):
 def bl_story_mcq_last(request):
     data = get_random_sentence5(request)
     context = {"val": data['data'], "recording": True, "data_id": data['data_id'], "languages": data['languages']}
-    request.session['my_context'] = context
+    request.session['ml1_context'] = context
     phone_number = request.session.get('phone_number')
     print("ph", phone_number)
     enrollment_id = request.session.get('enrollment_id')
@@ -2658,6 +2780,7 @@ def get_random_sentence5(request):
             print('data id updated', data_id)
             mcq_complete = 3
             request.session['mcq_complete'] = mcq_complete
+            request.session['question'] = question 
 
             return {
                 'data': question,
@@ -2711,10 +2834,14 @@ def ml1_mcq_api(request):
         print("lan",selected_lan)
         status = request.session.get('status')
         selected_language = request.POST.get('selected_language')
-        selected_div = request.POST.get('selected-div')
-        print("#################################################################")
+        # selected_div = request.POST.get('selected-div')
+        # print("#################################################################")
         data_id = request.session.get('data_id')
         print(data_id)
+        selected_div = request.session.get('selected-ans')
+        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@selected_div',selected_div)
+        answer = request.session.get('answer')
+        print('###%%%%%%%%%%%%%%%#######################',answer)
         id_value = request.session.get('id_value')
         ml1_res = request.session.get('ml1_res')
         # transcript = request.session.get('transcript')
@@ -2737,17 +2864,17 @@ def ml1_mcq_api(request):
         if my_program == 'Advance English Program' and selected_option == 'BL':
             data = json_advance_eng
             val = request.session.get('question')
-            for d in data['Story']:
-                if d['id'] == data_id:
-                    print('data_id#######################################', data_id)
-                    val = d['data']
-                    break
+            # for d in data['Story']:
+            #     if d['id'] == data_id:
+            #         print('data_id#######################################', data_id)
+            #         val = d['data']
+            #         break
             selected_data = next((item for item in data['Story'] if item['id'] == data_id), None)
             print('selected_data#######################################', selected_data)
 
             if selected_data:
-                question = selected_data['questions']
-                question = question[0]
+                # question = selected_data['questions']
+                # question = question[0]
 
                 if selected_language == 'hindi':
                     print("selected", 'hindi')
@@ -2762,8 +2889,9 @@ def ml1_mcq_api(request):
                     print("Invalid selected language")
 
                 if selected_language in ['hindi', 'marathi', 'English']:
-                    answer = question['language'][selected_language]['answers']
-                    print('answer is $$$$$$$$$$$$$$$$$$$$$$', answer)
+                    pass
+                    # answer = question['language'][selected_language]['answers']
+                    # print('answer is $$$$$$$$$$$$$$$$$$$$$$', answer)
                 else:
                     print("Invalid selected language")
             else:
@@ -2831,9 +2959,22 @@ def ml1_mcq_api(request):
             if indexing == 1:
                 request.session['indexing'] = 2
                 return redirect('bl_story_mcq_last')
-            mcq_complete = request.session.get('mcq_complete')
-            if mcq_complete:
-                return HttpResponse('flow completed for story')
+            # mcq_complete = request.session.get('mcq_complete')
+            # if mcq_complete:
+            #     return HttpResponse('flow completed for story')
+            my_story_result = request.session.get('my_story_result')
+            my_story_result = sum(my_story_result)
+
+            if my_story_result == 3:
+                context = {
+                        'level' : "Story with Exemption"
+                    }
+                return render(request,"AOP_PRO/ans_page_aop.html", context=context) 
+            else:
+                context = {
+                        'level' : "Story without Exemption"
+                    }
+                return render(request,"AOP_PRO/ans_page_aop.html", context=context) 
         else:    
             data = json_l2_data
             Sentence = None
@@ -4335,18 +4476,19 @@ def get_random_paragraph(request):
         'EL' : json_l4,
         'Advance English Program BL' : json_advance_eng
     }
+    del request.session['my_result']
     my_program = request.session.get('my_program')  # Retrieve selected option from session
     print('my_program is', my_program)
     request.session['my_language'] = 'English'
     if my_program == 'Advance English Program' and selected_option == 'BL' :
         json_file = json_advance_eng
-        print(json_file)
+        # print(json_file)
         data1 = random.choice(json_file['Para'])
         print("the value ", data1['id'])
         data_id = data1['id']
         request.session['data_id'] = data_id
         print(data_id)
-        print("data", data1['data'])
+        # print("data", data1['data'])
         request.session['data_value'] = data1['data']
         return data1['data'], data_id
     else:
@@ -4772,6 +4914,7 @@ def get_random_story(request):
         'EL' : json_l4,
         'Advance English Program' : json_advance_eng
     }
+    # del request.session['my_story_result']
     if selected_option in json_files:
         json_file = json_files[selected_option]
         data1 = random.choice(json_file['Story'])
