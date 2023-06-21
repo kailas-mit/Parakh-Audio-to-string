@@ -18,7 +18,7 @@ from dotenv import dotenv_values
 from .models import Program, Aop_lan, Aop_sub_lan,MyModel,Avatar,MyUser
 
 
-dotenv_path = "/home/mit/Downloads/Parakh30-05/Parakh/.env"
+dotenv_path = "../.env"
 env_vars = dotenv_values(dotenv_path)
 
 firebase_path = env_vars.get("Firebase_path")
