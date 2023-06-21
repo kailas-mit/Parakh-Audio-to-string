@@ -293,6 +293,13 @@ def msg_api(request):
                 request.session['name'] = name
                 status = data_result[0]['status']
                 request.session['status'] = status
+                # Check if my_result is not empty before deleting the session
+                if 'my_result' in request.session and len(request.session['my_result']) > 0:
+                    del request.session['my_result']
+                
+                # Check if my_story_result is not empty before deleting the session
+                if 'my_story_result' in request.session and len(request.session['my_story_result']) > 0:
+                    del request.session['my_story_result']
                 
                 context = {
                     'data': data_result,
@@ -428,8 +435,9 @@ def start_assesment(request, selected_option):
     selected_level = request.session.get('selected_level')  # Retrieve selected level from session
     if my_program == 'Advance English Program':
         selected_option = f'{my_program} {selected_option}'  # Combine my_program and selected_option
+        # selected_option = 'Advance English Program'
         session['selected_option'] = selected_option 
-        # print('selected option is in start assesment',selected_option)
+        print('selected option is in start assesment',selected_option)
         return render(request, 'start_assesment.html', {'selected_option': selected_option, 'selected_level': selected_level, 'status': status})
     else:
         request.session['selected_option'] = selected_option
@@ -606,7 +614,7 @@ def bl_answer(request):
     selected_option = request.session.get('selected_option')
     my_program = request.session.get('my_program')  # Retrieve selected option from session
     print('my_program is', my_program)
-    if my_program == 'Advance English Program' and selected_option == 'BL':
+    if my_program == 'Advance English Program' and (selected_option == 'BL' or selected_option == 'EL'):
         json_file = json_advance_eng
         # print(json_file)
         data_id = request.session.get('data_id')
@@ -698,16 +706,6 @@ def bl_retake(request):
 
     my_program = request.session.get('my_program')
     if my_program == 'Advance English Program' :
-        # data_id = request.session.get('data_id')
-        # print("data_id",data_id)
-        # request.session['audio_recorded'] = True
-        # data = json_advance_eng
-        # Para = None
-        # for d in data['Para']:
-        #     if d['id'] == data_id:
-        #         val = d['data']
-        #         break
-
         json_file = json_advance_eng
         # print(json_file)
         data_id = request.session.get('data_id')
@@ -744,6 +742,8 @@ def bl_retake(request):
 
     if val:
         print("the val",val)
+        if my_program == 'Advance English Program' :
+            return render(request, "para_rec_next.html", {"recording": True,"val":val })
     return render(request, "AOP_PRO/bl_retake.html", {"recording": True,"val":val })
    
 
@@ -924,11 +924,11 @@ def bl_store(request):
             headers = {}
             response = requests.request("POST", url, headers=headers, data=payload, files=files)
             
-            if number <= 2:
+            if number <= 3:
                 return redirect('bl_mcq_next')  # redirect to bl_mcq function
             else:
                 context = {
-                        'level' : "Paragraph without Exeception"
+                        'level' : "Sentence level"
                     }
                 return render(request,"AOP_PRO/ans_page_aop.html", context=context) 
             
@@ -1110,7 +1110,7 @@ def get_random_sentence(request):
     print("get_random_sentence",selected_option)
     my_program = request.session.get('my_program')  # Retrieve selected program from session
     print('my_program is', my_program)
-    if my_program == 'Advance English Program' and selected_option == 'BL':
+    if my_program == 'Advance English Program' and (selected_option == 'BL' or selected_option == 'EL'):
         data = json_advance_eng
         data_id = request.session.get('data_id')
         print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^data id new', data_id)
@@ -1203,7 +1203,7 @@ def bl_mcq_api(request):
         print('text:', text)
         print('audio_url:', audio_url)
         print('process_time:', process_time)
-        if my_program == 'Advance English Program' and selected_option == 'BL':
+        if my_program == 'Advance English Program' and (selected_option == 'BL' or selected_option == 'EL'):
             data = json_advance_eng
             # request.session['question'] = question 
             val = request.session.get('question')
@@ -1307,11 +1307,11 @@ def bl_mcq_api(request):
             mcq_complete = request.session.get('mcq_complete')
             # if mcq_complete:
             #     return redirect('story')
-            if my_result == 3:
+            if my_result >= 2:
                 return redirect('story')
             else:
                 context = {
-                        'level' : "Paragraph without Exeception"
+                        'level' : "Para Level Without Comprehension"
                     }
                 return render(request,"AOP_PRO/ans_page_aop.html", context=context) 
 
@@ -1668,7 +1668,7 @@ def get_random_sentence1(request):
     print("get_random_sentence",selected_option)
     my_program = request.session.get('my_program')  # Retrieve selected program from session
     print('my_program is', my_program)
-    if my_program == 'Advance English Program' and selected_option == 'BL':
+    if my_program == 'Advance English Program' and (selected_option == 'BL' or selected_option == 'EL'):
         data = json_advance_eng
         data_id = request.session.get('data_id')
         print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^data id new', data_id)
@@ -1726,7 +1726,7 @@ def get_random_sentence2(request):
     print("get_random_sentence",selected_option)
     my_program = request.session.get('my_program')  # Retrieve selected program from session
     print('my_program is', my_program)
-    if my_program == 'Advance English Program' and selected_option == 'BL':
+    if my_program == 'Advance English Program' and (selected_option == 'BL' or selected_option == 'EL'):
         data = json_advance_eng
         data_id = request.session.get('data_id')
         print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^data id new', data_id)
@@ -1916,7 +1916,7 @@ def get_random_ml1_sentence(request):
     print("get_random_sentence",selected_option)
     my_program = request.session.get('my_program')  # Retrieve selected program from session
     print('my_program is', my_program)
-    if my_program == 'Advance English Program' and selected_option == 'BL':
+    if my_program == 'Advance English Program' and (selected_option == 'BL' or selected_option == 'EL'):
         data = json_advance_eng
         data_id = request.session.get('data_id')
         print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^data id new', data_id)
@@ -2205,6 +2205,8 @@ def ml1_retake(request):
     print("ph", phone_number)
     enrollment_id = request.session.get('enrollment_id')
     print("enrollment_id",enrollment_id)
+    if my_program == 'Advance English Program' :
+        return render(request, "story_rec_next.html", {"recording": True,"val":val })
     return render(request, "AOP_PRO/ml1_retake.html", {"recording": True,"val":val, 'mobile_number': phone_number })
    
 def ml1_skip(request):
@@ -2436,11 +2438,11 @@ def ml1_store(request):
             # else:
             #     return redirect('ml1_next')
 
-            if number <= 2:
+            if number < 3:
                 return redirect('ml1_mcq_next')  # redirect to bl_mcq function
             else:
                 context = {
-                        'level' : "Story without Exeception"
+                        'level' : "Para Level With Comprehension"
                     }
                 return render(request,"AOP_PRO/ans_page_aop.html", context=context) 
         except TypeError:
@@ -2704,7 +2706,7 @@ def get_random_sentence4(request):
     print("get_random_sentence",selected_option)
     my_program = request.session.get('my_program')  # Retrieve selected program from session
     print('my_program is', my_program)
-    if my_program == 'Advance English Program' and selected_option == 'BL':
+    if my_program == 'Advance English Program' and (selected_option == 'BL' or selected_option == 'EL'):
         data = json_advance_eng
         data_id = request.session.get('data_id')
         print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^data id new', data_id)
@@ -2756,7 +2758,7 @@ def get_random_sentence5(request):
     print("get_random_sentence",selected_option)
     my_program = request.session.get('my_program')  # Retrieve selected program from session
     print('my_program is', my_program)
-    if my_program == 'Advance English Program' and selected_option == 'BL':
+    if my_program == 'Advance English Program' and (selected_option == 'BL' or selected_option == 'EL'):
         data = json_advance_eng
         data_id = request.session.get('data_id')
         print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^data id new', data_id)
@@ -2861,7 +2863,7 @@ def ml1_mcq_api(request):
         print('audio_url:', audio_url)
         print('process_time:', process_time)
 
-        if my_program == 'Advance English Program' and selected_option == 'BL':
+        if my_program == 'Advance English Program' and (selected_option == 'BL' or selected_option == 'EL'):
             data = json_advance_eng
             val = request.session.get('question')
             # for d in data['Story']:
@@ -2965,14 +2967,14 @@ def ml1_mcq_api(request):
             my_story_result = request.session.get('my_story_result')
             my_story_result = sum(my_story_result)
 
-            if my_story_result == 3:
+            if my_story_result >= 2:
                 context = {
-                        'level' : "Story with Exemption"
+                        'level' : "Story Level With Comprehension"
                     }
                 return render(request,"AOP_PRO/ans_page_aop.html", context=context) 
             else:
                 context = {
-                        'level' : "Story without Exemption"
+                        'level' : "Story Level Without Comprehension"
                     }
                 return render(request,"AOP_PRO/ans_page_aop.html", context=context) 
         else:    
@@ -4446,9 +4448,11 @@ def paragraph(request):
     print("@",selected_option)
     my_program = request.session.get('my_program')  # Retrieve selected option from session
     print('my_program is', my_program)
-    if my_program == 'Advance English Program':
-        return redirect('start_recording_bl')
-    elif request.method == 'POST':
+    # if my_program == 'Advance English Program':
+    #     return redirect('start_recording')
+    if request.method == 'POST':
+        # if my_program == 'Advance English Program':
+        #     return redirect('start_recording')
         return redirect('start_recording')
     return render(request, 'para_start.html')
 
@@ -4476,11 +4480,12 @@ def get_random_paragraph(request):
         'EL' : json_l4,
         'Advance English Program BL' : json_advance_eng
     }
-    del request.session['my_result']
+    if 'my_result' in request.session and len(request.session['my_result']) > 0:
+        del request.session['my_result']
     my_program = request.session.get('my_program')  # Retrieve selected option from session
     print('my_program is', my_program)
     request.session['my_language'] = 'English'
-    if my_program == 'Advance English Program' and selected_option == 'BL' :
+    if my_program == 'Advance English Program' and (selected_option == 'BL' or selected_option == 'EL') :
         json_file = json_advance_eng
         # print(json_file)
         data1 = random.choice(json_file['Para'])
@@ -4565,6 +4570,12 @@ def answer(request):
     my_program = request.session.get('my_program')  # Retrieve selected program from session
     print('my_program is', my_program)
     if my_program == 'Advance English Program':
+        filepath = request.session.get('filepath')
+        filename = request.session.get('filename')
+        print(filename)
+        selected_option = request.session.get('selected_option')
+        print("@",selected_option)
+        data_id = request.session.get('data_id')
         my_language = request.session.get('my_language')  # Retrieve selected language from session
         print('my_language is', my_language)
         selected_option = my_language
@@ -4574,74 +4585,129 @@ def answer(request):
             # with open(json_eng) as f:
             #     data = json.load(f)
             data = json_advance_eng
-            print('json advance english',data)
+            # print('json advance english',data)
             paragraph = None
             val = None  # Initialize the val variable
             for d in data['Para']:
                 if d['id'] == data_id:
                     val = d['data']
-                    return HttpResponse("this is working")
+                    break
 
-            # if val:
-            #     print("the val", val)
-            #     url = 'http://3.7.133.80:8000/gettranscript/'
+            if val:
+                print("the val", val)
+                url = 'http://3.7.133.80:8000/gettranscript/'
                 
-            #     filepath = request.session.get('filepath')  # Retrieve the filepath from session
-            #     if filepath:
-            #         # Check if the file exists
-            #         if os.path.exists(filepath):
-            #             # Get the file name from the file path
-            #             filename = os.path.basename(filepath)
-            #             audio_url = request.build_absolute_uri(settings.MEDIA_URL + filename)
-            #         else:
-            #             filepath = None
-            #     else:
-            #         filepath = None
+                filepath = request.session.get('filepath')  # Retrieve the filepath from session
+                if filepath:
+                    # Check if the file exists
+                    if os.path.exists(filepath):
+                        # Get the file name from the file path
+                        filename = os.path.basename(filepath)
+                        audio_url = request.build_absolute_uri(settings.MEDIA_URL + filename)
+                    else:
+                        filepath = None
+                else:
+                    filepath = None
 
-            #     if filepath:
-            #         files = [('audio', (filepath, open(filepath, 'rb'), 'audio/wav'))]
-            #         payload = {'language': selected_option, 'question': val}
-            #         headers = {}
-            #         response = requests.request("POST", url, headers=headers, data=payload, files=files)
-            #         print('***', response.text)
+                if filepath:
+                    files = [('audio', (filepath, open(filepath, 'rb'), 'audio/wav'))]
+                    payload = {'language': selected_option, 'question': val}
+                    headers = {}
+                    response = requests.request("POST", url, headers=headers, data=payload, files=files)
+                    print('***', response.text)
 
-            #         if response.status_code == 200:
-            #             print("text", val)
-            #             request.session['val'] = val
-            #             data_string = response.json().get('text')
-            #             mistake = response.json().get('no_mistakes')
-            #             fluency = response.json().get('wcpm')
-            #             index = response.json().get('sub_details')
-            #             deld = response.json().get('del_details')
-            #             request.session['no_mistakes'] = mistake
+                    if response.status_code == 200:
+                        print("text", val)
+                        request.session['val'] = val
+                        data_string = response.json().get('text')
+                        mistake = response.json().get('no_mistakes')
+                        fluency = response.json().get('wcpm')
+                        index = response.json().get('sub_details')
+                        deld = response.json().get('del_details')
+                        request.session['no_mistakes'] = mistake
 
-            #             # Format wcpm to have only two decimal places
-            #             wcpm_formatted = '{:.2f}'.format(float(fluency)) if fluency else None
+                        # Format wcpm to have only two decimal places
+                        wcpm_formatted = '{:.2f}'.format(float(fluency)) if fluency else None
 
-            #             audio_url = None
-            #             if filepath:
-            #                 audio_url = request.build_absolute_uri(settings.MEDIA_URL + filename)
+                        audio_url = None
+                        if filepath:
+                            audio_url = request.build_absolute_uri(settings.MEDIA_URL + filename)
 
-            #             return render(request, 'para_ans.html', {'transcript': data_string, 'text': data_string,
-            #                                                         'originaltext': val, 'sub_details': index,
-            #                                                         'del_details': deld, 'audio_url': audio_url,
-            #                                                         'my_program' : my_program,
-            #                                                         'no_mistakes': mistake, 'wcpm': wcpm_formatted})
-    filepath = request.session.get('filepath')
-    filename = request.session.get('filename')
-    print(filename)
-    selected_option = request.session.get('selected_option')
-    print("@",selected_option)
-    data_id = request.session.get('data_id')
-    if selected_option is not None:
+                        return render(request, 'AOP_PRO/bl_answer.html', {'transcript': data_string, 'text':data_string, 'originaltext':val , 'sub_details':index,'del_details':deld, 'audio_url': audio_url, 'no_mistakes': mistake, 'wcpm': wcpm_formatted})
+
+
+    # filepath = request.session.get('filepath')
+    # print(filepath)
+    # selected_option = request.session.get('selected_option')
+    # print("@",selected_option)
+    # my_program = request.session.get('my_program')
+    # if my_program == 'Advance English Program':
+    #     filepath = request.session.get('filepath')
+    #     filename = request.session.get('filename')
+    #     print(filename)
+    #     selected_option = request.session.get('selected_option')
+    #     print("@",selected_option)
+        
+    #     data_id = request.session.get('data_id')
+    #     print("data_id",data_id)
+    #     data = json_advance_eng
+    #     paragraph = None
+    #     for d in data['Story']:
+    #         if d['id'] == data_id:
+    #             val = d['data']
+    #             break
+
+    #     if val:
+    #         print("the val",val)
+    #     url = 'http://3.7.133.80:8000/gettranscript/'
+    #     files = [('audio', (filepath, open(filepath, 'rb'), 'audio/wav'))]
+    #     payload = {'language': 'English' ,'question':val}
+    #     headers = {}
+    #     response = requests.request("POST", url, headers=headers, data=payload, files=files)
+    #     print('***', response.text)
+    #     request.session['ml1_res'] = response.text
+    #     phone_number = request.session.get('phone_number')
+    #     print("ph", phone_number)
+    #     enrollment_id = request.session.get('enrollment_id')
+    #     print("enrollment_id",enrollment_id)
+    #     if response.status_code == 200:
+    #         print("text",val)
+    #         data_string = response.json().get('text')
+    #         mistake = response.json().get('no_mistakes')
+    #         fluency = response.json().get('wcpm') 
+    #         index = response.json().get('sub_details') 
+    #         deld = response.json().get('del_details') 
+    #         # Format wcpm to have only two decimal places
+    #         wcpm_formatted = '{:.2f}'.format(float(fluency)) if fluency else None              
+    #         filepath = request.session.get('filepath')
+    #         audio_url = None
+    #         if filepath:
+    #             # Check if the file exists
+    #             if os.path.exists(filepath):
+    #                 # Get the file name from the file path
+    #                 filename = os.path.basename(filepath)
+    #                 audio_url = request.build_absolute_uri(settings.MEDIA_URL + filename)
+    #             else:
+    #                 filepath = None  
+    #         return render(request, 'AOP_PRO/ml1_answer.html', {'transcript': data_string, 'text':data_string, 'originaltext':val , 'sub_details':index,'del_details':deld, 'audio_url': audio_url, 'no_mistakes': mistake, 'wcpm': wcpm_formatted,'mobile_number': phone_number})
+    #     else:
+    #         return render(request, 'Error/pages-500.html' )
+    else:
+        filepath = request.session.get('filepath')
+        filename = request.session.get('filename')
+        print(filename)
+        selected_option = request.session.get('selected_option')
+        print("@",selected_option)
         data_id = request.session.get('data_id')
-        print("data_id", data_id)
-        json_file = json_files[selected_option]
-        paragraph = None
-        for d in json_file['Paragraph']:
-            if d['id'] == data_id:
-                val = d['data']
-                break
+        if selected_option is not None:
+            data_id = request.session.get('data_id')
+            print("data_id", data_id)
+            json_file = json_files[selected_option]
+            paragraph = None
+            for d in json_file['Paragraph']:
+                if d['id'] == data_id:
+                    val = d['data']
+                    break
 
     if val:
         print("the val",val)
@@ -4671,7 +4737,7 @@ def answer(request):
                 filename = os.path.basename(filepath)
                 audio_url = request.build_absolute_uri(settings.MEDIA_URL + filename)
             else:
-                filepath = None  
+                filepath = None 
         return render(request, 'para_ans.html', {'transcript': data_string, 'text':data_string, 'originaltext':val , 'sub_details':index,'del_details':deld, 'audio_url': audio_url, 'no_mistakes': mistake, 'wcpm': wcpm_formatted})
     else:
         return render(request, 'Error/pages-500.html' )
@@ -4682,14 +4748,24 @@ def skip_answer(request):
     print("@",selected_option)
     data_id = request.session.get('data_id')
     print("data_id",data_id)
-    json_file = json_files[selected_option]
-    if json_file is not None:
-        data = json_file
+    my_program = request.session.get('my_program')
+    if my_program == 'Advance English Program':
+        json_file = json_advance_eng
+        data = json_advance_eng
         paragraph = None
-        for d in data['Paragraph']:
+        for d in data['Para']:
             if d['id'] == data_id:
                 val = d['data']
                 break
+    else:
+        json_file = json_files[selected_option]
+        if json_file is not None:
+            data = json_file
+            paragraph = None
+            for d in data['Paragraph']:
+                if d['id'] == data_id:
+                    val = d['data']
+                    break
     # if selected_option == 'English':
     #     data_id = request.session.get('data_id')
     #     print("data_id",data_id)
@@ -4714,6 +4790,9 @@ def skip_answer(request):
     words = val.split()
     my_list = list(words)
     last_index = len(my_list) 
+    my_program = request.session.get('my_program')
+    if my_program == 'Advance English Program':
+        return render(request, 'AOP_PRO/bl_answer.html', {'originaltext': val, 'wcpm': None, 'no_mistakes': last_index})
     return render(request, 'para_ans.html', {'originaltext': val, 'wcpm': None, 'no_mistakes': last_index})
 
 
@@ -4830,6 +4909,20 @@ def next_para(request):
             except Exception as e:
                 print(e)
 
+    my_program = request.session.get('my_program')
+    if my_program == 'Advance English Program' :
+        json_file = json_advance_eng
+        # print(json_file)
+        data_id = request.session.get('data_id')
+        print("data_id", data_id)
+        data = json_file  # Assuming the desired data is directly under the 'json_file' variable
+        para = None
+
+        for d in data['Para']:  # Assuming the data is stored under the 'Paragraph' key
+            if d['id'] == data_id:
+                val = d['data']
+                break
+
     if selected_option is not None:
         data_id = request.session.get('data_id')
         print("data_id", data_id)
@@ -4914,7 +5007,8 @@ def get_random_story(request):
         'EL' : json_l4,
         'Advance English Program' : json_advance_eng
     }
-    # del request.session['my_story_result']
+    if 'my_result' in request.session and len(request.session['my_result']) > 0:
+        del request.session['my_result']
     if selected_option in json_files:
         json_file = json_files[selected_option]
         data1 = random.choice(json_file['Story'])
@@ -4956,6 +5050,8 @@ def story_answer(request):
     print("@",selected_option)
     my_program = request.session.get('my_program')
     if my_program == 'Advance English Program':
+        if 'my_result' in request.session and len(request.session['my_result']) > 0:
+            del request.session['my_result']
         filepath = request.session.get('filepath')
         filename = request.session.get('filename')
         print(filename)
@@ -5055,7 +5151,18 @@ def story_answer(request):
 def skip_story_answer(request):
     selected_option = request.session.get('selected_option')
     print("@",selected_option)
-    if selected_option == 'English':
+    my_program = request.session.get('my_program')
+    if my_program == 'Advance English Program' and (selected_option == 'BL' or selected_option == 'EL'):
+        data_id = request.session.get('data_id')
+        print("data_id",data_id)
+        data = json_advance_eng
+        story = None
+        for d in data['Story']:
+            if d['id'] == data_id:
+                val = d['data']
+                break
+
+    elif selected_option == 'English':
         data_id = request.session.get('data_id')
         print("data_id",data_id)
         data = json_eng
