@@ -1,31 +1,3 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <p class="text">  <br> <br> {{ val }}<br> <br> <br> </p> 
-    <p class="text"  >  <br> <br> {{ data_id }}<br> <br> <br> </p> 
-    {% if languages %}
-    <p>Languages:</p>
-    <ul>
-        {% for language, data in languages.items %}
-            <li>{{ language }}</li>
-            <ul>
-                {% for key, value in data.items %}
-                    <li>{{ key }}: {{ value }}</li>
-                {% endfor %}
-            </ul>
-        {% endfor %}
-    </ul>
-{% endif %}
-
-</body>
-</html> -->
-
 <!DOCTYPE html>
 <html lang="en">
 {% load static %}
@@ -53,19 +25,19 @@
   <script>
     function disableBackButton() {
       window.history.pushState(null, "", window.location.href);
-      window.onpopstate = function() {
-          window.history.pushState(null, "", window.location.href);
+      window.onpopstate = function () {
+        window.history.pushState(null, "", window.location.href);
       };
 
       document.getElementById("message").innerHTML = "Successfully!, Browser back button disabled";
-      setTimeout(function() {
+      setTimeout(function () {
         document.getElementById("message").style.display = "none";
       }, 2000);
     }
 
-    window.onload = function() {
+    window.onload = function () {
       var button = document.getElementById('myButton');
-      
+
       // Programmatically click the button
       button.click();
 
@@ -75,240 +47,58 @@
   </script>
   <title>Parakh</title>
 </head>
-<body >
+
+<body>
   <button style="display: none;" id="myButton" onclick="disableBackButton()">Click to Disable</button>
   <p style="display: none;" id="message"></p>
   <div class="background-image"></div>
 
-  <style>
+
+  <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
 
 
-.test{
-  display: flex;
-                                    justify-content: center;
-                                    align-items: center;
-                                    text-align: center; 
-                                    /* width: 270px;   */
-                                    cursor: pointer;
-                                    height: 45px;
-                                    background-color: #e2e2e0a1;
-                                    border: 1px solid #a9a9a9;
-                                    box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-                                    border-radius: 5px;
-                                    /* top: 143px; */
-                                    font-size: 20px;
-                                    padding-bottom: 0px;
-}
+  <!--pop up all  Modal 1 -->
+  <div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+    data-backdrop="static">
+    <div class="modal-dialog">
+      <div class="modal-content">
 
-    .background-image {
-  background-image: url("{% static 'images/parakh 1.png'%}");
-  background-size: cover;
-  background-position: center center;
-  background-attachment: fixed;
-  height: 100%;
-  width: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: -1;
-}
-    .a {
-      background-color: #093966;
-      border: none;
-      color: white;
-      padding: 15px 32px;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      font-size: 16px;
-      margin: 4px 2px;
-      cursor: pointer;
-      border-radius: 10px;
-    }
+        <div class="modal-body">
 
-    /* a {
-      background-color: #093966;
-      border: none;
-      color: white;
-      padding: 15px 32px;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      font-size: 16px;
-      margin: 4px 2px;
-      cursor: pointer;
-      border-radius: 10px;
-    } */
-    .b {
-            background-color: #a7262a;
-            border: none;
-            color: white;
-            padding: 15px 32px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 10px;
-        }
+          <!-- <img src="{% static 'images/top_user.png'%}" alt="top_user" style="position: absolute; top: 0; left: 0;">  -->
+          <form action="/msg_api" method="post">
 
- 
-   
-    .text{
-    color: #093966;
-    font-size: 25px;
-    font-family: sans-serif;
-    background-color: lightblue;
-      border-radius: 10%;
-  }
+            {% csrf_token %}
+            <input style="display: none;" type="text" id="mobile_number" name="mobile_number"
+              placeholder="Enter 10 digits number" value="{{ mobile_number }}">
 
-    text {
-      color: #093966;
-      font-size: 45px;
-    }
-    
-    
-    .button {
-      background-color: #093966;
-      border: none;
-      color: white;
-      padding: 15px 32px;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      font-size: 16px;
-      margin: 4px 2px;
-      cursor: pointer;
-      border-radius: 10px;
-    }
-    form {
-    display: inline-block;
-    margin-right: 10px; /* adjust this value to add some space between the forms */
-  }
-  .highlight {
-  color: red;
-}
+            <button type="submit" type="submit" id="search" name="search" value="Next"
+              style="border: none; background: none; padding: 0; margin: 0; cursor: pointer;">
+              <img src="{% static 'images/top_user.png' %}" alt="top_user" style="position: absolute; top: 0; left: 0;">
+            </button>
+          </form>
+          <img src="{% static 'images/pratham_center.png'%}"
+            style="position: absolute; top: 0; right: 0; padding-right: 5px; padding-top: 5px; width: 80px; height: 50px;"
+            alt="top_user"> <br> <br>
 
-  #language-select {
-    position: absolute;
-    top: 60px;
-    right: 20px;
-    width: 150px;
-    height: 40px;
-    font-size: 20px;
-    border: 2px solid #a9a9a9;
-    border-radius: 10px;
-  }
-  </style>
-<style>
-  .option {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    cursor: pointer;
-    /* height: 45px; */
-    background-color: #e2e2e0a1;
-    border: 1px solid #a9a9a9;
-    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-    border-radius: 5px;
-    top: 143px;
-    /* font-size: 20px; */
-    padding-bottom: 0px;
-    width: 270px;
-    /* white-space: nowrap; */
-    overflow: hidden;
-  }
-</style>
-<style>
-  @media screen and (max-width: 767px) {
-  /* Center the modal vertically */
-  #myModal1 .modal-dialog {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-  }
+          <br>
+          <br> <br>
+          <select id="language-select" onchange="displayData()" style="width: 35%;">
+            {% for language in languages %}
+            <option value="{{ language }}">
 
-  /* Set the modal content to full width */
-  #myModal1 .modal-content {
-    width: 100%;
-  }
-}
-@media (max-width: 600px) {
-    #language-select {
-      /* / Custom styles for mobile view / */
-    }
-  }
-  
-  @media (min-width: 601px) {
-    #language-select {
-      /* / Custom styles for web view / */
-    }
-  }
-</style>
- <!--pop up all  Modal 1 -->
- <div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
- data-backdrop="static">
- <div class="modal-dialog">
-   <div class="modal-content">
-    
-     <div class="modal-body">
-       
-         <!-- <img src="{% static 'images/top_user.png'%}" alt="top_user" style="position: absolute; top: 0; left: 0;">  -->
-         <form action="/msg_api" method="post">
-
-          {% csrf_token %}
-          <input style="display: none;" type="text" id="mobile_number" name="mobile_number" placeholder="Enter 10 digits number" value="{{ mobile_number }}">
-
-          <button type="submit"  type="submit" id="search" name="search" value="Next" style="border: none; background: none; padding: 0; margin: 0; cursor: pointer;">
-            <img src="{% static 'images/top_user.png' %}" alt="top_user" style="position: absolute; top: 0; left: 0;">
-          </button>
-        </form>
-       <img src="{% static 'images/pratham_center.png'%}" style="position: absolute; top: 0; right: 0; padding-right: 5px; padding-top: 5px; width: 80px; height: 50px;" alt="top_user"> <br> <br>
-
-         <br>
-         <br> <br>
-         <select id="language-select" onchange="displayData()" style="width: 35%;">
-          {% for language in languages %}
-          <option value="{{ language }}" {% if language == 'Hindi' %}selected{% endif %}>
-            {% if language == 'hindi' %}
-            Hindi - हिंदी
-            {% elif language == 'marathi' %}
-            Marathi- मराठी
-            {% else %}
-            {{ language }}
-            {% endif %}
-          </option>
-          {% endfor %}
-        </select><br><br>
-         <center>
-            <p class="text" style=" font-family: Roboto ;">   {{ val }}<br>  </p> 
-            <!-- <p class="text"  >  <br> <br> {{ data_id }}<br> <br> <br> </p>  -->
-            <!-- {% if languages %}
-                <p>Languages:</p>
-                <ul>
-                    {% for language, data in languages.items %}
-                        <li>{{ language }}</li>
-                        <ul>
-                            {% for key, value in data.items %}
-                                <li>
-                                    {{ key }}: <br>
-                                    {% if key != "answers" %}
-                                        {% for v in value %}
-                                            {{ v }}<br>
-                                        {% endfor %}
-                                    {% else %}
-                                        {{ value }}
-                                    {% endif %}
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% endfor %}
-                </ul>
-            {% endif %} -->
-
+              {% if language == 'hindi' %}
+              Hindi - हिंदी
+              {% elif language == 'marathi' %}
+              Marathi- मराठी
+              {% else %}
+              {{ language }}
+              {% endif %}
+            </option>
+            {% endfor %}
+          </select><br><br>
+          <center>
+            <p class="text" style=" font-family: Roboto ;"> {{ val }}<br> </p>
             <table id="data-table">
               <tbody>
                 {% for language, data in languages.items %}
@@ -319,25 +109,25 @@
                     {% if key != "answers" %}
                     {% if language == "hindi" %}
                     <div id="v0" onclick="logValue('{{ value.0 }}', 'v0')" class="option">{{ value.0 }}</div><br>
-            
+
                     <div id="v1" onclick="logValue('{{ value.1 }}', 'v1')" class="option">{{ value.1 }}</div><br>
-            
+
                     <div id="v2" onclick="logValue('{{ value.2 }}', 'v2')" class="option">{{ value.2 }}</div><br>
-            
+
                     <div id="v3" onclick="logValue('{{ value.3 }}', 'v3')" class="option">{{ value.3 }}</div><br>
                     {% elif language == "marathi" %}
                     <div id="v4" onclick="logValue('{{ value.4 }}', 'v4')" class="option">{{ value.0 }}</div><br>
                     <div id="v5" onclick="logValue('{{ value.5 }}', 'v5')" class="option">{{ value.1 }}</div><br>
-            
+
                     <div id="v6" onclick="logValue('{{ value.6 }}', 'v6')" class="option">{{ value.2 }}</div><br>
-            
+
                     <div id="v7" onclick="logValue('{{ value.7 }}', 'v7')" class="option">{{ value.3 }}</div><br>
                     {% elif language == "English" %}
                     <div id="v8" onclick="logValue('{{ value.8 }}', 'v8')" class="option">{{ value.0 }}</div><br>
                     <div id="v9" onclick="logValue('{{ value.9 }}', 'v9')" class="option">{{ value.1 }}</div><br>
-            
+
                     <div id="v10" onclick="logValue('{{ value.10 }}', 'v10')" class="option">{{ value.2 }}</div><br>
-            
+
                     <div id="v11" onclick="logValue('{{ value.11 }}', 'v11')" class="option">{{ value.3 }}</div><br>
                     {% endif %}
                     {% else %}
@@ -351,575 +141,214 @@
                 {% endfor %}
               </tbody>
             </table>
-            
-            
-            
+            <form action="/bl_final_mcq" method="post" onsubmit="return onSubmit()">
+
+              {% csrf_token %}
+              <input style="display: none;" type="hidden" name="selected_language" id="selected-language" value="">
+              <input type="hidden" name="language_value" id="language-value" value="">
+              <input style="display: none;" type="text" id="selected-div" name="selected-div" readonly>
+              <input style="display: none;" type="text" id="selected-div_id" name="selected-div_id" readonly>
+              <input type="hidden" name="selected_language_input" id="selected-language-input" value="">
+              <p style="display: none;" id="selected-language-display"></p>
+              <input class="a" name="next" id="nextform" type="submit" value="Next" disabled="true"><br>
+            </form>
+            <h1 style="display: none;" id="selected-div-display"></h1>
 
 
-            <!-- <table id="data-table">
-              <tbody>
-                {% for language, data in languages.items %}
-                <tr class="language-row {{ language }}">
-                  {% for key, value in data.items %}
-                  {% if key != 'language' %}
-                  <td>
-                    {% if key != "answers" %}
-                    {% if language == "hindi" %}
-                    <div id="v0" onclick="logValue('{{ value.0 }}', 'v0')" style="
-                      display: flex;
-                      justify-content: center;
-                      align-items: center;
-                      text-align: center;
-                      cursor: pointer;
-                      height: 45px;
-                      background-color: #e2e2e0a1;
-                      border: 1px solid #a9a9a9;
-                      box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-                      border-radius: 5px;
-                      top: 143px;
-                      font-size: 20px;
-                      padding-bottom: 0px;">{{ value.0 }}</div><br>
-            
-                    <div id="v1" onclick="logValue('{{ value.1 }}', 'v1')" style="
-                      display: flex;
-                      justify-content: center;
-                      align-items: center;
-                      text-align: center;
-                      cursor: pointer;
-                      height: 45px;
-                      background-color: #e2e2e0a1;
-                      border: 1px solid #a9a9a9;
-                      box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-                      border-radius: 5px;
-                      top: 143px;
-                      font-size: 20px;
-                      padding-bottom: 0px;">{{ value.1 }}</div><br>
-            
-                    <div id="v2" onclick="logValue('{{ value.2 }}', 'v2')" style="
-                      display: flex;
-                      justify-content: center;
-                      align-items: center;
-                      text-align: center;
-                      cursor: pointer;
-                      height: 45px;
-                      background-color: #e2e2e0a1;
-                      border: 1px solid #a9a9a9;
-                      box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-                      border-radius: 5px;
-                      top: 143px;
-                      font-size: 20px;
-                      padding-bottom: 0px;">{{ value.2 }}</div><br>
-            
-                    <div id="v3" onclick="logValue('{{ value.3 }}', 'v3')" style="
-                      display: flex;
-                      justify-content: center;
-                      align-items: center;
-                      text-align: center;
-                      cursor: pointer;
-                      height: 45px;
-                      background-color: #e2e2e0a1;
-                      border: 1px solid #a9a9a9;
-                      box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-                      border-radius: 5px;
-                      top: 143px;
-                      font-size: 20px;
-                      padding-bottom: 0px;">{{ value.3 }}</div><br>
-                    {% elif language == "marathi" %}
-                    <div id="v4" onclick="logValue('{{ value.4 }}', 'v4')" style="
-                      display: flex;
-                      justify-content: center;
-                      align-items: center;
-                      text-align: center;
-                      width: 270px;
-                      cursor: pointer;
-                      height: 45px;
-                      background-color: #e2e2e0a1;
-                      border: 1px solid #a9a9a9;
-                      box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-                      border-radius: 5px;
-                      top: 143px;
-                      font-size: 20px;
-                      padding-bottom: 0px;">{{ value.0 }}</div><br>
-                    <div id="v5" onclick="logValue('{{ value.5 }}', 'v5')" style="
-                      display: flex;
-                      justify-content: center;
-                      align-items: center;
-                      text-align: center;
-                      width: 270px;
-                      cursor: pointer;
-                      height: 45px;
-                      background-color: #e2e2e0a1;
-                      border: 1px solid #a9a9a9;
-                      box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-                      border-radius: 5px;
-                      top: 143px;
-                      font-size: 20px;
-                      padding-bottom: 0px;">{{ value.1 }}</div><br>
-            
-                    <div id="v6" onclick="logValue('{{ value.6 }}', 'v6')" style="
-                      display: flex;
-                      justify-content: center;
-                      align-items: center;
-                      text-align: center;
-                      width: 270px;
-                      cursor: pointer;
-                      height: 45px;
-                      background-color: #e2e2e0a1;
-                      border: 1px solid #a9a9a9;
-                      box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-                      border-radius: 5px;
-                      top: 143px;
-                      font-size: 20px;
-                      padding-bottom: 0px;">{{ value.2 }}</div><br>
-            
-                    <div id="v7" onclick="logValue('{{ value.7 }}', 'v7')" style="
-                      display: flex;
-                      justify-content: center;
-                      align-items: center;
-                      text-align: center;
-                      width: 270px;
-                      cursor: pointer;
-                      height: 45px;
-                      background-color: #e2e2e0a1;
-                      border: 1px solid #a9a9a9;
-                      box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-                      border-radius: 5px;
-                      top: 143px;
-                      font-size: 20px;
-                      padding-bottom: 0px;">{{ value.3 }}</div><br>
-                    {% elif language == "English" %}
-                    <div id="v8" onclick="logValue('{{ value.8 }}', 'v8')" style="
-                      display: flex;
-                      justify-content: center;
-                      align-items: center;
-                      text-align: center;
-                      width: 270px;
-                      cursor: pointer;
-                      height: 45px;
-                      background-color: #e2e2e0a1;
-                      border: 1px solid #a9a9a9;
-                      box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-                      border-radius: 5px;
-                      top: 143px;
-                      font-size: 20px;
-                      padding-bottom: 0px;">{{ value.0 }}</div><br>
-                    <div id="v9" onclick="logValue('{{ value.9 }}', 'v9')" style="
-                      display: flex;
-                      justify-content: center;
-                      align-items: center;
-                      text-align: center;
-                      width: 270px;
-                      cursor: pointer;
-                      height: 45px;
-                      background-color: #e2e2e0a1;
-                      border: 1px solid #a9a9a9;
-                      box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-                      border-radius: 5px;
-                      top: 143px;
-                      font-size: 20px;
-                      padding-bottom: 0px;">{{ value.1 }}</div><br>
-            
-                    <div id="v10" onclick="logValue('{{ value.10 }}', 'v10')" style="
-                      display: flex;
-                      justify-content: center;
-                      align-items: center;
-                      text-align: center;
-                      width: 270px;
-                      cursor: pointer;
-                      height: 45px;
-                      background-color: #e2e2e0a1;
-                      border: 1px solid #a9a9a9;
-                      box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-                      border-radius: 5px;
-                      top: 143px;
-                      font-size: 20px;
-                      padding-bottom: 0px;">{{ value.2 }}</div><br>
-            
-                    <div id="v11" onclick="logValue('{{ value.11 }}', 'v11')" style="
-                      display: flex;
-                      justify-content: center;
-                      align-items: center;
-                      text-align: center;
-                      width: 270px;
-                      cursor: pointer;
-                      height: 45px;
-                      background-color: #e2e2e0a1;
-                      border: 1px solid #a9a9a9;
-                      box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-                      border-radius: 5px;
-                      top: 143px;
-                      font-size: 20px;
-                      padding-bottom: 0px;">{{ value.3 }}</div><br>
-                    {% endif %}
-                    {% else %}
-                    <br>
-                    <div  id="language-value" class="{{ language }}">{{ value }}</div>
-                    {% endif %}
-                  </td>
-                  {% endif %}
-                  {% endfor %}
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-             -->
+            <!-- <style>
+              p {
+                background-color: rgb(143, 143, 255);
+              }
+            </style> -->
 
-            <!-- <table id="data-table" >	
-              <tbody>	
-                  {% for language, data in languages.items %}	
-                    <tr class="language-row {{ language }}">	
-                      {% for key, value in data.items %}	
-                        {% if key != 'language' %}	
-                          <td>	
-                            {% if key != "answers" %}	
-                            {% if language == "hindi" %}	
-                              <div id="v0" onclick="logValue('{{ value.0 }}', 'v0')" style="	
-                                  display: flex;	
-                                  justify-content: center;	
-                                  align-items: center;	
-                                  text-align: center; 	
-                                  cursor: pointer;	
-                                  height: 45px;	
-                                  background-color: #e2e2e0a1;	
-                                  border: 1px solid #a9a9a9;	
-                                  box-shadow: 2px 2px 4px rgba(0,0,0,0.2);	
-                                  border-radius: 5px;	
-                                  top: 143px;	
-                                  font-size: 20px;	
-                                  padding-bottom: 0px;">{{ value.0 }}</div><br>	
-                    
-                              <div id="v1" onclick="logValue('{{ value.1 }}', 'v1')" style="	
-                                 display: flex;	
-                                  justify-content: center;	
-                                  align-items: center;	
-                                  text-align: center; 	
-                                  cursor: pointer;	
-                                  height: 45px;	
-                                  background-color: #e2e2e0a1;	
-                                  border: 1px solid #a9a9a9;	
-                                  box-shadow: 2px 2px 4px rgba(0,0,0,0.2);	
-                                  border-radius: 5px;	
-                                  top: 143px;	
-                                  font-size: 20px;	
-                                  padding-bottom: 0px;">{{ value.1 }}</div><br>	
-                    
-                              <div id="v2" onclick="logValue('{{ value.2 }}', 'v2')" style="	
-                                 display: flex;	
-                                  justify-content: center;	
-                                  align-items: center;	
-                                  text-align: center; 	
-                                  cursor: pointer;	
-                                  height: 45px;	
-                                  background-color: #e2e2e0a1;	
-                                  border: 1px solid #a9a9a9;	
-                                  box-shadow: 2px 2px 4px rgba(0,0,0,0.2);	
-                                  border-radius: 5px;	
-                                  top: 143px;	
-                                  font-size: 20px;	
-                                  padding-bottom: 0px;">{{ value.2 }}</div><br>	
-                    
-                              <div id="v3" onclick="logValue('{{ value.3 }}', 'v3')" style="	
-                                 display: flex;	
-                                  justify-content: center;	
-                                  align-items: center;	
-                                  text-align: center; 	
-                                  cursor: pointer;	
-                                  height: 45px;	
-                                  background-color: #e2e2e0a1;	
-                                  border: 1px solid #a9a9a9;	
-                                  box-shadow: 2px 2px 4px rgba(0,0,0,0.2);	
-                                  border-radius: 5px;	
-                                  top: 143px;	
-                                  font-size: 20px;	
-                                  padding-bottom: 0px;">{{ value.3 }}</div><br>	
-                              {% elif language == "marathi" %}	
-                              <div id="v4" onclick="logValue('{{ value.4 }}', 'v4')" style="	
-                                   display: flex;	
-                                  justify-content: center;	
-                                  align-items: center;	
-                                  text-align: center; 	
-                                  width: 270px;  	
-                                  cursor: pointer;	
-                                  height: 45px;	
-                                  background-color: #e2e2e0a1;	
-                                  border: 1px solid #a9a9a9;	
-                                  box-shadow: 2px 2px 4px rgba(0,0,0,0.2);	
-                                  border-radius: 5px;	
-                                  top: 143px;	
-                                  font-size: 20px;	
-                                  padding-bottom: 0px;">{{ value.0 }}</div><br>	
-                                 <div id="v5" onclick="logValue('{{ value.5 }}', 'v5')" style="	
-                                   display: flex;	
-                                    justify-content: center;	
-                                    align-items: center;	
-                                    text-align: center; 	
-                                    width: 270px;  	
-                                    cursor: pointer;	
-                                    height: 45px;	
-                                    background-color: #e2e2e0a1;	
-                                    border: 1px solid #a9a9a9;	
-                                    box-shadow: 2px 2px 4px rgba(0,0,0,0.2);	
-                                    border-radius: 5px;	
-                                    top: 143px;	
-                                    font-size: 20px;	
-                                    padding-bottom: 0px;">{{ value.1 }}</div><br>	
-                     
-                               <div id="v6" onclick="logValue('{{ value.6 }}', 'v6')" style="	
-                                  display: flex;	
-                                  justify-content: center;	
-                                  align-items: center;	
-                                  text-align: center; 	
-                                  width: 270px;  	
-                                  cursor: pointer;	
-                                  height: 45px;	
-                                  background-color: #e2e2e0a1;	
-                                  border: 1px solid #a9a9a9;	
-                                  box-shadow: 2px 2px 4px rgba(0,0,0,0.2);	
-                                  border-radius: 5px;	
-                                  top: 143px;	
-                                  font-size: 20px;	
-                                  padding-bottom: 0px;">{{ value.2 }}</div><br>	
-                     
-                               <div id="v7" onclick="logValue('{{ value.7 }}', 'v7')" style="	
-                               display: flex;	
-                                justify-content: center;	
-                                align-items: center;	
-                                text-align: center; 	
-                                width: 270px;  	
-                                cursor: pointer;	
-                                height: 45px;	
-                                background-color: #e2e2e0a1;	
-                                border: 1px solid #a9a9a9;	
-                                box-shadow: 2px 2px 4px rgba(0,0,0,0.2);	
-                                border-radius: 5px;	
-                                top: 143px;	
-                                font-size: 20px;	
-                                padding-bottom: 0px;">{{ value.3 }}</div><br>	
-                        {% endif %}	
-                                  
-                            {% else %}	
-                              <br>	
-                              <div style="display: none;" id="language-value" class="{{ language }}">{{ value }}</div>	
-                            {% endif %}	
-                          </td>	
-                        {% endif %}	
-                      {% endfor %}	
-                    </tr>	
-                  {% endfor %}	
-                  </tbody>	
-            </table> -->
-              
-              <form action="/bl_final_mcq" method="post"  onsubmit="return onSubmit()" >
+            <script>
+              const divIds = ["v0", "v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9", "v10", "v11"];
+              for (let i = 0; i < divIds.length; i++) {
+                const divElement = document.getElementById(divIds[i]);
+                divElement.addEventListener('click', function clickHandler() {
+                  const clickedDivId = this.id;
+                  const clickedDivValue = this.textContent;
+                  var selectedLanguage = document.getElementById("language-select").value;
+                  var languageValue = document.querySelector(".language-row." + selectedLanguage + " #language-value").textContent;
+                  console.log("on which i click ", clickedDivValue);
+                  console.log("Clicked div ID:", clickedDivId);
+                  localStorage.setItem('clickedDivValue', clickedDivValue);
 
-                {% csrf_token %}
-                <input style="display: none;" type="hidden" name="selected_language" id="selected-language" value="">
-                <input  type="hidden" name="language_value" id="language-value" value="">
+                  document.getElementById("selected-div").value = clickedDivValue;
+                  localStorage.setItem('clickedDivId', clickedDivId);
+                  document.getElementById("selected-div_id").value = clickedDivId;
+                  if (clickedDivValue === languageValue) {
+                    this.style.backgroundColor = "#9cbee1";
+                    this.style.border = "2px solid #25759e";
+                    document.getElementById("selected-div").value = clickedDivValue;
+                    document.getElementById("selected-div-display").textContent = "Selected div: " + clickedDivValue;
+                  } else {
+                    this.style.backgroundColor = "#9cbee1";
+                    this.style.border = "2px solid #25759e";
+                    const matchingDivId = localStorage.getItem("matchingDivId");
+                    if (matchingDivId !== null && matchingDivId !== clickedDivId) {
+                      const matchingDiv = document.getElementById(matchingDivId);
+                    }
+                  }
+                  // remove click event listener from all divs
+                  for (let i = 0; i < divIds.length; i++) {
+                    const divElement = document.getElementById(divIds[i]);
+                    divElement.removeEventListener('click', clickHandler);
+                  }
+                  // disable language select element
+                  document.getElementById("language-select").disabled = true;
+                  document.getElementById("nextform").disabled = false;
 
-                <input style="display: none;" type="text" id="selected-div" name="selected-div" readonly>
-                <input style="display: none;" type="text" id="selected-div_id" name="selected-div_id" readonly>
-                
+                  // disable all divs
+                  for (let i = 0; i < divIds.length; i++) {
+                    const divElement = document.getElementById(divIds[i]);
+                    divElement.style.pointerEvents = "none";
+                  }
+                });
+              }
+              function onSubmit() {
+                var selectedDivId = localStorage.getItem('clickedDivValue');
+                document.getElementById("selected-div").value = selectedDivId;
+                var selectedDivId = localStorage.getItem('clickedDivId');
+                document.getElementById("selected-div_id").value = selectedDivId;
 
-                <input type="hidden" name="selected_language_input" id="selected-language-input" value="">
-                <p style="display: none;"  id="selected-language-display"></p>
-                <input class="a" name="next" id="nextform" type="submit" value="Next" disabled="true"><br>
-              </form>
-              <h1 style="display: none;" id="selected-div-display"></h1>
-              
- 
-<style>
-  p{
-    background-color: rgb(143, 143, 255);
-  }
-</style>
+                return true;
+              }
+              function displayData() {
+                const divIds = ["v0", "v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9", "v10", "v11"];
+                for (let i = 0; i < divIds.length; i++) {
+                  const divElement = document.getElementById(divIds[i]);
+                  divElement.addEventListener('click', function () {
+                    const selectedDivs = JSON.parse(localStorage.getItem('selectedDivs')) || [];
+                    selectedDivs.push(divIds[i]);
+                    localStorage.setItem('selectedDivs', JSON.stringify(selectedDivs));
+                  });
+                }
 
-<script>
-const divIds = ["v0", "v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9", "v10", "v11"];
-for (let i = 0; i < divIds.length; i++) {
-  const divElement = document.getElementById(divIds[i]);
-  divElement.addEventListener('click', function clickHandler() {
-    const clickedDivId = this.id;
-    const clickedDivValue = this.textContent;
-    var selectedLanguage = document.getElementById("language-select").value;
-    var languageValue = document.querySelector(".language-row." + selectedLanguage + " #language-value").textContent;
-    console.log("on which i click ", clickedDivValue);
-    console.log("Clicked div ID:", clickedDivId);
-    localStorage.setItem('clickedDivValue', clickedDivValue);
+                var selectedLanguage = document.getElementById("language-select").value;
+                document.getElementById("selected-language").value = selectedLanguage;
+                document.getElementById("selected-language-display").textContent = selectedLanguage;
 
-    document.getElementById("selected-div").value = clickedDivValue;
-    localStorage.setItem('clickedDivId', clickedDivId);
-    document.getElementById("selected-div_id").value = clickedDivId;
-      if (clickedDivValue === languageValue) {
-        this.style.backgroundColor =  "#9cbee1";
-        this.style.border = "2px solid #25759e";
-        document.getElementById("selected-div").value = clickedDivValue;
-        document.getElementById("selected-div-display").textContent = "Selected div: " + clickedDivValue;
-      } else {
-        this.style.backgroundColor =  "#9cbee1";
-        this.style.border = "2px solid #25759e";
-        const matchingDivId = localStorage.getItem("matchingDivId");
-        if (matchingDivId !== null && matchingDivId !== clickedDivId) {
-          const matchingDiv = document.getElementById(matchingDivId);
+                var tableRows = document.getElementById("data-table").getElementsByClassName("language-row");
+                for (var i = 0; i < tableRows.length; i++) {
+                  tableRows[i].style.display = "none";
+                }
+                document.getElementsByClassName(selectedLanguage)[0].style.display = "table-row";
+
+                var languageValue = document.querySelector(".language-row." + selectedLanguage + " #language-value").textContent;
+
+                for (let i = 0; i < divIds.length; i++) {
+                  const divElement = document.getElementById(divIds[i]);
+                  const divValue = divElement.textContent;
+                  if (divValue === languageValue) {
+                    const matchingDivId = divIds[i];
+                    localStorage.setItem('matchingDivId', matchingDivId);
+                    console.log("ID of div with value " + divValue + " is " + matchingDivId);
+                    localStorage.setItem('divValue', divValue);
+                    localStorage.setItem('matchingDivId', divIds[i]);
+
+
+                  }
+                }
+              }
+              displayData();
+            </script>
+
+            <script>
+              history.pushState(null, null, document.URL);
+              window.addEventListener('popstate', function () {
+                history.pushState(null, null, document.URL);
+              });
+            </script>
+          </center>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    var spanElement = document.getElementById("mis");
+    var subDetails = spanElement.innerHTML;
+    var subDetailsArray = subDetails.split(/,|-/);
+
+    var integerArray = [];
+    for (var i = 0; i < subDetailsArray.length; i++) {
+      var intValue = parseInt(subDetailsArray[i], 10);
+      if (!isNaN(intValue)) {
+        integerArray.push(intValue);
+      }
+    }
+
+    console.log(integerArray);
+
+    var spanElement = document.getElementById("dil");
+    var subDetails = spanElement.innerHTML;
+    var subDetailsArray = subDetails.split(/,|-/);
+
+    var delintegerArray = [];
+    for (var i = 0; i < subDetailsArray.length; i++) {
+      var intValue = parseInt(subDetailsArray[i], 10);
+      if (!isNaN(intValue)) {
+        delintegerArray.push(intValue);
+      }
+    }
+
+    console.log(delintegerArray);
+
+    const originalText = document.querySelector(".text").textContent.trim();
+    const originalTextList = originalText.split(" ");
+    console.log("Original text list:", originalTextList);
+
+    var fluency = document.getElementById("fluency").textContent.trim();
+
+    if (fluency === "None") {
+      for (let i = 0; i < originalTextList.length; i++) {
+        originalTextList[i] = "<span style='color:red'>" + originalTextList[i] + "</span>";
+      }
+    } else {
+      for (let i = 0; i < originalTextList.length; i++) {
+        if (integerArray.includes(i)) {
+          originalTextList[i] = "<span style='color:red'>" + originalTextList[i] + "</span>";
+        } else if (delintegerArray.includes(i)) {
+          originalTextList[i] = "<span style='color:red'>" + originalTextList[i] + "</span>";
+        } else {
+          originalTextList[i] = "<span style='color:rgb(69, 204, 69)'>" + originalTextList[i] + "</span>";
         }
       }
-      // remove click event listener from all divs
-      for (let i = 0; i < divIds.length; i++) {
-        const divElement = document.getElementById(divIds[i]);
-        divElement.removeEventListener('click', clickHandler);
+    }
+
+    document.querySelector(".text").innerHTML = originalTextList.join(" ");
+  </script>
+
+  <script>
+    let selectedImagee = null;
+    function selectImages(img) {
+      if (selectedImage !== null) {
+        selectedImage.style.border = "";
       }
-      // disable language select element
-      document.getElementById("language-select").disabled = true;
-      document.getElementById("nextform").disabled = false;
+      selectedImage = img;
+      selectedImage.style.border = "2px solid blue";
+    }
 
-      // disable all divs
-      for (let i = 0; i < divIds.length; i++) {
-        const divElement = document.getElementById(divIds[i]);
-        divElement.style.pointerEvents = "none";
+    function submitForm() {
+      if (selectedImage === null) {
+        alert("Please select an image");
+        return false;
       }
-    });
-  }
-  function onSubmit() {
-  var selectedDivId = localStorage.getItem('clickedDivValue');
-  document.getElementById("selected-div").value = selectedDivId;
-  var selectedDivId = localStorage.getItem('clickedDivId');
-  document.getElementById("selected-div_id").value = selectedDivId;
-
-  return true;
-}
-  function displayData() {
-  const divIds = ["v0", "v1", "v2", "v3", "v4", "v5", "v6", "v7","v8","v9","v10","v11"];
-  for (let i = 0; i < divIds.length; i++) {
-    const divElement = document.getElementById(divIds[i]);
-    divElement.addEventListener('click', function() {
-      const selectedDivs = JSON.parse(localStorage.getItem('selectedDivs')) || [];
-      selectedDivs.push(divIds[i]);
-      localStorage.setItem('selectedDivs', JSON.stringify(selectedDivs));
-    });
-  }
-
-  var selectedLanguage = document.getElementById("language-select").value;
-  document.getElementById("selected-language").value = selectedLanguage;
-  document.getElementById("selected-language-display").textContent = selectedLanguage;
-
-  var tableRows = document.getElementById("data-table").getElementsByClassName("language-row");
-  for (var i = 0; i < tableRows.length; i++) {
-    tableRows[i].style.display = "none";
-  }
-  document.getElementsByClassName(selectedLanguage)[0].style.display = "table-row";
-
-  var languageValue = document.querySelector(".language-row." + selectedLanguage + " #language-value").textContent;
-
-  for (let i = 0; i < divIds.length; i++) {
-    const divElement = document.getElementById(divIds[i]);
-    const divValue = divElement.textContent;
-    if (divValue === languageValue) {
-      const matchingDivId = divIds[i];
-      localStorage.setItem('matchingDivId', matchingDivId);
-      console.log("ID of div with value " + divValue + " is " + matchingDivId);
-      localStorage.setItem('divValue', divValue);
-      localStorage.setItem('matchingDivId', divIds[i]);
-
-
+      document.getElementById("selected_image").value = selectedImage.src;
+      return true;
     }
-  }
-}
-displayData();
-</script>
+  </script>
 
-<script>
-  history.pushState(null, null, document.URL);
-  window.addEventListener('popstate', function () {
-      history.pushState(null, null, document.URL);
-  });
-</script>
-         </center> 
-     </div>
-    
-   </div>
- </div>
-</div>
+  <script>
+    function retake() {
+      retake_value = document.getElementById("retake").value
 
-
-<script>
-  var spanElement = document.getElementById("mis");
-  var subDetails = spanElement.innerHTML;
-  var subDetailsArray = subDetails.split(/,|-/);
-  
-  var integerArray = [];
-  for (var i = 0; i < subDetailsArray.length; i++) {
-    var intValue = parseInt(subDetailsArray[i], 10);
-    if (!isNaN(intValue)) {
-      integerArray.push(intValue);
+      localStorage.setItem("retake", retake)
     }
-  }
-  
-  console.log(integerArray);
-  
-  var spanElement = document.getElementById("dil");
-  var subDetails = spanElement.innerHTML;
-  var subDetailsArray = subDetails.split(/,|-/);
-  
-  var delintegerArray = [];
-  for (var i = 0; i < subDetailsArray.length; i++) {
-    var intValue = parseInt(subDetailsArray[i], 10);
-    if (!isNaN(intValue)) {
-      delintegerArray.push(intValue);
-    }
-  }
-  
-  console.log(delintegerArray);
-  
-  const originalText = document.querySelector(".text").textContent.trim();
-  const originalTextList = originalText.split(" ");
-  console.log("Original text list:", originalTextList);
-  
-  var fluency = document.getElementById("fluency").textContent.trim();
-  
-  if (fluency === "None") {
-    for (let i = 0; i < originalTextList.length; i++) {
-      originalTextList[i] = "<span style='color:red'>" + originalTextList[i] + "</span>";
-    }
-  } else {
-    for (let i = 0; i < originalTextList.length; i++) {
-      if (integerArray.includes(i)) {
-        originalTextList[i] = "<span style='color:red'>" + originalTextList[i] + "</span>";
-      } else if (delintegerArray.includes(i)) {
-        originalTextList[i] = "<span style='color:red'>" + originalTextList[i] + "</span>";
-      } else {
-        originalTextList[i] = "<span style='color:rgb(69, 204, 69)'>" + originalTextList[i] + "</span>";
-      }
-    }
-  }
-  
-  document.querySelector(".text").innerHTML = originalTextList.join(" ");
-</script>
-
-<script>
- let selectedImagee = null;
- function selectImages(img) {
-   if (selectedImage !== null) {
-     selectedImage.style.border = "";
-   }
-   selectedImage = img;
-   selectedImage.style.border = "2px solid blue";
- }
-
- function submitForm() {
-   if (selectedImage === null) {
-     alert("Please select an image");
-     return false;
-   }
-   document.getElementById("selected_image").value = selectedImage.src;
-   return true;
- }
-</script>
-
-<script>
- function retake(){
-   retake_value = document.getElementById("retake").value
-
-   localStorage.setItem("retake", retake)
- }
-</script>
+  </script>
   <!-- all popup script -->
   <script>
     $("div[id^='myModal']").each(function () {

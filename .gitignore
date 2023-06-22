@@ -1,0 +1,11 @@
+.env
+/media/
+# Ignore __pycache__ directories
+__pycache__/
+db.sqlite3
+/asset/
+
+# Ignore migration files
+**/migrations/*.py
+**/migrations/*.pyc
+**/migrations/__pycache__/

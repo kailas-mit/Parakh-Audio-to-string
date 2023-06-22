@@ -1,0 +1,156 @@
+
+.option {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  /* height: 45px; */
+  background-color: #e2e2e0a1;
+  border: 1px solid #a9a9a9;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  top: 143px;
+  /* font-size: 20px; */
+  padding-bottom: 0px;
+  width: 270px;
+  /* white-space: nowrap; */
+  overflow: hidden;
+}
+
+@media screen and (max-width: 767px) {
+
+    /* Center the modal vertically */
+    #myModal1 .modal-dialog {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+    }
+
+    /* Set the modal content to full width */
+    #myModal1 .modal-content {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 600px) {
+    #language-select {
+      /* / Custom styles for mobile view / */
+    }
+  }
+
+  @media (min-width: 601px) {
+    #language-select {
+      /* / Custom styles for web view / */
+    }
+  }
+
+  .background-image {
+    background-image: url("{% static 'images/parakh 1.png'%}");
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed;
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+  }
+
+  .a {
+    background-color: #093966;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 10px;
+  }
+
+  /* a {
+    background-color: #093966;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 10px;
+  } */
+  .b {
+    background-color: #a7262a;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 10px;
+  }
+
+
+
+  .text {
+    color: #093966;
+    font-size: 25px;
+    font-family: sans-serif;
+    background-color: lightblue;
+    border-radius: 10%;
+  }
+
+  text {
+    color: #093966;
+    font-size: 45px;
+  }
+
+
+  .button {
+    background-color: #093966;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 10px;
+  }
+
+  form {
+    display: inline-block;
+    margin-right: 10px;
+    /* adjust this value to add some space between the forms */
+  }
+
+  .highlight {
+    color: red;
+  }
+
+  #language-select {
+    position: absolute;
+    top: 60px;
+    right: 60px;
+    width: 150px;
+    height: 40px;
+    font-size: 20px;
+    border: 2px solid #a9a9a9;
+    border-radius: 10px;
+  }
+
+  p {
+    background-color: rgb(143, 143, 255);
+  }
