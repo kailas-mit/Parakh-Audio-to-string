@@ -16,7 +16,7 @@ from django.http import HttpResponse
 from firebase_admin import credentials as fb_credentials,firestore
 from dotenv import dotenv_values
 from .models import Program, Aop_lan, Aop_sub_lan,MyModel,Avatar,MyUser
-
+from django.utils.translation import gettext as _
 
 dotenv_path = "../.env"
 env_vars = dotenv_values(dotenv_path)
@@ -106,6 +106,21 @@ json_advance_eng = json_advance_eng_data
 
 base_path = os.path.join(settings.MEDIA_ROOT, "")
 
+from django.utils.translation import get_language, activate, gettext
+def testing(request):
+    # trans = _('Paragraph')
+    trans = translate(language='hi')
+    return render(request, 'testing.html', {'trans' : trans})
+
+def translate(language):
+    cur_language = get_language()
+    try:
+        activate(language)
+        text = gettext('START')
+
+    finally:
+        activate(cur_language)
+    return text
 
 def first(request):
     options = Program.OPTION_CHOICES

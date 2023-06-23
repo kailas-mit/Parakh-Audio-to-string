@@ -1,3 +1,4 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
 {% load static %}
@@ -221,6 +222,7 @@
           <center>
             <!-- <h2 class="text">Paragraph</h2> <br> -->
             <text> <b style=" font-family: Roboto ;"> Paragraph </b> </text><br> <br> <br>
+            <text> <b style=" font-family: Roboto ;"> {% trans "Paragraph" %} </b> </text><br> <br> <br>
 
             <p class="text"> <br> <br> {{ val }}<br> <br> <br> </p>
             <p class="text" style="display: none;"> <br> <br> {{ data_id }}<br> <br> <br> </p>

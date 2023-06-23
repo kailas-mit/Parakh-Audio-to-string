@@ -1,3 +1,4 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
 {% load static %}
@@ -162,6 +163,9 @@
                 <img   src="{% static 'images/dash_user.png' %}" width="120" height="120" alt="Avatar Image" style="border-radius: 50%;"> <br> <br>
 
                 <text style=" font-family: Roboto ;">Choose Language</text><br><br>
+
+                <!-- <text style="font-family: Roboto;">{% trans "Choose Language" %}</text><br><br> -->
+
                 <select name="option" class="form-select" style="width: 80%;  border: 3px solid gray; font-family: Roboto ; font-size: 18px;" id="assessment-select" name="assessment">
                     {% for choice in eng_option %}
                           <option style="font-weight: 18px; font-family: Roboto ;" value="{{ choice.0 }}">{{ choice.1 }}</option>

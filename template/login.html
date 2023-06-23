@@ -1,3 +1,4 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
 {% load static %}
@@ -134,6 +135,8 @@ input[type=number] {
                   </ul>
               {% endif %}
               <input class="a" type="submit" value="Login"><br>
+              {% trans "Paragraph" %}
+              {% trans "START" %}
             </form>
           </center>
         </div>

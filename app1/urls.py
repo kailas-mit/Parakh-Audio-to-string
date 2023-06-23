@@ -13,18 +13,22 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from . import views
 from django.conf.urls.static import static
 from django.conf import settings
-from django.conf.urls.static import static
-from django.conf.urls.static import static
-from django.urls import path, include, re_path
+from django.urls import path
+# from django.views.i18n import set_language
+# from django.utils.translation import gettext_lazy as _
 from . import views
 
+# app_name = 'app1'
 
 urlpatterns = [
     path('',views.first, name='first'),
     path('login',  views.login, name='login'),
+    # path(_('login'), views.login, name='login'),
+    
+    path('testing',  views.testing, name='testing'),
+    # path('language/', set_language, name='set_language'),
     path('choose_avatar',  views.choose_avatar, name='choose_avatar'),
     path('select_profile', views.select_profile, name='select_profile'),
 
