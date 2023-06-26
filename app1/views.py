@@ -12,13 +12,12 @@ from django.shortcuts import render ,HttpResponse, redirect
 from django.conf import settings
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse
 from firebase_admin import credentials as fb_credentials,firestore
 from dotenv import dotenv_values
 from .models import Program, Aop_lan, Aop_sub_lan,MyModel,Avatar,MyUser
 
 
-dotenv_path = "/home/mit/Downloads/Parakh30-05/Parakh/.env"
+dotenv_path = "../.env"
 env_vars = dotenv_values(dotenv_path)
 
 firebase_path = env_vars.get("Firebase_path")
@@ -103,6 +102,12 @@ base_path = os.path.join(settings.MEDIA_ROOT, "")
 
 
 def first(request):
+    """
+    This view handles the first page of the application.
+    It displays the available program options and saves the selected option in the session.
+    If the user selects the 'General Program', it redirects to the 'login' page.
+    If the user selects the 'AOP Program' or 'Advance English Program', it redirects to the 'aop_language' page.
+    """ 
     options = Program.OPTION_CHOICES
     if request.method == 'POST':
         my_program = request.POST.get('option')
@@ -117,6 +122,11 @@ def first(request):
 
 
 def aop_language(request):
+    """
+    This view handles the AOP language selection page.
+    It displays the available options for AOP sub-languages and English language options.
+    If a selection is made and submitted via POST request.
+    """
     options = Aop_sub_lan.OPTION_CHOICES
     eng_option= Aop_lan.OPTION_CHOICES
     if request.method == 'POST':
@@ -126,23 +136,36 @@ def aop_language(request):
 
 
 def aop_num(request,selected_option):
-    print("start_assesment",selected_option)
+    """
+    This view handles the AOP number search page.
+    It receives the selected option as a parameter and stores it in the session.
+    It then renders the 'AOP_PRO/search_num.html' template.
+    """
     request.session['selected_option'] = selected_option
     return render(request, 'AOP_PRO/search_num.html')
 
 
 def red_start(request):
+    """
+    This view handles the process of creating a profile and starting the assessment for the AOP program.
+    It receives enrollment ID and phone number as input and makes a POST request to create a profile using the API.
+    The created profile ID is stored in the session for further use.
+    If the request method is GET, it retrieves the enrollment ID, phone number, name, and program from the session.
+    It then makes an API request to fetch children details based on the mobile number provided.
+    If the mobile number is found, the name and status are stored in the session and rendered in the template.
+    If the mobile number is not found, an error message is displayed.
+    If the request method is POST and contains the 'search' parameter, it retrieves the selected option and mobile number from the request.
+    The mobile number is stored in the session, and an API request is made to fetch children details.
+    If the mobile number is found, the name and status are stored in the session and rendered in the template.
+    If the mobile number is not found, an error message is displayed.
+    """
     selected_option = request.session.get('selected_option')
     print("selected_option",selected_option)
     if request.method == 'GET':
         enrollment_id = request.GET.get('enrollment_id')
-        print(enrollment_id)
         phone_number = request.session.get('phone_number')
-        print("ph",phone_number)
         name = request.session.get('name')
-        print("name",name)
         my_program = request.session.get('my_program')
-        print('^^^^^^^^^^^^^^^^^^^^^^',my_program)
         data={}
         data["name"]=name
         data["profile_pic"]= ""
@@ -150,7 +173,6 @@ def red_start(request):
         data["phone_number"]= phone_number
         data["enrollment_id"]= enrollment_id
         data["program"]= my_program
-        print(data)
         url = 'https://parakh.pradigi.org/v1/createprofile/'
         files = []
         payload = {'data': json.dumps(data)}
@@ -159,7 +181,6 @@ def red_start(request):
         response_data = json.loads(response.text)
         id_value = response_data["data"][0]["id"]
         request.session['id_value'] = id_value
-        print("ID value:", id_value)
         request.session['enrollment_id'] = enrollment_id
         context = {
             'processed_data': 'some processed data'
@@ -173,8 +194,6 @@ def red_start(request):
         request.session['phone_number'] = mobile_number
         url = f'https://prajeevika.org/apis/aop/children-details.php?phone_number={mobile_number}&token=eyNsWgAdBF0KafwGPwOC9h5rWABTBuAKYxDxv8zRgJyuP'
         response = requests.get(url)
-        print("####",response)
-        print("resposne",response.text )
         try:
             data = response.json()
             name = data[0]['name']
@@ -193,17 +212,21 @@ def red_start(request):
 
 
 def msg_api_for_general_program(request):
+    """
+    This view handles the process of making an API request to update the result for the general program assessment.
+    If the request method is POST and contains the 'search' parameter, it retrieves the selected option, enrollment ID,
+    profile ID, program, and current date from the session.
+    It then constructs the API URL with the necessary parameters and makes a GET request to update the assessment result.
+    If the API response is successful (status code 200), it redirects the user to the home page.
+    Otherwise, it returns an error message indicating an invalid API response.
+    """
     if "search" in request.POST:
         now = datetime.now()
         today_date = now.strftime("%Y-%m-%d")
         selected_option = request.session.get('selected_option')
-        print('selected option',selected_option)
         enrollment_id = request.session.get('enrollment_id')
-        print('enrollment_id',enrollment_id)
         id_value = request.session.get('id_value')
-        print('id_value',id_value)
         my_program = request.session.get('my_program')
-        print('my program for general program')
         url = f'https://prajeevika.org/apis/aop/update-result.php?token=eyNsWgAdBF0KafwGPwOC9h5rWABTBuAKYxDxv8zRgJyuP&enrollment_id={enrollment_id}&student_id={id_value}&assessment_type={selected_option}&assessment_date={today_date}&assessment_level=L1&program={my_program}'
         response = requests.get(url)
         if response.status_code == 200:
@@ -214,6 +237,18 @@ def msg_api_for_general_program(request):
 
 
 def msg_api(request):
+    """
+    This view handles the process of making an API request to update the assessment result and retrieve children details.
+    If the request method is POST and contains the 'search' parameter, it retrieves the selected option, enrollment ID,
+    profile ID, program, and current date from the session.
+    It then constructs the API URL with the necessary parameters and makes a GET request to update the assessment result.
+    If the API response is successful (status code 200), it retrieves the mobile number from the request POST data and
+    makes another API request to retrieve the children details.
+    If the children details API response is successful, it extracts the name and status from the response data and stores
+    them in the session.
+    Finally, it renders the 'AOP_PRO/search_num.html' template with the retrieved data and selected option.
+    If any API response is unsuccessful, it renders the 'Error/pages-500.html' template.
+    """
     if "search" in request.POST:
         now = datetime.now()
         today_date = now.strftime("%Y-%m-%d")
@@ -221,7 +256,6 @@ def msg_api(request):
         enrollment_id = request.session.get('enrollment_id')
         id_value = request.session.get('id_value')
         my_program = request.session.get('my_program')
-        print('my program is',my_program)
         url = f'https://prajeevika.org/apis/aop/update-result.php?token=eyNsWgAdBF0KafwGPwOC9h5rWABTBuAKYxDxv8zRgJyuP&enrollment_id={enrollment_id}&student_id={id_value}&assessment_type={selected_option}&assessment_date={today_date}&assessment_level=L1&program={my_program}'
         response = requests.get(url)
         if response.status_code == 200:
@@ -246,6 +280,13 @@ def msg_api(request):
 
 
 def login(request):
+    """
+    This view handles the login process. If the request method is POST, it retrieves the mobile number from the request
+    POST data and stores it in the session. It performs basic validation to ensure that the mobile number is in the
+    correct format. If the mobile number already exists in the database, it redirects to the 'choose_avatar' page.
+    Otherwise, it creates a new user with a default username and the provided mobile number, and redirects to the
+    'choose_avatar' page. If the request method is GET, it renders the 'login.html' template.
+    """
     if request.method == 'POST':
         mobile_number = request.POST['mobile_number']
         request.session['mobile_number'] = mobile_number
@@ -263,6 +304,15 @@ def login(request):
 
 
 def choose_avatar(request):
+    """
+    This view handles the selection of an avatar. If the request method is POST, it retrieves the child name and
+    selected image from the request POST data. It performs basic validation to ensure that the child name is provided.
+    It then creates a new Avatar instance with the child name and selected image, and saves it to the database.
+    The child name and avatar URL are stored in the session. The mobile number and my_program values are retrieved
+    from the session. A data dictionary is created with the necessary information for creating a profile.
+    The data is sent as a JSON payload to the specified URL using the POST method. Finally, it redirects to the
+    'select_profile' page. If the request method is GET, it renders the 'chooseavtar.html' template.
+    """
     if request.method == 'POST':
         child_name = request.POST.get('child_name')
         if not child_name:
@@ -275,7 +325,6 @@ def choose_avatar(request):
         request.session['avatar_url'] = selected_image
         mobile_number = request.session.get('mobile_number')
         my_program = request.session.get('my_program')  # Retrieve 'my_program' from session
-        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@',my_program)
         data = {
             "name": child_name,
             "profile_pic": selected_image,
@@ -291,6 +340,12 @@ def choose_avatar(request):
 
 
 def select_profile(request):
+    """
+    This view is responsible for displaying the selected profile and handling the selection of a profile.
+    If the request method is POST, it redirects to the 'language' page.
+    If the request method is GET, it retrieves the child name and avatar image URL from the session.
+    It renders the 'selectavtar.html' template, passing the child name and avatar URL as context variables.
+    """
     if request.method == 'POST':
         return redirect('language')
     child_name = request.session.get('child_name')
@@ -299,6 +354,15 @@ def select_profile(request):
 
 
 def language(request):
+    """
+    This view is responsible for displaying the language selection page.
+    It retrieves the child name and avatar image URL from the session.
+    It also retrieves the available options and English levels.
+    If the request method is POST, it handles the selected option and level.
+    - If the selected option is 'BL', 'ML1', 'ML2', or 'EL', it redirects to the 'aop_num' view.
+    - Otherwise, it redirects to the 'start_assesment' view.
+    If the request method is GET, it renders the 'select_lan.html' template, passing the necessary context variables.
+    """
     child_name = request.session.get('child_name')
     avatar_image = request.session.get('avatar_url')
     options = MyModel.OPTION_CHOICES
@@ -309,14 +373,14 @@ def language(request):
         selected_level = request.POST.get('options')
         request.session['selected_level'] = selected_level
 
-        if selected_option == 'option1':
-            with open('1.json') as f:
-                json_data = json.load(f)
-        elif selected_option == 'option2':
-            with open('2.json') as f:
-                json_data = json.load(f)
-        else:
-            pass
+        # if selected_option == 'option1':
+        #     with open('1.json') as f:
+        #         json_data = json.load(f)
+        # elif selected_option == 'option2':
+        #     with open('2.json') as f:
+        #         json_data = json.load(f)
+        # else:
+        #     pass
         if selected_option == 'BL':
             url = reverse('aop_num', args=[selected_option])
             return redirect(url)
@@ -336,10 +400,22 @@ def language(request):
 
 
 def aop_start_assesment(request):
+    """
+    This view is responsible for rendering the AOP assessment start page.
+    """
     return render(request, 'AOP_PRO/six_one.html')
 
 
 def start_assesment(request,selected_option):
+    """
+    This view is responsible for rendering the assessment start page.
+    It receives the 'selected_option' parameter to determine the assessment type.
+    It retrieves the 'enrollment_id' and 'status' from the session.
+    If the request method is POST and the selected level is 'BL' or 'ML1',
+    it redirects to the 'bl' view.
+    It renders the 'start_assesment.html' template, passing the 'selected_option',
+    'selected_level', and 'status' as context variables.
+    """
     enrollment_id = request.session.get('enrollment_id')
     status = request.session.get('status')
     request.session['selected_option'] = selected_option
@@ -354,15 +430,20 @@ def start_assesment(request,selected_option):
 
 
 def gen_aop_redirect(request,selected_option):
-    print("start_assesment",selected_option)
+    """
+    This view is responsible for redirecting to different views based on the selected option.
+    It receives the 'selected_option' parameter and stores it in the session.
+    It retrieves the 'selected_option' and 'selected_level' from the session.
+    If the request method is POST, it checks the selected option and redirects accordingly.
+    If the selected option is 'BL', it redirects to the 'bl' view.
+    If the selected option is 'ML1', it redirects to the 'ml1' view.
+    Otherwise, it redirects to the 'paragraph' view.
+    """
     request.session['selected_option'] = selected_option
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     selected_level = request.session.get('selected_level')
-    print("@",selected_level)
     if request.method == 'POST':
         selected_option = request.session.get('selected_option')
-        print("@",selected_option)
         if selected_option == 'BL':
             return redirect('bl')
         elif selected_option == 'ML1':
@@ -374,6 +455,13 @@ def gen_aop_redirect(request,selected_option):
 
 #                   English Level
 def nextpage(request):
+    """
+    This view handles the submission of a form via POST method.
+    It retrieves the selected option from the form data.
+    It creates a list 'nomistake_list' and appends the selected option to it.
+    It retrieves the first item from the 'nomistake_list' and assigns it to 'nomistake' variable.
+    Finally, it returns an HTTP response containing the string representation of 'nomistake'.
+    """
     if request.method == 'POST':
         selected_option = request.POST.get('selected_option')
         nomistake_list = []
@@ -383,62 +471,82 @@ def nextpage(request):
     
     
 def bl(request):
+    """
+    This view handles the rendering of the 'bl_startrecording.html' template for the BL (Basic Level) assessment.
+    It retrieves the selected option and level from the session variables.
+    It also retrieves the enrollment ID and phone number from the session variables.
+    The 'mobile_number' is included in the context dictionary for rendering purposes.
+    If the request method is POST, it redirects to the 'start_recording_bl' view.
+    Otherwise, it renders the 'bl_startrecording.html' template with the provided context.
+    """
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     selected_level = request.session.get('selected_level')
-    print("@",selected_level)
     enrollment_id = request.session.get('enrollment_id')
-    print("enrollment_id",enrollment_id)
     phone_number = request.session.get('phone_number')
-    print("ph", phone_number)
     enrollment_id = request.session.get('enrollment_id')
-    print("enrollment_id",enrollment_id)
 
     context = {
         'mobile_number': phone_number,
     }
-    phone_number = request.session.get('phone_number')
-    print(phone_number)
     if request.method == 'POST':
         return redirect('start_recording_bl')
     return render(request, 'AOP_PRO/bl_startrecording.html',context)
 
 
 def start_recording_bl(request):
+    """
+    This view handles the rendering of the 'bl_recording.html' template for recording the BL (Basic Level) assessment.
+    It calls the 'get_random_paragraph' function to retrieve a random paragraph and data ID for the assessment.
+    The retrieved paragraph and data ID are included in the context dictionary for rendering purposes.
+    The 'recording' flag is set to True in the context to indicate that recording is active.
+    Finally, it renders the 'bl_recording.html' template with the provided context.
+    """
     paragraph, data_id = get_random_paragraph(request)
     context = {"val": paragraph, "recording": True, "data_id": data_id}
     return render(request, "AOP_PRO/bl_recording.html", context)
 
 
 def bl_next(request):
+    """
+    This view handles the rendering of the 'bl_startrecording_next.html' template for the next step in the BL (Basic Level) assessment.
+    It retrieves the selected option, selected level, phone number, and enrollment ID from the session.
+    If the request method is POST, it redirects to the 'start_recording_next_bl' view.
+    Otherwise, it renders the 'bl_startrecording_next.html' template with the provided context.
+    """
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     selected_level = request.session.get('selected_level')
-    print("@",selected_level)
     phone_number = request.session.get('phone_number')
-    print("ph", phone_number)
     enrollment_id = request.session.get('enrollment_id')
-    print("enrollment_id",enrollment_id)
     if request.method == 'POST':
         return redirect('start_recording_next_bl')
     return render(request, 'AOP_PRO/bl_startrecording_next.html',{'mobile_number': phone_number})
 
 
 def start_recording_next_bl(request):
+    """
+    This view handles the rendering of the 'bl_recording_next.html' template for the next step in the BL (Basic Level) assessment.
+    It calls the 'get_random_paragraph' function to retrieve a random paragraph and its associated data ID.
+    The paragraph and data ID are passed as context to the template.
+    """
     paragraph, data_id = get_random_paragraph(request)
     context = {"val": paragraph, "recording": True, "data_id": data_id}
     return render(request, "AOP_PRO/bl_recording_next.html", context)
 
 
 def bl_answer_final(request):
+    """
+    This view handles the processing of the final answer in the BL (Basic Level) assessment.
+    It retrieves the necessary session data such as file paths, selected options, and data IDs.
+    Based on the selected option, it retrieves the corresponding data from JSON files.
+    It sends a POST request to a transcript API with the audio file and question data.
+    The response is processed and relevant information is extracted.
+    The transcript, mistake details, fluency, and other data are passed to the 'bl_answer_final.html' template for rendering.
+    """
     filepath = request.session.get('filepath')
     filename = request.session.get('filename')
-    print(filename)
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     if selected_option == 'English':
         data_id = request.session.get('data_id')
-        print("data_id",data_id)
         data = json_eng
         paragraph = None
         for d in data['Paragraph']:
@@ -447,7 +555,6 @@ def bl_answer_final(request):
                 break
     elif selected_option == 'BL':
         data_id = request.session.get('data_id')
-        print("data_id",data_id)
         data = json_l1_data
         paragraph = None
         for d in data['Paragraph']:
@@ -456,7 +563,6 @@ def bl_answer_final(request):
                 break
     else:
         data_id = request.session.get('data_id')
-        print("data_id",data_id)
         data = json_l1_data
         paragraph = None
         for d in data['Paragraph']:
@@ -471,12 +577,10 @@ def bl_answer_final(request):
     payload = {'language': 'English' ,'question':val}
     headers = {}
     response = requests.request("POST", url, headers=headers, data=payload, files=files)
-    print('***', response.text)
     request.session['transcript'] = response.text
     phone_number = request.session.get('phone_number')
     enrollment_id = request.session.get('enrollment_id')
     if response.status_code == 200:
-        print("text",val)
         data_string = response.json().get('text')
         mistake = response.json().get('no_mistakes')
         fluency = response.json().get('wcpm') 
@@ -498,6 +602,14 @@ def bl_answer_final(request):
 
 @csrf_exempt
 def save_file_bl(request):
+    """
+    This view handles the saving of the audio file in the BL (Basic Level) assessment.
+    It checks if the request method is POST and if the 'audio_blob' file is present.
+    It retrieves the necessary session data such as data ID and value.
+    It creates a unique filename based on the data ID and saves the file to the media folder.
+    The file path and name are stored in the session for later use.
+    The 'bl_answer.html' template is rendered with the file path and mobile number.
+    """
     if request.method == 'POST' and request.FILES.get('audio_blob'):
         data_id = request.session.get('data_id')
         val = request.POST.get('val')
@@ -517,6 +629,16 @@ def save_file_bl(request):
 
 
 def bl_answer(request):
+    """
+    This view handles the processing of the audio file in the BL (Basic Level) assessment.
+    It retrieves the necessary session data such as file path, file name, selected option, and data ID.
+    Based on the selected option, it retrieves the appropriate data (English or BL) and the corresponding paragraph.
+    It makes a request to the transcript API with the audio file and paragraph data.
+    The transcript and other relevant information are stored in the session.
+    If the API response is successful, the transcript data is extracted and formatted.
+    The audio URL is generated for playback if the file exists.
+    The 'bl_answer.html' template is rendered with the transcript and other data for display.
+    """
     filepath = request.session.get('filepath')
     filename = request.session.get('filename')
     selected_option = request.session.get('selected_option')
@@ -530,7 +652,6 @@ def bl_answer(request):
                 break
     elif selected_option == 'BL':
         data_id = request.session.get('data_id')
-        print("data_id",data_id)
         data = json_l1_data
         paragraph = None
         for d in data['Paragraph']:
@@ -540,7 +661,6 @@ def bl_answer(request):
     
     else: 
         data_id = request.session.get('data_id')
-        print("data_id",data_id)
         data = json_l1_data
         paragraph = None
         for d in data['Paragraph']:
@@ -549,58 +669,57 @@ def bl_answer(request):
                 break
 
     if val:
-        print("the val",val)
-    phone_number = request.session.get('phone_number')
-    print("ph", phone_number)
-    enrollment_id = request.session.get('enrollment_id')
-    print("enrollment_id",enrollment_id)
-    url = 'http://3.7.133.80:8000/gettranscript/'
-    files = [('audio', (filepath, open(filepath, 'rb'), 'audio/wav'))]
-    payload = {'language': 'English' ,'question':val}
-    headers = {}
-    response = requests.request("POST", url, headers=headers, data=payload, files=files)
-    print('***', response.text)
-    request.session['transcript'] = response.text
-    if response.status_code == 200:
-        print("text",val)
-        data_string = response.json().get('text')
-        request.session['data_string'] = data_string
-        mistake = response.json().get('no_mistakes')
-        fluency = response.json().get('wcpm') 
-        index = response.json().get('sub_details') 
-        deld = response.json().get('del_details') 
-        # Format wcpm to have only two decimal places
-        wcpm_formatted = '{:.2f}'.format(float(fluency)) if fluency else None              
-        filepath = request.session.get('filepath')
-        audio_url = None
-        if filepath:
-            # Check if the file exists
-            if os.path.exists(filepath):
-                # Get the file name from the file path
-                filename = os.path.basename(filepath)
-                audio_url = request.build_absolute_uri(settings.MEDIA_URL + filename)
-            else:
-                filepath = None  
-        return render(request, 'AOP_PRO/bl_answer.html', {'transcript': data_string, 'text':data_string, 'originaltext':val , 'sub_details':index,'del_details':deld, 'audio_url': audio_url, 'no_mistakes': mistake, 'wcpm': wcpm_formatted, 'mobile_number': phone_number})
-    else:
-        return render(request, 'Error/pages-500.html' )
+        phone_number = request.session.get('phone_number')
+        enrollment_id = request.session.get('enrollment_id')
+        url = 'http://3.7.133.80:8000/gettranscript/'
+        files = [('audio', (filepath, open(filepath, 'rb'), 'audio/wav'))]
+        payload = {'language': 'English' ,'question':val}
+        headers = {}
+        response = requests.request("POST", url, headers=headers, data=payload, files=files)
+        request.session['transcript'] = response.text
+        if response.status_code == 200:
+            data_string = response.json().get('text')
+            request.session['data_string'] = data_string
+            mistake = response.json().get('no_mistakes')
+            fluency = response.json().get('wcpm') 
+            index = response.json().get('sub_details') 
+            deld = response.json().get('del_details') 
+            # Format wcpm to have only two decimal places
+            wcpm_formatted = '{:.2f}'.format(float(fluency)) if fluency else None              
+            filepath = request.session.get('filepath')
+            audio_url = None
+            if filepath:
+                # Check if the file exists
+                if os.path.exists(filepath):
+                    # Get the file name from the file path
+                    filename = os.path.basename(filepath)
+                    audio_url = request.build_absolute_uri(settings.MEDIA_URL + filename)
+                else:
+                    filepath = None  
+            return render(request, 'AOP_PRO/bl_answer.html', {'transcript': data_string, 'text':data_string, 'originaltext':val , 'sub_details':index,'del_details':deld, 'audio_url': audio_url, 'no_mistakes': mistake, 'wcpm': wcpm_formatted, 'mobile_number': phone_number})
+        else:
+            return render(request, 'Error/pages-500.html' )
 
 
 def bl_retake(request):
+    # Get the selected option from the session
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
+    
+    # Remove existing files from the media folder
     media_folder = os.path.join(settings.MEDIA_ROOT)
     for file in os.listdir(media_folder):
         file_path = os.path.join(media_folder, file)
         try:
             if os.path.isfile(file_path):
                 os.remove(file_path)
-        except Exception as e:
-            print(e)
+        except OSError as e:
+            # Handle the exception and display an error message
+            print(f"Error occurred while deleting file: {file_path}")
+            print(f"Error message: {str(e)}")
     
+    # Check the selected option and retrieve the appropriate data
     if selected_option == 'English':
         data_id = request.session.get('data_id')
-        print("data_id",data_id)
         request.session['audio_recorded'] = True
         data = json_eng
         paragraph = None
@@ -610,9 +729,7 @@ def bl_retake(request):
                 break
     elif selected_option == 'BL':
         data_id = request.session.get('data_id')
-        print("data_id",data_id)
         request.session['audio_recorded'] = True
-       
         data = json_l1_data
         paragraph = None
         for d in data['Paragraph']:
@@ -620,38 +737,47 @@ def bl_retake(request):
                 val = d['data']
                 break
 
+    # Render the appropriate template based on the availability of 'val'
     if val:
-        print("the val",val)
-    return render(request, "AOP_PRO/bl_retake.html", {"recording": True,"val":val })
-   
+        return render(request, "AOP_PRO/bl_retake.html", {"recording": True, "val": val})
+    else:
+        return render(request, 'Error/pages-500.html')
+
 
 def bl_skip(request):
+    # Get the selected option from the session
     selected_option = request.session.get('selected_option')
-    print("@", selected_option)
+    
+    # Get the data_id from the session
     data_id = request.session.get('data_id')
-    print("data_id", data_id)
-    data = json_l1_data
+    
+    # Retrieve the data based on the selected option
+    if selected_option == 'English':
+        data = json_eng
+    elif selected_option == 'BL':
+        data = json_l1_data
+    
     paragraph = None
+    
+    # Find the corresponding data based on the data_id
     for d in data['Paragraph']:
         if d['id'] == data_id:
             val = d['data']
             break
-
+    
+    # Process the text to generate the necessary details
     words = val.split()
     my_list = list(words)
     phone_number = request.session.get('phone_number')
-    print("ph", phone_number)
     enrollment_id = request.session.get('enrollment_id')
-    print("enrollment_id", enrollment_id)
     last_index = len(my_list)
 
     del_details = ', '.join([f"{i + 1}-{word}" for i, word in enumerate(my_list[1:])])
-    print('del_details',del_details)
 
     sub_details_index = 0
     sub_details = f"{sub_details_index}-{my_list[sub_details_index]}"
-    print('sub_details',sub_details)
 
+    # Prepare the BL response
     bl_response = {
         "no_mistakes": last_index,
         "no_del": last_index - 1,
@@ -665,37 +791,41 @@ def bl_skip(request):
         "process_time": 0.7457363605499268
     }
 
+    # Convert the BL response to JSON and store it in the session as transcript
     transcript = json.dumps(bl_response)
     request.session['transcript'] = transcript
+    
+    # Render the bl_answer.html template with the necessary details
     return render(request, 'AOP_PRO/bl_answer.html', {'originaltext': val, 'wcpm': None, 'no_mistakes': last_index, 'mobile_number': phone_number})
 
 
-
-
-
 def bl_skip_next(request):
+    # Get the selected option from the session
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
+    
+    # Get the data_id from the session
     data_id = request.session.get('data_id')
-    print("data_id",data_id)
+    
+    # Retrieve the data based on the selected option
     data = json_l1_data
+    
     paragraph = None
+    
+    # Find the corresponding data based on the data_id
     for d in data['Paragraph']:
         if d['id'] == data_id:
             val = d['data']
             break
-
+    
+    # Process the text to generate the necessary details
     words = val.split()
     my_list = list(words)
-    # for i, word in enumerate(my_list):
-    #     print("The index of", word, "in the list is:", i)
     last_index = len(my_list)
     del_details = ', '.join([f"{i + 1}-{word}" for i, word in enumerate(my_list[1:])])
-    print('del_details',del_details)
-
     sub_details_index = 0
     sub_details = f"{sub_details_index}-{my_list[sub_details_index]}"
-    print('sub_details',sub_details)
+    
+    # Prepare the BL response
     bl_response = {
         "no_mistakes": last_index,
         "no_del": last_index - 1,
@@ -708,36 +838,35 @@ def bl_skip_next(request):
         "audio_url": "",
         "process_time": 0.7457363605499268
     }
+    
+    # Convert the BL response to JSON and store it in the session as transcript
     transcript = json.dumps(bl_response)
     request.session['transcript'] = transcript
-    phone_number = request.session.get('phone_number')
-    print("ph", phone_number)
-    enrollment_id = request.session.get('enrollment_id')
-    print("enrollment_id",enrollment_id)
-    return render(request, 'AOP_PRO/bl_answer_final.html', {'originaltext':val ,'wcpm': None,'no_mistakes': last_index, 'mobile_number': phone_number,})
     
+    # Get phone number from the session
+    phone_number = request.session.get('phone_number')
+    enrollment_id = request.session.get('enrollment_id')
+    
+    # Render the bl_answer_final.html template with the necessary details
+    return render(request, 'AOP_PRO/bl_answer_final.html', {'originaltext':val ,'wcpm': None,'no_mistakes': last_index, 'mobile_number': phone_number})
+
 
 def bl_store(request):
-    if request.method == 'POST':   
+    if request.method == 'POST':
+        # Retrieve the fluency_adjustment value from the form
         fluency_adjustment = request.POST.get('fluency_adjustment')
-        print("fluency_adjustment", fluency_adjustment)
-        # adjustment_from_storage = request.POST.get('adjustment')
-        # print('adjustment_from_storage',adjustment_from_storage)
-        # Store the value in the session
-        # request.session['adjustment'] = adjustment
-        # nomistake_list = []
-        # nomistake_list.append(str(request.session['adjustment']))
-        # nomistake = nomistake_list[0]
-        # print("nomistake", nomistake)
+        
+        # Determine the ans_next_level based on the fluency_adjustment value
         if fluency_adjustment == '0':
             request.session['ans_next_level'] = 'L2'
         else:
             request.session['ans_next_level'] = 'L1'
+        
+        # Retrieve necessary values from the session
         enrollment_id = request.session.get('enrollment_id')
         status = request.session.get('status')
         filepath = request.session.get('filepath')
         bl_rec = request.session.get('transcript')
-        print('BL_res:', bl_rec)
         transcript_dict = json.loads(bl_rec)
         no_mistakes = transcript_dict.get('no_mistakes')
         no_del = transcript_dict.get('no_del')
@@ -750,73 +879,72 @@ def bl_store(request):
         id_value = request.session.get('id_value')
         data_id = request.session.get('data_id')
         my_program = request.session.get('my_program')
-        print('my program is saveprogress',my_program)
+        
         data = json_l1_data
         paragraph = None
+        
+        # Find the corresponding data based on the data_id
         for d in data['Paragraph']:
             if d['id'] == data_id:
                 val = d['data']
                 break
-
+        
         if val:
-            print("question",val)
-        ans_next_level = request.session.get('ans_next_level')
-        print("next level",ans_next_level)
-        data={}
-        data["student_id"]=id_value
-        data["sample_id"]= "data_id"
-        data["level"]= 'L2'
-        data["question"]= val
-        data["section "]= 'reading'
-        data["answer"]= text
-        data["audio_url"]= audio_url
-        data["mistakes_count"]= '0'
-        data["no_mistakes"]= no_mistakes
-        data["no_mistakes_edited"]= fluency_adjustment
-        data["api_process_time"]= process_time
-        data["language"]= 'English'
-        data["no_del"]= no_del
-        data["del_details"]= del_details
-        data["no_sub"]= no_sub
-        data["sub_details"]= sub_details
-        data["test_type"]= status
-        data["next_level"]= ans_next_level
-        data["program"] = my_program
-        url = 'https://parakh.pradigi.org/v1/saveprogress/'
-        files = []
-        payload = {'data': json.dumps(data)}
-        headers = {}
-        response = requests.request("POST", url, headers=headers, data=payload, files=files)
-        if fluency_adjustment == '0':
-            return redirect('bl_mcq_next')  # redirect to bl_mcq function
-        else:
-            return redirect('bl_next') 
+            # Prepare the data to be sent for saving progress
+            ans_next_level = request.session.get('ans_next_level')
+            data = {
+                "student_id": id_value,
+                "sample_id": "data_id",
+                "level": 'L2',
+                "question": val,
+                "section": 'reading',
+                "answer": text,
+                "audio_url": audio_url,
+                "mistakes_count": '0',
+                "no_mistakes": no_mistakes,
+                "no_mistakes_edited": fluency_adjustment,
+                "api_process_time": process_time,
+                "language": 'English',
+                "no_del": no_del,
+                "del_details": del_details,
+                "no_sub": no_sub,
+                "sub_details": sub_details,
+                "test_type": status,
+                "next_level": ans_next_level,
+                "program": my_program
+            }
+            
+            # Send the data for saving progress via API
+            url = 'https://parakh.pradigi.org/v1/saveprogress/'
+            files = []
+            payload = {'data': json.dumps(data)}
+            headers = {}
+            response = requests.request("POST", url, headers=headers, data=payload, files=files)
+            
+            # Redirect to the appropriate view based on the fluency_adjustment value
+            if fluency_adjustment == '0':
+                return redirect('bl_mcq_next')  # redirect to bl_mcq function
+            else:
+                return redirect('bl_next')
 
 
 def bl_next_store(request):
-  if request.method == 'POST':
-    try:
+    if request.method == 'POST':
+        try:
+            # Retrieve and validate the fluency_adjustment value from the form
             fluency_adjustment = request.POST.get('fluency_adjustment')
-            print("fluency_adjustment", fluency_adjustment)
-            # adjustment_from_storage = request.POST.get('adjustment')
-            # print('adjustment_from_storage',adjustment_from_storage)
-            # # Store the value in the session
-            # request.session['adjustment'] = adjustment_from_storage
-            # nomistake_list = []
-            # nomistake_list.append(str(request.session['adjustment']))
-            # nomistake = nomistake_list[0]
-            # print("nomistake", nomistake)
+            number = int(fluency_adjustment)
             
             if fluency_adjustment == '0':
                 request.session['ans_next_level'] = 'L2'
             else:
                 request.session['ans_next_level'] = 'L1'
             
+            # Retrieve necessary values from the session
             enrollment_id = request.session.get('enrollment_id')
             status = request.session.get('status')
             filepath = request.session.get('filepath')
             bl_rec = request.session.get('transcript')
-            print('BL_res:', bl_rec)
             transcript_dict = json.loads(bl_rec)
             no_mistakes = transcript_dict.get('no_mistakes')
             no_del = transcript_dict.get('no_del')
@@ -827,104 +955,101 @@ def bl_next_store(request):
             no_sub = transcript_dict.get('no_sub')
             process_time = transcript_dict.get('process_time')
             id_value = request.session.get('id_value')
-            print("student_id",id_value)
             data_id = request.session.get('data_id')
-            print("sample_id",data_id)
             my_program = request.session.get('my_program')
-            print('my program is saveprogress',my_program)
+            
             data = json_l1_data
             paragraph = None
+            
+            # Find the corresponding data based on the data_id
             for d in data['Paragraph']:
                 if d['id'] == data_id:
                     val = d['data']
                     break
-
-            if val:
-                print("question",val)
-            # selected_option = request.session.get('selected_option')
-            print(status)
-            ans_next_level = request.session.get('ans_next_level')
-            data={}
-            data["student_id"]=id_value
-            data["sample_id"]= "data_id"
-            data["level"]= 'L2'
-            data["question"]= val
-            data["section "]= 'reading'
-            data["answer"]= text
-            data["audio_url"]= audio_url
-            data["mistakes_count"]= '0'
-            data["no_mistakes"]= no_mistakes
-            data["no_mistakes_edited"]= fluency_adjustment
-            data["api_process_time"]= process_time
-            data["language"]= 'English'
-            data["no_del"]= no_del
-            data["del_details"]= del_details
-            data["no_sub"]= no_sub
-            data["sub_details"]= sub_details
-            data["test_type"]= status
-            data["next_level"]= ans_next_level
-            data["program"] = my_program
-            print(data)
-            url = 'https://parakh.pradigi.org/v1/saveprogress/'
-            files = []
-            payload = {'data': json.dumps(data)}
-            headers = {}
-            response = requests.request("POST", url, headers=headers, data=payload, files=files)
-            response_data = json.loads(response.text)
-            print(fluency_adjustment)
-            if fluency_adjustment == '0':
-                return redirect('bl_mcq_next') 
-            else:
-                phone_number = request.session.get('phone_number')
-                print("ph", phone_number)
-                enrollment_id = request.session.get('enrollment_id')
-                print("enrollment_id",enrollment_id)
             
-                context = {
-                    'mobile_number': phone_number,
-                    'level' : "beginner"
+            if val:
+                # Prepare the data to be sent for saving progress
+                ans_next_level = request.session.get('ans_next_level')
+                data = {
+                    "student_id": id_value,
+                    "sample_id": "data_id",
+                    "level": 'L2',
+                    "question": val,
+                    "section": 'reading',
+                    "answer": text,
+                    "audio_url": audio_url,
+                    "mistakes_count": '0',
+                    "no_mistakes": no_mistakes,
+                    "no_mistakes_edited": fluency_adjustment,
+                    "api_process_time": process_time,
+                    "language": 'English',
+                    "no_del": no_del,
+                    "del_details": del_details,
+                    "no_sub": no_sub,
+                    "sub_details": sub_details,
+                    "test_type": status,
+                    "next_level": ans_next_level,
+                    "program": my_program
                 }
-                return render(request, "AOP_PRO/ans_page_aop.html", context=context)
-    except TypeError:
-        return HttpResponse("Invalid adjustment value")
+                
+                # Send the data for saving progress via API
+                url = 'https://parakh.pradigi.org/v1/saveprogress/'
+                files = []
+                payload = {'data': json.dumps(data)}
+                headers = {}
+                response = requests.request("POST", url, headers=headers, data=payload, files=files)
+                response_data = json.loads(response.text)
+                
+                if number == 0:
+                    return redirect('bl_mcq_next')
+                else:
+                    # Retrieve additional values from the session
+                    phone_number = request.session.get('phone_number')
+                    enrollment_id = request.session.get('enrollment_id')
+                    
+                    # Prepare the context for rendering the template
+                    context = {
+                        'mobile_number': phone_number,
+                        'level': "beginner"
+                    }
+                    return render(request, "AOP_PRO/ans_page_aop.html", context=context)
+        except TypeError:
+            return HttpResponse("Invalid adjustment value")
 
     
 def get_random_sentence(request):
     selected_option = request.session.get('selected_option')
-    print("get_random_sentence",selected_option)
+    
+    # Check the selected_option to determine the data source
     if selected_option == 'BL':
         data = json_l1_data
-        data1 = random.choice(data['Sentence'])
-        print("the value ",data1['id'])
-        data_id = data1['id']
-        request.session['data_id'] = data_id
-        print(data_id)
-        print("dta",data1['data'])
-        languages = data1['language']
-        return {
-            'data': data1['data'],
-            'data_id': data_id,
-            'languages': languages,
-        }
     else:
         data = json_l1_data
-        data1 = random.choice(data['Sentence'])
-        print("the value ",data1['id'])
-        data_id = data1['id']
-        request.session['data_id'] = data_id
-        print(data_id)
-        print("dta",data1['data'])
-        languages = data1['language']
-        return {
-            'data': data1['data'],
-            'data_id': data_id,
-            'languages': languages,
-        }
+    
+    # Select a random sentence from the data
+    data1 = random.choice(data['Sentence'])
+    data_id = data1['id']
+    
+    # Store the data_id in the session
+    request.session['data_id'] = data_id
+    
+    # Retrieve the language information
+    languages = data1['language']
+    
+    # Return the data, data_id, and languages as a dictionary
+    return {
+        'data': data1['data'],
+        'data_id': data_id,
+        'languages': languages,
+    }
        
 
+
 def bl_mcq_api(request):
+    # Get session variables
     selected_option = request.session.get('selected_option')
     selected_level = request.session.get('selected_level')
+
     if request.method == 'POST':
         selected_lan = request.POST.get('selected_language_input')
         selecteddiv = request.session.get('selected-div')
@@ -944,25 +1069,26 @@ def bl_mcq_api(request):
         process_time = transcript_dict.get('process_time')
         ans_next_level = request.session.get('ans_next_level')
         my_program = request.session.get('my_program')
-        print('my program is saveprogress',my_program)
-        print('text:', text)
-        print('audio_url:', audio_url)
-        print('process_time:', process_time)
+
+        # Retrieve data from json_l1_data
         data = json_l1_data
-        Sentence = None
+        val = None
+        answer = None
+
         for d in data['Sentence']:
             if d['id'] == data_id:
                 val = d['data']
                 break
-        print("@",selected_option)
+
+        # Set selected language
         if selected_language == 'hindi':
-                print("selected",'hindi')
-                request.session['lan'] = selected_language
-        elif selected_language == 'marathi':
-            print('selected','marathi')
             request.session['lan'] = selected_language
+        elif selected_language == 'marathi':
+            request.session['lan'] = selected_language
+
+        # Retrieve data based on selected language
         if selected_language == 'hindi':
-                # find the data with matching data_id
+            # Find the data with matching data_id
             data = json_l1_data
             selected_data = next((item for item in data['Sentence'] if item['id'] == data_id), None)
             if selected_data:
@@ -974,7 +1100,7 @@ def bl_mcq_api(request):
                 print("Data not found for the given data_id")
         elif selected_language == 'marathi':
             data = json_l1_data
-            # find the data with matching data_id
+            # Find the data with matching data_id
             selected_data = next((item for item in data['Sentence'] if item['id'] == data_id), None)
             if selected_data:
                 languages = selected_data['language']
@@ -982,231 +1108,258 @@ def bl_mcq_api(request):
                 options = selected_language.get('options')
                 answer = selected_language.get('answers')
             else:
-                print("Data not found for the given data_id")
-        print("student_id",id_value)
-        print("sample_id",data_id)
-        print("level")
-        print("section")
-        print("question",val)
-        print("answer",selected_div) 
-        print('audio_url:', audio_url)
-        print('mistakes_count', audio_url)
-        print('no_mistakes:', no_mistakes)
-        print('no_mistakes_edited', no_mistakes)
-        print('process_time:', process_time)
-        print('language:', 'English')
-        print('no_del:', no_del)
-        print('del_details:', del_details)
-        print('no_sub:', "no_sub")
-        print('sub_details:', sub_details)
-        print("test_type",status)
-        print("next level",ans_next_level)
-        print("correct_answer:", answer)
-        print("answer_check_status:", "answer")
+                pass
+
         lan = request.session.get('lan')
-        print("lan",lan)
-        data={}
-        data["student_id"]=id_value
-        data["sample_id"]= "data_id"
-        data["level"]= 'L1'
-        data["question"]= val
-        data["section "]= 'MCQ'
-        data["answer"]= selected_div
-        data["audio_url"]= ''
-        data["mistakes_count"]= '0'
-        data["no_mistakes"]= '0'
-        data["no_mistakes_edited"]= '0'
-        data["api_process_time"]= '0'
-        data["language"]= 'English'
-        data["no_del"]= '0'
-        data["del_details"]= '0'
-        data["no_sub"]= '0'
-        data["sub_details"]= '0'
-        data["test_type"]= status
-        data["next_level"]= ans_next_level
-        data["correct_answer"]= answer
-        data["answer_check_status"]= 'true'
-        data["mcq_language"]= lan
+
+        # Prepare data for API request
+        data = {}
+        data["student_id"] = id_value
+        data["sample_id"] = data_id
+        data["level"] = 'L1'
+        data["question"] = val
+        data["section"] = 'MCQ'
+        data["answer"] = selected_div
+        data["audio_url"] = ''
+        data["mistakes_count"] = '0'
+        data["no_mistakes"] = '0'
+        data["no_mistakes_edited"] = '0'
+        data["api_process_time"] = '0'
+        data["language"] = 'English'
+        data["no_del"] = '0'
+        data["del_details"] = '0'
+        data["no_sub"] = '0'
+        data["sub_details"] = '0'
+        data["test_type"] = status
+        data["next_level"] = ans_next_level
+        data["correct_answer"] = answer
+        data["answer_check_status"] = 'true'
+        data["mcq_language"] = lan
         data["program"] = my_program
-        print(data)
+
         url = 'https://parakh.pradigi.org/v1/saveprogress/'
         files = []
         payload = {'data': json.dumps(data)}
         headers = {}
+        
+        # Make API request to save progress
         response = requests.request("POST", url, headers=headers, data=payload, files=files)
-        print('student_id', response.text)
         response_data = json.loads(response.text)
-        print(response.text)
+
+        # Delete the 'data_id' session variable
         del request.session['data_id']
+
+        # Redirect to 'ml1' view
         return redirect('ml1')
        
 
 def bl_final_mcq(request):
+    # Retrieve 'my_context' from session
     context = request.session.get('my_context', {})
-    print("context", context)
+
     if request.method == 'POST':
         selected_div = request.POST.get('selected-div')
         selected_divid = request.POST.get('selected-div_id')
+        
+        # Update context with selected values
         context['selected_divid'] = selected_divid
-        print('selected-div', selected_divid)
         context['selected_div'] = selected_div
-        print('selected-div', selected_div)
         selected_language = request.POST.get('selected_language')
         context['selected_language'] = selected_language
-        print('selected_language', selected_language)
+        
+        # Render 'bl_mcq.html' template with updated context
         return render(request, "AOP_PRO/bl_mcq.html", context)
-    context['selected_div'] = context.get('selected_div')  # Add selected_div to context
+    
+    # Add 'selected_div' to context
+    context['selected_div'] = context.get('selected_div')
+
+    # Render 'bl_mcq.html' template with context
     return render(request, "AOP_PRO/bl_mcq.html", context)
 
 
 def bl_mcq(request):
-    # selected_option = request.session.get('selected_option')
-    # print("@",selected_option)
-    # selected_level = request.session.get('selected_level')
-    # print("@",selected_level)
+    # Retrieve 'phone_number' and 'enrollment_id' from session
     phone_number = request.session.get('phone_number')
-    print("ph", phone_number)
     enrollment_id = request.session.get('enrollment_id')
-    print("enrollment_id",enrollment_id)
+
+    # Get random sentence data
     data = get_random_sentence(request)
+
+    # Create context dictionary with initial values
     context = {"val": data['data'], "recording": True, "data_id": data['data_id'], "languages": data['languages'], 'mobile_number': phone_number}
+
     if request.method == 'POST':
         selecteddiv = request.session.get('selected-div')
-        print('selected-div',selecteddiv)
         data_id = request.session.get('data_id')
-        print("data_id",data_id)
         transcript = request.session.get('transcript')
-        print("transcript",transcript)
+
+        # Redirect to 'ml1' view
         return redirect('ml1')
+
+    # Render 'bl_mcq.html' template with context
     return render(request, "AOP_PRO/bl_mcq.html", context)
 
 
 def bl_mcq_next(request):
-    # selected_option = request.session.get('selected_option')
-    # print("@",selected_option)
-    # selected_level = request.session.get('selected_level')
-    # print("@",selected_level)
+    # Get random sentence data
     data = get_random_sentence(request)
+
+    # Create context dictionary with initial values
     context = {"val": data['data'], "recording": True, "data_id": data['data_id'], "languages": data['languages']}
+
+    # Store context in session
     request.session['my_context'] = context
+
+    # Retrieve 'phone_number' and 'enrollment_id' from session
     phone_number = request.session.get('phone_number')
-    print("ph", phone_number)
     enrollment_id = request.session.get('enrollment_id')
-    print("enrollment_id",enrollment_id)
+
     if request.method == 'POST':
+        # Redirect to 'ml1' view
         return redirect('ml1')
+
+    # Render 'bl_mcq_next.html' template with context
     return render(request, "AOP_PRO/bl_mcq_next.html", context)
 
 
 def bl_answer_page(request):
+    # Retrieve 'phone_number' and 'enrollment_id' from session
     phone_number = request.session.get('phone_number')
-    print("ph", phone_number)
     enrollment_id = request.session.get('enrollment_id')
-    print("enrollment_id",enrollment_id)
+
+    # Create context dictionary with 'mobile_number' value
     context = {
         'mobile_number': phone_number,
     }
+
+    # Render 'bl_cong.html' template with context
     return render(request, "AOP_PRO/bl_cong.html", context=context)
 
 
 def error_recording(request):
     if request.method == 'GET':
+        # Retrieve 'data_id' from session
         data_id = request.session.get('data_id')
-        print("data_id", data_id)
+
+        # Find the paragraph with matching 'data_id'
         data = json_l1_data
         paragraph = None
         for d in data['Paragraph']:
             if d['id'] == data_id:
                 paragraph = d['data']
-                print("data_id", data_id)
                 break
+
         if paragraph:
-            print("hello ",paragraph)
-        request.session['paragraph'] = paragraph
-    return redirect(start)
+            # If paragraph is found, store it in session
+            request.session['paragraph'] = paragraph
+
+    # Redirect to 'start' view
+    return redirect('start')
 
 
 def start(request):
+    # Retrieve 'paragraph' from session
     paragraph = request.session.get('paragraph')
-    print("######",paragraph)
-    return render(request, "AOP_PRO/bl_recording.html",{'val': paragraph})
 
+    # Render the 'bl_recording.html' template with the paragraph value
+    return render(request, "AOP_PRO/bl_recording.html", {'val': paragraph})
 
-#############################################################################################
 
 def get_random_ml1(request):
+    # Retrieve selected option from session
     selected_option = request.session.get('selected_option')
+
+    # Retrieve ML1 data
     data = json_l1_data
+
+    # Select a random paragraph from the ML1 data
     data1 = random.choice(data['Paragraph'])
-    print("the value ",data1['id'])
+
+    # Get the data and data_id of the selected paragraph
     data_id = data1['id']
+    
+    # Store the data_id in the session
     request.session['data_id'] = data_id
-    print(data_id)
-    print("dta",data1['data'])
+
+    # Return the paragraph data and data_id
     return data1['data'], data_id
 
 
 def nextpage(request):
     if request.method == 'POST':
+        # Retrieve selected option from the request POST data
         selected_option = request.POST.get('selected_option')
+
+        # Create a list to store the selected option
         nomistake_list = []
         nomistake_list.append(selected_option)
+
+        # Retrieve the selected option from the list
         nomistake = nomistake_list[0]
+
+        # Return the selected option as an HTTP response
         return HttpResponse(str(nomistake))
     
 
 def ml1(request):
-    # selected_option = request.session.get('selected_option')
-    # print("@",selected_option)
-    # selected_level = request.session.get('selected_level')
-    # print("@",selected_level)
     phone_number = request.session.get('phone_number')
-    print("ph", phone_number)
     enrollment_id = request.session.get('enrollment_id')
-    print("enrollment_id",enrollment_id)
+
     if request.method == 'POST':
+        # Remove 'filename' and 'filepath' from session
         del request.session['filename']
         del request.session['filepath']
+
+        # Redirect to 'start_recording_ml1' view
         return redirect('start_recording_ml1')
-    return render(request, 'AOP_PRO/ml1_startrecording.html',{'mobile_number': phone_number})
+
+    # Render the template with the phone number
+    return render(request, 'AOP_PRO/ml1_startrecording.html', {'mobile_number': phone_number})
 
 
 def start_recording_ml1(request):
+    # Get a random paragraph and data ID for ML1
     paragraph, data_id = get_random_ml1(request)
+
+    # Retrieve phone number and enrollment ID from session
     phone_number = request.session.get('phone_number')
-    print("ph", phone_number)
     enrollment_id = request.session.get('enrollment_id')
-    print("enrollment_id",enrollment_id)
+
+    # Prepare context for rendering the template
     context = {"val": paragraph, "recording": True, "data_id": data_id, 'mobile_number': phone_number}
+
+    # Render the template for ML1 recording
     return render(request, "AOP_PRO/ml1_recording.html", context)
 
 
 def ml1_next(request):
+    # Retrieve selected option and level from session
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     selected_level = request.session.get('selected_level')
-    print("@",selected_level)
+
+    # Retrieve filepath, phone number, and enrollment ID from session
     filepath = request.session.get('filepath')
     phone_number = request.session.get('phone_number')
-    print("ph", phone_number)
     enrollment_id = request.session.get('enrollment_id')
-    print("enrollment_id",enrollment_id)
+
     if request.method == 'POST':
+        # Redirect to the start recording page for the next ML1 task
         return redirect('start_recording_next_ml1')
+
+    # Render the template for the next ML1 task's start recording page
     return render(request, 'AOP_PRO/ml1_startrecording_next.html', {'mobile_number': phone_number})
 
 
 def get_random_ml1_sentence(request):
+    # Retrieve selected option from session
     selected_option = request.session.get('selected_option')
-    print("get_random_sentence",selected_option)
+
     if selected_option == 'ML1':
+        # Retrieve random sentence data from JSON file for ML1 option
         data = json_l2
         data1 = random.choice(data['Sentence'])
-        print("the value ",data1['id'])
         data_id = data1['id']
         request.session['data_id'] = data_id
-        print(data_id)
-        print("dta",data1['data'])
         languages = data1['language']
         return {
             'data': data1['data'],
@@ -1214,41 +1367,41 @@ def get_random_ml1_sentence(request):
             'languages': languages,
         }
     else:
-            data = json_l2_data
-            data1 = random.choice(data['Sentence'])
-            print("the value ",data1['id'])
-            data_id = data1['id']
-            request.session['data_id'] = data_id
-            print(data_id)
-            print("dta",data1['data'])
-            languages = data1['language']
-            return {
-                'data': data1['data'],
-                'data_id': data_id,
-                'languages': languages,
-            }
+        # Retrieve random sentence data from JSON file for other options
+        data = json_l2_data
+        data1 = random.choice(data['Sentence'])
+        data_id = data1['id']
+        request.session['data_id'] = data_id
+        languages = data1['language']
+        return {
+            'data': data1['data'],
+            'data_id': data_id,
+            'languages': languages,
+        }
 
 
 def start_recording_next_ml1(request):
+    # Retrieve a random paragraph and data ID
     paragraph, data_id = get_random_paragraph(request)
+
+    # Retrieve phone number and enrollment ID from session
     phone_number = request.session.get('phone_number')
-    print("ph", phone_number)
     enrollment_id = request.session.get('enrollment_id')
-    print("enrollment_id",enrollment_id)
-    context = {"val": paragraph, "recording": True, "data_id": data_id,'mobile_number': phone_number}
+
+    # Prepare the context for rendering the template
+    context = {"val": paragraph, "recording": True, "data_id": data_id, 'mobile_number': phone_number}
     return render(request, "AOP_PRO/ml1_recording_next.html", context)
 
 
 def ml1_answer_final(request):
+    # Retrieve session data
     filepath = request.session.get('filepath')
     filename = request.session.get('filename')
-    print(filename)
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     
+    # Determine the selected option and retrieve the corresponding data
     if selected_option == 'English':
         data_id = request.session.get('data_id')
-        print("data_id",data_id)
         data = json_eng
         paragraph = None
         for d in data['Paragraph']:
@@ -1257,7 +1410,6 @@ def ml1_answer_final(request):
                 break
     elif selected_option == 'BL':
         data_id = request.session.get('data_id')
-        print("data_id",data_id)
         data = json_l2_data
         paragraph = None
         for d in data['Paragraph']:
@@ -1265,8 +1417,8 @@ def ml1_answer_final(request):
                 val = d['data']
                 break
     
+    # Perform transcript request and retrieve response
     data_id = request.session.get('data_id')
-    print("data_id",data_id)
     data = json_l2_data
     paragraph = None
     for d in data['Paragraph']:
@@ -1274,95 +1426,75 @@ def ml1_answer_final(request):
             val = d['data']
             break
     if val:
-        print("the val",val)
-    url = 'http://3.7.133.80:8000/gettranscript/'
-    files = [('audio', (filepath, open(filepath, 'rb'), 'audio/wav'))]
-    payload = {'language': 'English' ,'question':val}
-    headers = {}
-    response = requests.request("POST", url, headers=headers, data=payload, files=files)
-    print('***', response.text)
-    request.session['ml1_res'] = response.text
-    phone_number = request.session.get('phone_number')
-    print("ph", phone_number)
-    enrollment_id = request.session.get('enrollment_id')
-    print("enrollment_id",enrollment_id)
-    if response.status_code == 200:
-        print("text",val)
-        data_string = response.json().get('text')
-        mistake = response.json().get('no_mistakes')
-        fluency = response.json().get('wcpm') 
-        index = response.json().get('sub_details') 
-        deld = response.json().get('del_details') 
-        # Format wcpm to have only two decimal places
-        wcpm_formatted = '{:.2f}'.format(float(fluency)) if fluency else None              
-        filepath = request.session.get('filepath')
-        audio_url = None
-        if filepath:
-            # Check if the file exists
-            if os.path.exists(filepath):
-                # Get the file name from the file path
-                filename = os.path.basename(filepath)
-                audio_url = request.build_absolute_uri(settings.MEDIA_URL + filename)
-            else:
-                filepath = None  
-        return render(request, 'AOP_PRO/ml1_answer_final.html', {'transcript': data_string, 'text':data_string, 'originaltext':val , 'sub_details':index,'del_details':deld, 'audio_url': audio_url, 'no_mistakes': mistake, 'wcpm': wcpm_formatted, 'mobile_number': phone_number})
+        url = 'http://3.7.133.80:8000/gettranscript/'
+        files = [('audio', (filepath, open(filepath, 'rb'), 'audio/wav'))]
+        payload = {'language': 'English' ,'question':val}
+        headers = {}
+        response = requests.request("POST", url, headers=headers, data=payload, files=files)
+        request.session['ml1_res'] = response.text
+        
+        # Retrieve phone number and enrollment ID from session
+        phone_number = request.session.get('phone_number')
+        
+        # Process response data if request is successful
+        if response.status_code == 200:
+            data_string = response.json().get('text')
+            mistake = response.json().get('no_mistakes')
+            fluency = response.json().get('wcpm') 
+            index = response.json().get('sub_details') 
+            deld = response.json().get('del_details') 
+            # Format wcpm to have only two decimal places
+            wcpm_formatted = '{:.2f}'.format(float(fluency)) if fluency else None              
+            filepath = request.session.get('filepath')
+            audio_url = None
+            if filepath:
+                # Check if the file exists
+                if os.path.exists(filepath):
+                    # Get the file name from the file path
+                    filename = os.path.basename(filepath)
+                    audio_url = request.build_absolute_uri(settings.MEDIA_URL + filename)
+                else:
+                    filepath = None  
+            
+            # Render the template with the processed data
+            return render(request, 'AOP_PRO/ml1_answer_final.html', {'transcript': data_string, 'text':data_string, 'originaltext':val , 'sub_details':index,'del_details':deld, 'audio_url': audio_url, 'no_mistakes': mistake, 'wcpm': wcpm_formatted, 'mobile_number': phone_number})
+        else:
+            # Render an error page if the request fails
+            return render(request, 'Error/pages-500.html')
     else:
-        return render(request, 'Error/pages-500.html' )
+        # Render an error page if the data is not found
+        return render(request, 'Error/pages-500.html')
 
 
 @csrf_exempt
 def save_file_ml1(request):
+    # Check if the request method is POST and an audio file is present
     if request.method == 'POST' and request.FILES.get('audio_blob'):
+        # Retrieve necessary session data
         data_id = request.session.get('data_id')
         val = request.POST.get('val')
-        print(val)
         filename = f'{data_id}.wav'
         media_folder = os.path.join(settings.MEDIA_ROOT)
         os.makedirs(media_folder, exist_ok=True)
         filepath = os.path.join(media_folder, filename)
-        print(filename)
         phone_number = request.session.get('phone_number')
-        print("ph", phone_number)
         enrollment_id = request.session.get('enrollment_id')
-        print("enrollment_id",enrollment_id)
+        
+        # Save the audio file to the specified filepath
         with open(os.path.join(media_folder, filename), 'wb') as audio_file:
             audio_file.write(request.FILES['audio_blob'].read())
-            print(filepath)
             request.session['filepath'] = filepath
             request.session['filename'] = filename
-            return render(request, 'AOP_PRO/ml1_answer.html', { 'filepath': filepath, 'mobile_number': phone_number})
+            
+            # Render the template with the filepath and phone number
+            return render(request, 'AOP_PRO/ml1_answer.html', {'filepath': filepath, 'mobile_number': phone_number})
 
 
 def ml1_answer(request):
     filepath = request.session.get('filepath')
     filename = request.session.get('filename')
-    print(filename)
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
-    
-    # if selected_option == 'English':
-    #     data_id = request.session.get('data_id')
-    #     print("data_id",data_id)
-    #     with open(json_eng) as f:
-    #         data = json.load(f)
-    #         paragraph = None
-    #         for d in data['Paragraph']:
-    #             if d['id'] == data_id:
-    #                 val = d['data']
-    #                 break
-    # elif selected_option == 'ML1':
-    #     data_id = request.session.get('data_id')
-    #     print("data_id",data_id)
-    #     with open(json_l2, 'r', encoding='utf-8') as f:
-    #         data = json.load(f)
-    #         paragraph = None
-    #         for d in data['Paragraph']:
-    #             if d['id'] == data_id:
-    #                 val = d['data']
-    #                 break
-    
     data_id = request.session.get('data_id')
-    print("data_id",data_id)
     data = json_l1_data
     paragraph = None
     for d in data['Paragraph']:
@@ -1371,27 +1503,28 @@ def ml1_answer(request):
             break
 
     if val:
-        print("the val",val)
+        print("the val", val)
+
+    # Make a request to obtain the transcript for the audio file
     url = 'http://3.7.133.80:8000/gettranscript/'
     files = [('audio', (filepath, open(filepath, 'rb'), 'audio/wav'))]
-    payload = {'language': 'English' ,'question':val}
+    payload = {'language': 'English', 'question': val}
     headers = {}
     response = requests.request("POST", url, headers=headers, data=payload, files=files)
-    print('***', response.text)
     request.session['ml1_res'] = response.text
     phone_number = request.session.get('phone_number')
-    print("ph", phone_number)
     enrollment_id = request.session.get('enrollment_id')
-    print("enrollment_id",enrollment_id)
+
     if response.status_code == 200:
-        print("text",val)
         data_string = response.json().get('text')
         mistake = response.json().get('no_mistakes')
-        fluency = response.json().get('wcpm') 
-        index = response.json().get('sub_details') 
-        deld = response.json().get('del_details') 
+        fluency = response.json().get('wcpm')
+        index = response.json().get('sub_details')
+        deld = response.json().get('del_details')
+
         # Format wcpm to have only two decimal places
-        wcpm_formatted = '{:.2f}'.format(float(fluency)) if fluency else None              
+        wcpm_formatted = '{:.2f}'.format(float(fluency)) if fluency else None
+
         filepath = request.session.get('filepath')
         audio_url = None
         if filepath:
@@ -1401,15 +1534,26 @@ def ml1_answer(request):
                 filename = os.path.basename(filepath)
                 audio_url = request.build_absolute_uri(settings.MEDIA_URL + filename)
             else:
-                filepath = None  
-        return render(request, 'AOP_PRO/ml1_answer.html', {'transcript': data_string, 'text':data_string, 'originaltext':val , 'sub_details':index,'del_details':deld, 'audio_url': audio_url, 'no_mistakes': mistake, 'wcpm': wcpm_formatted,'mobile_number': phone_number})
+                filepath = None
+
+        return render(request, 'AOP_PRO/ml1_answer.html', {
+            'transcript': data_string,
+            'text': data_string,
+            'originaltext': val,
+            'sub_details': index,
+            'del_details': deld,
+            'audio_url': audio_url,
+            'no_mistakes': mistake,
+            'wcpm': wcpm_formatted,
+            'mobile_number': phone_number
+        })
     else:
-        return render(request, 'Error/pages-500.html' )
+        return render(request, 'Error/pages-500.html')
 
 
 def ml1_retake(request):
+    # Remove previously recorded audio files
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     media_folder = os.path.join(settings.MEDIA_ROOT)
     for file in os.listdir(media_folder):
         file_path = os.path.join(media_folder, file)
@@ -1418,34 +1562,9 @@ def ml1_retake(request):
                 os.remove(file_path)
         except Exception as e:
             print(e)
-    
-    # if selected_option == 'English':
-    #     data_id = request.session.get('data_id')
-    #     print("data_id",data_id)
-    #     request.session['audio_recorded'] = True
-    #     with open(json_eng) as f:
-    #         data = json.load(f)
-    #         paragraph = None
-    #         for d in data['Paragraph']:
-    #             if d['id'] == data_id:
-    #                 val = d['data']
-    #                 break
-    # elif selected_option == 'BL':
-    #     data_id = request.session.get('data_id')
-    #     print("data_id",data_id)
-    #     request.session['audio_recorded'] = True
-    #     with open(json_l1, 'r', encoding='utf-8') as f:
-    #         data = json.load(f)
-    #         paragraph = None
-    #         for d in data['Paragraph']:
-    #             if d['id'] == data_id:
-    #                 val = d['data']
-    #                 break
+
     data_id = request.session.get('data_id')
-    print("data_id",data_id)
     request.session['audio_recorded'] = True
-    # with open(json_l2, 'r', encoding='utf-8') as f:
-    #     data = json.load(f)
     data = json_l2_data
     paragraph = None
     for d in data['Paragraph']:
@@ -1454,40 +1573,17 @@ def ml1_retake(request):
             break
 
     if val:
-        print("the val",val)
+        print("the val", val)
+
     phone_number = request.session.get('phone_number')
-    print("ph", phone_number)
     enrollment_id = request.session.get('enrollment_id')
-    print("enrollment_id",enrollment_id)
-    return render(request, "AOP_PRO/ml1_retake.html", {"recording": True,"val":val, 'mobile_number': phone_number })
+    
+    return render(request, "AOP_PRO/ml1_retake.html", {"recording": True, "val": val, 'mobile_number': phone_number })
    
+
 def ml1_skip(request):
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
-    
-    # if selected_option == 'English':
-    #     data_id = request.session.get('data_id')
-    #     print("data_id",data_id)
-    #     with open(json_eng) as f:
-    #         data = json.load(f)
-    #         paragraph = None
-    #         for d in data['Paragraph']:
-    #             if d['id'] == data_id:
-    #                 val = d['data']
-    #                 break
-    # elif selected_option == 'ML1':
-    #     data_id = request.session.get('data_id')
-    #     print("data_id",data_id)
-    #     with open(json_l2, 'r', encoding='utf-8') as f:
-    #         data = json.load(f)
-    #         paragraph = None
-    #         for d in data['Paragraph']:
-    #             if d['id'] == data_id:
-    #                 val = d['data']
-    #                 break
-    # else:
     data_id = request.session.get('data_id')
-    print("data_id",data_id)
     data = json_l2_data
     paragraph = None
     for d in data['Paragraph']:
@@ -1497,21 +1593,15 @@ def ml1_skip(request):
 
     words = val.split()
     my_list = list(words)
-
-    # for i, word in enumerate(my_list):
-    #     print("The index of", word, "in the list is:", i)
     phone_number = request.session.get('phone_number')
-    print("ph", phone_number)
     enrollment_id = request.session.get('enrollment_id')
-    print("enrollment_id",enrollment_id)
-    ml1_res= {}
+    
+    # Simulate ML1 response with skipped details
+    ml1_res = {}
     last_index = len(my_list)
     del_details = ', '.join([f"{i + 1}-{word}" for i, word in enumerate(my_list[1:])])
-    print('del_details',del_details)
-
     sub_details_index = 0
     sub_details = f"{sub_details_index}-{my_list[sub_details_index]}"
-    print('sub_details',sub_details)
     ml1_response = {
         "no_mistakes": last_index,
         "no_del": last_index - 1,
@@ -1526,91 +1616,50 @@ def ml1_skip(request):
     }
     transcript = json.dumps(ml1_response)
     request.session['ml1_res'] = transcript
-    return render(request, 'AOP_PRO/ml1_answer.html', {'originaltext':val ,'wcpm': None,'no_mistakes': last_index, 'mobile_number': phone_number})
+    return render(request, 'AOP_PRO/ml1_answer.html', {'originaltext': val, 'wcpm': None, 'no_mistakes': last_index, 'mobile_number': phone_number})
 
 
 def ml1_skip_next(request):
-    # selected_option = request.session.get('selected_option')
-    # print("@",selected_option)
+    data_id = request.session.get('data_id')
+    data = json_l2_data
+    paragraph = None
+    for d in data['Paragraph']:
+        if d['id'] == data_id:
+            val = d['data']
+            break
+
+    words = val.split()
+    my_list = list(words)
+    phone_number = request.session.get('phone_number')
+    enrollment_id = request.session.get('enrollment_id')
     
-    # if selected_option == 'English':
-    #     data_id = request.session.get('data_id')
-    #     print("data_id",data_id)
-    #     with open(json_eng) as f:
-    #         data = json.load(f)
-    #         paragraph = None
-    #         for d in data['Paragraph']:
-    #             if d['id'] == data_id:
-    #                 val = d['data']
-    #                 break
-    # elif selected_option == 'ML1':
-    #     data_id = request.session.get('data_id')
-    #     print("data_id",data_id)
-    #     with open(json_l2, 'r', encoding='utf-8') as f:
-    #         data = json.load(f)
-    #         paragraph = None
-    #         for d in data['Paragraph']:
-    #             if d['id'] == data_id:
-    #                 val = d['data']
-    #                 break
-    # else:
-        data_id = request.session.get('data_id')
-        print("data_id",data_id)
-        data = json_l2_data
-        paragraph = None
-        for d in data['Paragraph']:
-            if d['id'] == data_id:
-                val = d['data']
-                break
-
-        words = val.split()
-        my_list = list(words)
-
-        # for i, word in enumerate(my_list):
-        #     print("The index of", word, "in the list is:", i)
-        phone_number = request.session.get('phone_number')
-        print("ph", phone_number)
-        enrollment_id = request.session.get('enrollment_id')
-        print("enrollment_id",enrollment_id)
-        
-        last_index = len(my_list) 
-        del_details = ', '.join([f"{i + 1}-{word}" for i, word in enumerate(my_list[1:])])
-        print('del_details',del_details)
-
-        sub_details_index = 0
-        sub_details = f"{sub_details_index}-{my_list[sub_details_index]}"
-        print('sub_details',sub_details)
-        ml1_response = {
-            "no_mistakes": last_index,
-            "no_del": last_index - 1,
-            "del_details": del_details,
-            "no_sub": 1,
-            "sub_details": sub_details,
-            "status": "success",
-            "wcpm": 0.0,
-            "text": "",
-            "audio_url": "",
-            "process_time": 0.7457363605499268
-        }
-        transcript = json.dumps(ml1_response)
-        request.session['ml1_res'] = transcript
-        return render(request, 'AOP_PRO/ml1_answer_final.html', {'originaltext':val ,'wcpm': None,'no_mistakes': last_index, 'mobile_number': phone_number})
+    # Simulate ML1 response with skipped details
+    last_index = len(my_list)
+    del_details = ', '.join([f"{i + 1}-{word}" for i, word in enumerate(my_list[1:])])
+    sub_details_index = 0
+    sub_details = f"{sub_details_index}-{my_list[sub_details_index]}"
+    ml1_response = {
+        "no_mistakes": last_index,
+        "no_del": last_index - 1,
+        "del_details": del_details,
+        "no_sub": 1,
+        "sub_details": sub_details,
+        "status": "success",
+        "wcpm": 0.0,
+        "text": "",
+        "audio_url": "",
+        "process_time": 0.7457363605499268
+    }
+    transcript = json.dumps(ml1_response)
+    request.session['ml1_res'] = transcript
+    return render(request, 'AOP_PRO/ml1_answer_final.html', {'originaltext': val, 'wcpm': None, 'no_mistakes': last_index, 'mobile_number': phone_number})
 
 
 def ml1_store(request):
   if request.method == 'POST':
     try:
         fluency_adjustment = request.POST.get('fluency_adjustment')
-        print("fluency_adjustment", fluency_adjustment)
-        # adjustment_from_storage = request.POST.get('adjustment')
-        # print('adjustment_from_storage',adjustment_from_storage)
-        # Store the value in the session
-        # request.session['adjustment'] = adjustment_from_storage
-        # nomistake_list = []
-        # nomistake_list.append(str(request.session['adjustment']))
-        # nomistake = nomistake_list[0]
-        # print("nomistake", nomistake)
-        
+        # Determine the next level based on the fluency adjustment
         if fluency_adjustment == '0':
             request.session['ans_next_level'] = 'L3'
         else:
@@ -1620,10 +1669,8 @@ def ml1_store(request):
         status = request.session.get('status')
         filepath = request.session.get('filepath')
         ml1_res = request.session.get('ml1_res')
-        print('ml1_res:', ml1_res)
         transcript_dict = json.loads(ml1_res)
         no_mistakes = transcript_dict.get('no_mistakes')
-        print("no_mistakes",no_mistakes)
         no_del = transcript_dict.get('no_del')
         del_details = transcript_dict.get('del_details')
         sub_details = transcript_dict.get('sub_details')
@@ -1632,26 +1679,20 @@ def ml1_store(request):
         no_sub = transcript_dict.get('no_sub')
         process_time = transcript_dict.get('process_time')
         id_value = request.session.get('id_value')
-        print("student_id",id_value)
         data_id = request.session.get('data_id')
-        print("sample_id",data_id)
         my_program = request.session.get('my_program')
-        print('my program is saveprogress',my_program)
-        
         data = json_l1_data
         paragraph = None
         for d in data['Paragraph']:
             if d['id'] == data_id:
                 val = d['data']
                 break
-
         if val:
             print("question",val)
 
         selected_option = request.session.get('selected_option')
-        print("test_type",selected_option)
-        print(status)
         ans_next_level = request.session.get('ans_next_level')
+        # Prepare data for saving progress
         data={}
         data["student_id"]=id_value
         data["sample_id"]= "data_id"
@@ -1672,15 +1713,12 @@ def ml1_store(request):
         data["test_type"]= status
         data["next_level"]= ans_next_level
         data["program"] = my_program
-        print(data)
         url = 'https://parakh.pradigi.org/v1/saveprogress/'
         files = []
         payload = {'data': json.dumps(data)}
         headers = {}
         response = requests.request("POST", url, headers=headers, data=payload, files=files)
         response_data = json.loads(response.text)
-        print(response.text)
-        print(fluency_adjustment)
         if fluency_adjustment == '0':
             return redirect('ml1_mcq_next')  # redirect to bl_mcq function
         else:
@@ -1690,151 +1728,163 @@ def ml1_store(request):
 
 
 def ml1_next_store(request):
-  if request.method == 'POST':
-    try:
-        fluency_adjustment = request.POST.get('fluency_adjustment')
-        print("fluency_adjustment", fluency_adjustment)
-        # adjustment_from_storage = request.POST.get('adjustment')
-        # print('adjustment_from_storage',adjustment_from_storage)
-        # Store the value in the session
-        # request.session['adjustment'] = adjustment_from_storage
-        # nomistake_list = []
-        # nomistake_list.append(str(request.session['adjustment']))
-        # nomistake = nomistake_list[0]
-        # print("nomistake", nomistake)
-        
-        if fluency_adjustment == '0':
-            request.session['ans_next_level'] = 'L3'
-        else:
-            request.session['ans_next_level'] = 'L2'
+    if request.method == 'POST':
+        try:
+            fluency_adjustment = request.POST.get('fluency_adjustment')
+            
+            # Determine the next level based on the fluency adjustment value
+            if fluency_adjustment == '0':
+                request.session['ans_next_level'] = 'L3'
+            else:
+                request.session['ans_next_level'] = 'L2'
 
-        enrollment_id = request.session.get('enrollment_id')
-        status = request.session.get('status')
-        filepath = request.session.get('filepath')
-        ml1_res = request.session.get('ml1_res')
-        print('ml1_res:', ml1_res)
-        transcript_dict = json.loads(ml1_res)
-        no_mistakes = transcript_dict.get('no_mistakes')
-        print("no_mistakes",no_mistakes)
-        no_del = transcript_dict.get('no_del')
-        del_details = transcript_dict.get('del_details')
-        sub_details = transcript_dict.get('sub_details')
-        text = transcript_dict.get('text')
-        audio_url = transcript_dict.get('audio_url')
-        no_sub = transcript_dict.get('no_sub')
-        process_time = transcript_dict.get('process_time')
-        id_value = request.session.get('id_value')
-        print("student_id",id_value)
-        data_id = request.session.get('data_id')
-        print("sample_id",data_id)
-        my_program = request.session.get('my_program')
-        print('my program is saveprogress',my_program)
-
-        data = json_l1_data
-        paragraph = None
-        for d in data['Paragraph']:
-            if d['id'] == data_id:
-                val = d['data']
-                break
-
-        if val:
-            print("question",val)
-
-        selected_option = request.session.get('selected_option')
-        print("test_type",selected_option)
-        print(status)
-        ans_next_level = request.session.get('ans_next_level')
-        data={}
-        data["student_id"]=id_value
-        data["sample_id"]= "data_id"
-        data["level"]= 'L2'
-        data["question"]= val
-        data["section "]= 'reading'
-        data["answer"]= text
-        data["audio_url"]= audio_url
-        data["mistakes_count"]= '0'
-        data["no_mistakes"]= no_mistakes
-        data["no_mistakes_edited"]= fluency_adjustment
-        data["api_process_time"]= process_time
-        data["language"]= 'English'
-        data["no_del"]= no_del
-        data["del_details"]= del_details
-        data["no_sub"]= no_sub
-        data["sub_details"]= sub_details
-        data["test_type"]= status
-        data["next_level"]= ans_next_level
-        data["program"] = my_program
-
-        print(data)
-        url = 'https://parakh.pradigi.org/v1/saveprogress/'
-        files = []
-        payload = {'data': json.dumps(data)}
-        headers = {}
-        response = requests.request("POST", url, headers=headers, data=payload, files=files)
-        # print('student_id', response.text)
-        response_data = json.loads(response.text)
-        print(response.text)
-        print(fluency_adjustment)
-        if fluency_adjustment == '0':
-            return redirect('ml1_mcq_next')  # redirect to bl_mcq function
-        else:
-            phone_number = request.session.get('phone_number')
-            print("ph", phone_number)
             enrollment_id = request.session.get('enrollment_id')
-            print("enrollment_id",enrollment_id)
-        
-            context = {
-                'mobile_number': phone_number,
-                'level' : "L1-sentence"
-            }
-            return render(request, "AOP_PRO/ans_page_aop.html", context=context)
-    except TypeError:
-        return HttpResponse("Invalid adjustment value")
+            status = request.session.get('status')
+            filepath = request.session.get('filepath')
+            ml1_res = request.session.get('ml1_res')
+            transcript_dict = json.loads(ml1_res)
+            no_mistakes = transcript_dict.get('no_mistakes')
+            no_del = transcript_dict.get('no_del')
+            del_details = transcript_dict.get('del_details')
+            sub_details = transcript_dict.get('sub_details')
+            text = transcript_dict.get('text')
+            audio_url = transcript_dict.get('audio_url')
+            no_sub = transcript_dict.get('no_sub')
+            process_time = transcript_dict.get('process_time')
+            id_value = request.session.get('id_value')
+            data_id = request.session.get('data_id')
+            my_program = request.session.get('my_program')
+
+            data = json_l1_data
+            paragraph = None
+            for d in data['Paragraph']:
+                if d['id'] == data_id:
+                    val = d['data']
+                    break
+            if val:
+                print("question", val)
+
+            selected_option = request.session.get('selected_option')
+            ans_next_level = request.session.get('ans_next_level')
+
+            # Prepare data for saving progress
+            data = {}
+            data["student_id"] = id_value
+            data["sample_id"] = "data_id"
+            data["level"] = 'L2'
+            data["question"] = val
+            data["section "] = 'reading'
+            data["answer"] = text
+            data["audio_url"] = audio_url
+            data["mistakes_count"] = '0'
+            data["no_mistakes"] = no_mistakes
+            data["no_mistakes_edited"] = fluency_adjustment
+            data["api_process_time"] = process_time
+            data["language"] = 'English'
+            data["no_del"] = no_del
+            data["del_details"] = del_details
+            data["no_sub"] = no_sub
+            data["sub_details"] = sub_details
+            data["test_type"] = status
+            data["next_level"] = ans_next_level
+            data["program"] = my_program
+
+            url = 'https://parakh.pradigi.org/v1/saveprogress/'
+            files = []
+            payload = {'data': json.dumps(data)}
+            headers = {}
+            response = requests.request("POST", url, headers=headers, data=payload, files=files)
+            response_data = json.loads(response.text)
+
+            if fluency_adjustment == '0':
+                return redirect('ml1_mcq_next')  # redirect to bl_mcq function
+            else:
+                phone_number = request.session.get('phone_number')
+                enrollment_id = request.session.get('enrollment_id')
+                
+                # Render the answer page for AOP with the appropriate context
+                context = {
+                    'mobile_number': phone_number,
+                    'level': "L1-sentence"
+                }
+                return render(request, "AOP_PRO/ans_page_aop.html", context=context)
+        except TypeError:
+            return HttpResponse("Invalid adjustment value")
 
 
 def ml1_final_mcq(request):
+    # Retrieve the context from the session
     context = request.session.get('ml1_context', {})
+    
     if request.method == 'POST':
         selected_div = request.POST.get('selected-div')
         selected_divid = request.POST.get('selected-div_id')
+        
+        # Update the context with the selected division and its ID
         context['selected_divid'] = selected_divid
-        print('selected-div',selected_divid)
         context['selected_div'] = selected_div
-        print('selected-div',selected_div)
+        
         selected_language = request.POST.get('selected_language')
+        
+        # Update the context with the selected language
         context['selected_language'] = selected_language
-        print('selected_language',selected_language)
+        
         return render(request, "AOP_PRO/ml1_mcq.html", context)
+    
+    # Render the MCQ page with the context
     return render(request, "AOP_PRO/ml1_mcq.html", context)
 
 
 def ml1_mcq(request):
+    # Retrieve the selected option and level from the session
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     selected_level = request.session.get('selected_level')
-    print("@",selected_level)
+    
+    # Get random ML1 sentence data
     data = get_random_ml1_sentence(request)
-    context = {"val": data['data'], "recording": True, "data_id": data['data_id'], "languages": data['languages']}
+    
+    # Prepare the context for rendering the MCQ page
+    context = {
+        "val": data['data'],            # Sentence data
+        "recording": True,              # Flag indicating if recording is enabled
+        "data_id": data['data_id'],     # ID of the data
+        "languages": data['languages']  # Available languages for translation
+    }
+    
     if request.method == 'POST':
+        # Get the transcript from the session
         transcript = request.session.get('transcript')
-        print("transcript",transcript)
+        
+        # Redirect to the next view (e.g., ml2)
         return redirect('ml2')
+    
+    # Render the MCQ page with the context
     return render(request, "AOP_PRO/ml1_mcq.html", context)
 
 
 def ml1_mcq_next(request):
-    # selected_option = request.session.get('selected_option')
-    # print("@",selected_option)
-    # selected_level = request.session.get('selected_level')f
-    # print("@",selected_level)
+    # Get random ML1 sentence data
     data = get_random_ml1_sentence(request)
-    context = {"val": data['data'], "recording": True, "data_id": data['data_id'], "languages": data['languages']}
+    
+    # Prepare the context for rendering the MCQ page
+    context = {
+        "val": data['data'],            # Sentence data
+        "recording": True,              # Flag indicating if recording is enabled
+        "data_id": data['data_id'],     # ID of the data
+        "languages": data['languages']  # Available languages for translation
+    }
+    
+    # Store the context in the session
     request.session['ml1_context'] = context
-
+    
     if request.method == 'POST':
+        # Get the transcript from the session
         transcript = request.session.get('transcript')
-        print("transcript",transcript)
+        
+        # Redirect to the next view (e.g., ml2)
         return redirect('ml2')
+    
+    # Render the MCQ page with the context
     return render(request, "AOP_PRO/ml1_mcq_next.html", context)
 
 
@@ -1843,18 +1893,14 @@ def ml1_mcq_api(request):
     selected_level = request.session.get('selected_level')
 
     if request.method == 'POST':
+        # Retrieve data from the request
         selected_lan = request.POST.get('selected_language_input')
-        print("lan",selected_lan)
         status = request.session.get('status')
         selected_language = request.POST.get('selected_language')
         selected_div = request.POST.get('selected-div')
-        print("#################################################################")
         data_id = request.session.get('data_id')
-        print(data_id)
         id_value = request.session.get('id_value')
         ml1_res = request.session.get('ml1_res')
-        # transcript = request.session.get('transcript')
-        print('ml1_res:', ml1_res)
         transcript_dict = json.loads(ml1_res)
         no_mistakes = transcript_dict.get('no_mistakes')
         no_del = transcript_dict.get('no_del')
@@ -1865,182 +1911,175 @@ def ml1_mcq_api(request):
         process_time = transcript_dict.get('process_time')
         ans_next_level = request.session.get('ans_next_level')
         my_program = request.session.get('my_program')
-        print('my program is saveprogress',my_program)
-        print('text:', text)
-        print('audio_url:', audio_url)
-        print('process_time:', process_time)
+        
+        # Retrieve data from json_l2_data based on data_id and selected_language
         data = json_l2_data
         Sentence = None
         for d in data['Sentence']:
             if d['id'] == data_id:
                 val = d['data']
                 break
-        print("@",selected_option)
+        
         if selected_language == 'hindi':
-                print("selected",'hindi')
-                request.session['lan'] = selected_language
-
-        elif selected_language == 'marathi':
-            print('selected','marathi')
             request.session['lan'] = selected_language
-
-        if selected_language == 'hindi':
-                data = json_l2_data
-                # find the data with matching data_id
-                selected_data = next((item for item in data['Sentence'] if item['id'] == data_id), None)
-                if selected_data:
-                    languages = selected_data['language']
-                    selected_language = languages.get(selected_language)
-                    options = selected_language.get('options')
-                    answer = selected_language.get('answers')
-                else:
-                    print("Data not found for the given data_id")
         elif selected_language == 'marathi':
-                data = json_l2_data
-                # find the data with matching data_id
-                selected_data = next((item for item in data['Sentence'] if item['id'] == data_id), None)
-                if selected_data:
-                    
-                    languages = selected_data['language']
-                    selected_language = languages.get(selected_language)
-                    options = selected_language.get('options')
-                    answer = selected_language.get('answers')
-                else:
-                    print("Data not found for the given data_id")
-     
+            request.session['lan'] = selected_language
+        
+        # Retrieve options and answers based on selected_language
+        if selected_language == 'hindi' or selected_language == 'marathi':
+            data = json_l2_data
+            selected_data = next((item for item in data['Sentence'] if item['id'] == data_id), None)
+            if selected_data:
+                languages = selected_data['language']
+                selected_language = languages.get(selected_language)
+                options = selected_language.get('options')
+                answer = selected_language.get('answers')
+            else:
+                print("Data not found for the given data_id")
+        
+        # Retrieve lan from session
         lan = request.session.get('lan')
-        print("lan",lan)
-        data={}
-        data["student_id"]=id_value
-        data["sample_id"]= "data_id"
-        data["level"]= 'L1'
-        data["question"]= val
-        data["section "]= 'MCQ'
-        data["answer"]= selected_div
-        data["audio_url"]= ''
-        data["mistakes_count"]= '0'
-        data["no_mistakes"]= '0'
-        data["no_mistakes_edited"]= '0'
-        data["api_process_time"]= '0'
-        data["language"]= 'English'
-        data["no_del"]= '0'
-        data["del_details"]= '0'
-        data["no_sub"]= '0'
-        data["sub_details"]= '0'
-        data["test_type"]= status
-        data["next_level"]= ans_next_level
-        data["correct_answer"]= answer
-        data["answer_check_status"]= 'true'
-        data["mcq_language"]= lan
+        
+        # Prepare the data to be sent for saving progress
+        data = {}
+        data["student_id"] = id_value
+        data["sample_id"] = "data_id"
+        data["level"] = 'L1'
+        data["question"] = val
+        data["section"] = 'MCQ'
+        data["answer"] = selected_div
+        data["audio_url"] = ''
+        data["mistakes_count"] = '0'
+        data["no_mistakes"] = '0'
+        data["no_mistakes_edited"] = '0'
+        data["api_process_time"] = '0'
+        data["language"] = 'English'
+        data["no_del"] = '0'
+        data["del_details"] = '0'
+        data["no_sub"] = '0'
+        data["sub_details"] = '0'
+        data["test_type"] = status
+        data["next_level"] = ans_next_level
+        data["correct_answer"] = answer
+        data["answer_check_status"] = 'true'
+        data["mcq_language"] = lan
         data["program"] = my_program
-        print(data)
+        
         url = 'https://parakh.pradigi.org/v1/saveprogress/'
         files = []
         payload = {'data': json.dumps(data)}
         headers = {}
         response = requests.request("POST", url, headers=headers, data=payload, files=files)
-        print('student_id', response.text)
         response_data = json.loads(response.text)
-        print(response.text)
+        
+        # Redirect to the next view (e.g., ml2)
         return redirect('ml2')
   
     
 #############################################################################################
 
 def get_random_ml2(request):
-        data = json_l3_data
-        data1 = random.choice(data['Paragraph'])
-        print("the value ",data1['id'])
-        data_id = data1['id']
-        request.session['data_id'] = data_id
-        print(data_id)
-        print("dta",data1['data'])
-        return data1['data'], data_id
+    # Retrieve ML2 data from json_l3_data
+    data = json_l3_data
+    
+    # Randomly select a paragraph from the data
+    data1 = random.choice(data['Paragraph'])
+    data_id = data1['id']
+    
+    # Store the selected data_id in the session
+    request.session['data_id'] = data_id
+    
+    # Return the data and data_id
+    return data1['data'], data_id
    
 
 def nextpage(request):
     if request.method == 'POST':
+        # Retrieve the selected_option from the POST data
         selected_option = request.POST.get('selected_option')
+        
+        # Create a list to store the selected_option
         nomistake_list = []
         nomistake_list.append(selected_option)
+        
+        # Retrieve the selected_option from the list
         nomistake = nomistake_list[0]
+        
+        # Return the selected_option as an HTTP response
         return HttpResponse(str(nomistake))
-    
+
 
 def ml2(request):
-    # selected_option = request.session.get('selected_option')
-    # print("@",selected_option)
-    # selected_level = request.session.get('selected_level')
-    # print("@",selected_level)
     if request.method == 'POST':
-        
+        # If the request method is POST, redirect to the 'start_recording_ml2' view
         return redirect('start_recording_ml2')
+    # If the request method is GET, render the 'ml2_startrecording.html' template
     return render(request, 'AOP_PRO/ml2_startrecording.html')
 
 
 def start_recording_ml2(request):
+    # Get a random paragraph and its data_id using the get_random_ml2 function
     paragraph, data_id = get_random_ml2(request)
+    
+    # Prepare the context data for rendering the template
     context = {"val": paragraph, "recording": True, "data_id": data_id}
+    
+    # Render the 'ml2_recording.html' template with the provided context
     return render(request, "AOP_PRO/ml2_recording.html", context)
 
 
 def ml2_next(request):
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     selected_level = request.session.get('selected_level')
-    print("@",selected_level)
+    
     if request.method == 'POST':
+        # If the request method is POST, redirect to the 'start_recording_next_ml2' view
         return redirect('start_recording_next_ml2')
+    
+    # If the request method is not POST, render the 'ml2_startrecording_next.html' template
     return render(request, 'AOP_PRO/ml2_startrecording_next.html')
 
 
 def get_random_ml2_sentence(request):
     selected_option = request.session.get('selected_option')
-    print("get_random_sentence",selected_option)
+    
+    # Check the selected_option value to determine the data source
     if selected_option == 'Ml2':
-            data = json_l3_data
-            data1 = random.choice(data['Sentence'])
-            print("the value ",data1['id'])
-            data_id = data1['id']
-            request.session['data_id'] = data_id
-            print(data_id)
-            print("dta",data1['data'])
-            languages = data1['language']
-            return {
-                'data': data1['data'],
-                'data_id': data_id,
-                'languages': languages,
-            }
-    else:
+        # If selected_option is 'Ml2', use json_l3_data for sentence data
         data = json_l3_data
-        data1 = random.choice(data['Sentence'])
-        print("the value ",data1['id'])
-        data_id = data1['id']
-        request.session['data_id'] = data_id
-        print(data_id)
-        print("dta",data1['data'])
-        languages = data1['language']
-        return {
-            'data': data1['data'],
-            'data_id': data_id,
-            'languages': languages,
-        }
+    else:
+        # Otherwise, use json_l3_data for sentence data
+        data = json_l3_data
+    
+    # Randomly select a sentence from the data
+    data1 = random.choice(data['Sentence'])
+    data_id = data1['id']
+    request.session['data_id'] = data_id
+    languages = data1['language']
+    
+    return {
+        'data': data1['data'],
+        'data_id': data_id,
+        'languages': languages,
+    }
 
 
 def start_recording_next_ml2(request):
+    # Retrieve a random paragraph and data ID
     paragraph, data_id = get_random_paragraph(request)
+    
+    # Prepare the context for the template
     context = {"val": paragraph, "recording": True, "data_id": data_id}
+    
+    # Render the template with the provided context
     return render(request, "AOP_PRO/ml2_recording_next.html", context)
 
 
 def ml2_answer_final(request):
     filepath = request.session.get('filepath')
     filename = request.session.get('filename')
-    print(filename)
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     data_id = request.session.get('data_id')
-    print("data_id",data_id)
     data = json_l2_data
     paragraph = None
     for d in data['Paragraph']:
@@ -2055,10 +2094,8 @@ def ml2_answer_final(request):
     payload = {'language': 'English' ,'question':val}
     headers = {}
     response = requests.request("POST", url, headers=headers, data=payload, files=files)
-    print('***', response.text)
     request.session['ml2_res'] = response.text
     if response.status_code == 200:
-        print("text",val)
         data_string = response.json().get('text')
         mistake = response.json().get('no_mistakes')
         fluency = response.json().get('wcpm') 
@@ -2303,80 +2340,81 @@ def ml2_skip_next(request):
 def ml2_store(request):
   if request.method == 'POST':
     try:
-            fluency_adjustment = request.POST.get('fluency_adjustment')
-            print("fluency_adjustment", fluency_adjustment)
-            
-            if fluency_adjustment == '0':
-                request.session['ans_next_level'] = 'L4'
-            else:
-                request.session['ans_next_level'] = 'L3'
+        fluency_adjustment = request.POST.get('fluency_adjustment')
+        print("fluency_adjustment", fluency_adjustment)
+        
+        if fluency_adjustment == '0':
+            request.session['ans_next_level'] = 'L4'
+        else:
+            request.session['ans_next_level'] = 'L3'
 
-            enrollment_id = request.session.get('enrollment_id')
-            status = request.session.get('status')
-            filepath = request.session.get('filepath')
-            ml1_res = request.session.get('ml1_res')
-            print('ml1_res:', ml1_res)
-            transcript_dict = json.loads(ml1_res)
-            no_mistakes = transcript_dict.get('no_mistakes')
-            no_del = transcript_dict.get('no_del')
-            del_details = transcript_dict.get('del_details')
-            sub_details = transcript_dict.get('sub_details')
-            text = transcript_dict.get('text')
-            audio_url = transcript_dict.get('audio_url')
-            no_sub = transcript_dict.get('no_sub')
-            process_time = transcript_dict.get('process_time')
-            id_value = request.session.get('id_value')
-            print("student_id",id_value)
-            data_id = request.session.get('data_id')
-            print("sample_id",data_id)
-            my_program = request.session.get('my_program')
-            print('my program is saveprogress',my_program)
-            data = json_l1_data
-            paragraph = None
-            for d in data['Paragraph']:
-                if d['id'] == data_id:
-                    val = d['data']
-                    break
+        enrollment_id = request.session.get('enrollment_id')
+        status = request.session.get('status')
+        filepath = request.session.get('filepath')
+        ml1_res = request.session.get('ml1_res')
+        print('ml1_res:', ml1_res)
+        transcript_dict = json.loads(ml1_res)
+        no_mistakes = transcript_dict.get('no_mistakes')
+        no_del = transcript_dict.get('no_del')
+        del_details = transcript_dict.get('del_details')
+        sub_details = transcript_dict.get('sub_details')
+        text = transcript_dict.get('text')
+        audio_url = transcript_dict.get('audio_url')
+        no_sub = transcript_dict.get('no_sub')
+        process_time = transcript_dict.get('process_time')
+        id_value = request.session.get('id_value')
+        print("student_id",id_value)
+        data_id = request.session.get('data_id')
+        print("sample_id",data_id)
+        my_program = request.session.get('my_program')
+        print('my program is saveprogress',my_program)
+        data = json_l1_data
+        paragraph = None
+        for d in data['Paragraph']:
+            if d['id'] == data_id:
+                val = d['data']
+                break
 
-            if val:
-                print("question",val)
+        if val:
+            print("question",val)
 
-            print(status)
-            ans_next_level = request.session.get('ans_next_level')
-            data={}
-            data["student_id"]=id_value
-            data["sample_id"]= "data_id"
-            data["level"]= 'L2'
-            data["question"]= val
-            data["section "]= 'reading'
-            data["answer"]= text
-            data["audio_url"]= audio_url
-            data["mistakes_count"]= '0'
-            data["no_mistakes"]= no_mistakes
-            data["no_mistakes_edited"]= fluency_adjustment
-            data["api_process_time"]= process_time
-            data["language"]= 'English'
-            data["no_del"]= no_del
-            data["del_details"]= del_details
-            data["no_sub"]= no_sub
-            data["sub_details"]= sub_details
-            data["test_type"]= status
-            data["next_level"]= ans_next_level
-            data["program"] = my_program
-            print(data)
-            url = 'https://parakh.pradigi.org/v1/saveprogress/'
-            files = []
-            payload = {'data': json.dumps(data)}
-            headers = {}
-            response = requests.request("POST", url, headers=headers, data=payload, files=files)
-            response_data = json.loads(response.text)
-            print(fluency_adjustment)
-            if fluency_adjustment == '0':
-                return redirect('ml2_mcq_next')  # redirect to bl_mcq function
-            else:
-                return redirect('ml2_next')
+        print(status)
+        ans_next_level = request.session.get('ans_next_level')
+        data={}
+        data["student_id"]=id_value
+        data["sample_id"]= "data_id"
+        data["level"]= 'L2'
+        data["question"]= val
+        data["section "]= 'reading'
+        data["answer"]= text
+        data["audio_url"]= audio_url
+        data["mistakes_count"]= '0'
+        data["no_mistakes"]= no_mistakes
+        data["no_mistakes_edited"]= fluency_adjustment
+        data["api_process_time"]= process_time
+        data["language"]= 'English'
+        data["no_del"]= no_del
+        data["del_details"]= del_details
+        data["no_sub"]= no_sub
+        data["sub_details"]= sub_details
+        data["test_type"]= status
+        data["next_level"]= ans_next_level
+        data["program"] = my_program
+        print(data)
+        url = 'https://parakh.pradigi.org/v1/saveprogress/'
+        files = []
+        payload = {'data': json.dumps(data)}
+        headers = {}
+        response = requests.request("POST", url, headers=headers, data=payload, files=files)
+        response_data = json.loads(response.text)
+        print(fluency_adjustment)
+        if fluency_adjustment == '0':
+            return redirect('ml2_mcq_next')  # redirect to bl_mcq function
+        else:
+            return redirect('ml2_next')
     except TypeError:
         return HttpResponse("Invalid adjustment value")
+
 
 def ml2_next_store(request):
   if request.method == 'POST':
@@ -2856,29 +2894,6 @@ def ml3_retake(request):
 
 def ml3_skip(request):
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
-    
-    # if selected_option == 'English':
-    #     data_id = request.session.get('data_id')
-    #     print("data_id",data_id)
-    #     with open(json_eng) as f:
-    #         data = json.load(f)
-    #         paragraph = None
-    #         for d in data['Paragraph']:
-    #             if d['id'] == data_id:
-    #                 val = d['data']
-    #                 break
-    # elif selected_option == 'EL':
-    #     data_id = request.session.get('data_id')
-    #     print("data_id",data_id)
-    #     with open(json_l4, 'r', encoding='utf-8') as f:
-    #         data = json.load(f)
-    #         paragraph = None
-    #         for d in data['Paragraph']:
-    #             if d['id'] == data_id:
-    #                 val = d['data']
-    #                 break
-    # else:
     data_id = request.session.get('data_id')
     print("data_id",data_id)
     data = json_l4_data
@@ -3144,9 +3159,8 @@ def ml3_next_store(request):
                 'level' : "L3-sentence"
             }
             return render(request, "AOP_PRO/ans_page_aop.html", context=context)
-            # return redirect('ml3_answer_page')
     except TypeError:
-      return HttpResponse("Invalid adjustment value")
+        return HttpResponse("Invalid adjustment value")
     
 
 def ml3_mcq_api(request):
@@ -3186,8 +3200,8 @@ def ml3_mcq_api(request):
                 break
         print("@",selected_option)
         if selected_language == 'hindi':
-                print("selected",'hindi')
-                request.session['lan'] = selected_language
+            print("selected",'hindi')
+            request.session['lan'] = selected_language
 
         elif selected_language == 'marathi':
             print('selected','marathi')
@@ -3648,13 +3662,13 @@ def next_para(request):
     media_folder = os.path.join(settings.MEDIA_ROOT)
 
     for file in os.listdir(media_folder):
-            file_path = os.path.join(media_folder, file)
-            try:
-                if os.path.isfile(file_path):
-                    os.remove(file_path)
-                    print("the file is removed")
-            except Exception as e:
-                print(e)
+        file_path = os.path.join(media_folder, file)
+        try:
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+                print("the file is removed")
+        except Exception as e:
+            print(e)
 
     if selected_option is not None:
         data_id = request.session.get('data_id')
@@ -3951,12 +3965,12 @@ def next_story(request):
     print("@",selected_option)
     media_folder = os.path.join(settings.MEDIA_ROOT)
     for file in os.listdir(media_folder):
-            file_path = os.path.join(media_folder, file)
-            try:
-                if os.path.isfile(file_path):
-                    os.remove(file_path)
-            except Exception as e:
-                print(e)
+        file_path = os.path.join(media_folder, file)
+        try:
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+        except Exception as e:
+            print(e)
 
     if selected_option is not None:
         data_id = request.session.get('data_id')
@@ -4735,13 +4749,13 @@ def save_word1(request):
     data_id = request.session.get('data_id')
     print("data_id", data_id)
     if json_file_path:
-            data = json_file_path
-            if data is not None:
-                Word = None
-                for d in data['Word']:
-                    if d['id'] == d_dataid[0]:
-                        val = d['data']
-                        break
+        data = json_file_path
+        if data is not None:
+            Word = None
+            for d in data['Word']:
+                if d['id'] == d_dataid[0]:
+                    val = d['data']
+                    break
 
     if val:
         print("the val",val)
@@ -4761,22 +4775,21 @@ def save_word1(request):
                 dc_res[0] = response.text
             else:
                 dc_res.insert(0, response.text)
-            # dc_res.clear()
             request.session["dc_res"] = dc_res
             print("testing the data", dc_res)
             if len(dc_res)==5:
-                    request.session['dc_rec'] = dc_res
-                    context = {'l_res': dc_res}
-                    url = reverse('wans_page')
-                    if len(dc_res)==5:
-                        return redirect(url,context)
+                request.session['dc_rec'] = dc_res
+                context = {'l_res': dc_res}
+                url = reverse('wans_page')
+                if len(dc_res)==5:
+                    return redirect(url,context)
             if len(dc_res)==4:
-                    request.session['dc_rec'] = dc_res
-                    context = {'l_res': dc_res}
-                    url = reverse('wans_page')
-                    if len(dc_res)==4:
-                        
-                        return redirect(url,context)
+                request.session['dc_rec'] = dc_res
+                context = {'l_res': dc_res}
+                url = reverse('wans_page')
+                if len(dc_res)==4:
+                    
+                    return redirect(url,context)
     else:
         return render(request, 'Error/pages-500.html' )
         
@@ -4821,13 +4834,13 @@ def save_word2(request):
     data_id = request.session.get('data_id')
     print("data_id", data_id)
     if json_file_path:
-            data = json_file_path
-            if data is not None:
-                Word = None
-                for d in data['Word']:
-                    if d['id'] == d_dataid[1]:
-                        val = d['data']
-                        break
+        data = json_file_path
+        if data is not None:
+            Word = None
+            for d in data['Word']:
+                if d['id'] == d_dataid[1]:
+                    val = d['data']
+                    break
 
     if val:
         print("the val",val)
@@ -4851,13 +4864,11 @@ def save_word2(request):
             request.session["dc_res"] = dc_res
             print("testing the data", dc_res)
             if len(dc_res)==5:
-                    request.session['dc_rec'] = dc_res
-                    context = {'l_res': dc_res}
-                    url = reverse('wans_page')
-                    if len(dc_res)==5:
-                        
-                        return redirect(url,context)
-                    
+                request.session['dc_rec'] = dc_res
+                context = {'l_res': dc_res}
+                url = reverse('wans_page')
+                if len(dc_res)==5:
+                    return redirect(url,context)
     else:
         return render(request, 'Error/pages-500.html' )
 
@@ -4902,13 +4913,13 @@ def save_word3(request):
     data_id = request.session.get('data_id')
     print("data_id", data_id)
     if json_file_path:
-            data = json_file_path
-            if data is not None:
-                Word = None
-                for d in data['Word']:
-                    if d['id'] == d_dataid[2]:
-                        val = d['data']
-                        break
+        data = json_file_path
+        if data is not None:
+            Word = None
+            for d in data['Word']:
+                if d['id'] == d_dataid[2]:
+                    val = d['data']
+                    break
     
     if selected_option == 'English':
         request.session['d_dataid[2]'] = d_dataid[2]
@@ -4927,7 +4938,6 @@ def save_word3(request):
     payload = {'language': selected_option,'question':val}
     headers = {}
     response = requests.request("POST", url, headers=headers, data=payload, files=files)
-    # dc_res=[]
     if response.status_code == 200:
         dc_res = request.session.setdefault('dc_res', [])
         if request.session.get("dc_res",None) is None:
@@ -4938,17 +4948,14 @@ def save_word3(request):
                 dc_res[2] = response.text
             else:
                 dc_res.insert(2, response.text)
-            # dc_res.clear()
             request.session["dc_res"] = dc_res
             print("testing the data", dc_res)
             if len(dc_res)==5:
-                    request.session['dc_rec'] = dc_res
-                    context = {'l_res': dc_res}
-                    url = reverse('wans_page')
-                    if len(dc_res)==5:
-                        
-                        return redirect(url,context)
-                    
+                request.session['dc_rec'] = dc_res
+                context = {'l_res': dc_res}
+                url = reverse('wans_page')
+                if len(dc_res)==5:
+                    return redirect(url,context)                
     else:
         return render(request, 'Error/pages-500.html' )
 
@@ -4977,9 +4984,6 @@ def retake_word4(request):
             if len(d_copy_audio_files)<5:
                 d_copy_audio_files.append(filepath)
         print("###",d_copy_audio_files)
-        # if len(d_audio_files) < 5:
-        #     d_audio_files.clear()
-        #     d_audio_files_name.clear()
         request.session['filepath'] = filepath
         return render(request, 'word_answer.html', { 'audio_url': filepath})
     
@@ -4998,13 +5002,13 @@ def save_word4(request):
     print("data_id", data_id)
     
     if json_file_path:
-            data = json_file_path
-            if data is not None:
-                Word = None
-                for d in data['Word']:
-                    if d['id'] == d_dataid[3]:
-                        val = d['data']
-                        break
+        data = json_file_path
+        if data is not None:
+            Word = None
+            for d in data['Word']:
+                if d['id'] == d_dataid[3]:
+                    val = d['data']
+                    break
 
     if val:
         print("the val",val)
@@ -5029,13 +5033,11 @@ def save_word4(request):
             request.session["dc_res"] = dc_res
             print("testing the data", dc_res)
             if len(dc_res)==5:
-                    request.session['dc_rec'] = dc_res
-                    context = {'l_res': dc_res}
-                    url = reverse('wans_page')
-                    if len(dc_res)==5:
-                        
-                        return redirect(url,context)
-                    
+                request.session['dc_rec'] = dc_res
+                context = {'l_res': dc_res}
+                url = reverse('wans_page')
+                if len(dc_res)==5:
+                    return redirect(url,context)
     else:
         return render(request, 'Error/pages-500.html' )
 
@@ -5129,13 +5131,11 @@ def save_word5(request):
             request.session["dc_res"] = dc_res
             print("testing the data", dc_res)
             if len(dc_res)==5:
-                    request.session['dc_rec'] = dc_res
-                    context = {'l_res': dc_res}
-                    url = reverse('wans_page')
-                    if len(dc_res)==5:
-                        
-                        return redirect(url,context)
-                    
+                request.session['dc_rec'] = dc_res
+                context = {'l_res': dc_res}
+                url = reverse('wans_page')
+                if len(dc_res)==5:
+                    return redirect(url,context)
     else:
         return render(request, 'Error/pages-500.html' )
 
@@ -5387,10 +5387,10 @@ def letter_skip(request):
             lc_res.append('{"no_mistakes": 1, "no_del": 0, "del_details": "", "no_sub": 1, "sub_details": "0-\\u092a\\u0948\\u0938\\u093e:", "status": "success", "wcpm": 0.0, "text": "", "audio_url": "", "process_time": 0.47053098678588867}')
             print("testing the data", lc_res)
             if len(lc_res)==5:
-                    request.session['dc_rec'] = lc_res
-                    context = {'l_res': lc_res}
-                    url = reverse('lans_page')
-                    return redirect(url,context)
+                request.session['dc_rec'] = lc_res
+                context = {'l_res': lc_res}
+                url = reverse('lans_page')
+                return redirect(url,context)
         if len(l_audio_files) == 4:
             return redirect('letter_recording')
         # if len(d_audio_files)==5:
@@ -5459,10 +5459,10 @@ def submit_letter_skip(request):
 
             print("testing the data", lc_res)
             if len(lc_res)==5:
-                    request.session['dc_rec'] = lc_res
-                    context = {'l_res': lc_res}
-                    url = reverse('lans_page')
-                    return redirect(url,context)
+                request.session['dc_rec'] = lc_res
+                context = {'l_res': lc_res}
+                url = reverse('lans_page')
+                return redirect(url,context)
         if len(l_audio_files) == 4:
             return redirect('letter_recording')
         # if len(d_audio_files)==5:
@@ -5506,13 +5506,9 @@ def letter_answer(request):
     if selected_option in json_files:
         json_file_path = json_files[selected_option]
         print('@###############################', json_file_path)
-        # request.session['json_file'] = json_file_path
         data_id = request.session.get('data_id')
         print("data_id", data_id)
         data = json_file_path
-
-        # with open(json_file_path, 'r', encoding='utf-8') as f:
-        #     data = json.load(f)
         letter = next((d['data'] for d in data['Letter'] if d['id'] == request.session.get('data_id')), None)
 
     qletter = request.session.setdefault('qletter', [])
@@ -5520,20 +5516,12 @@ def letter_answer(request):
         qletter.append(letter)
         request.session['qletter'] = qletter
 
-    # if val:
-    #     print("the val",val)
-    #     qletter = request.session.get("qletter")
-    #     qletter.append(val)
-    #     request.session["qletter"] = qletter
-
-        print("qletter",qletter)
     url = 'http://3.7.133.80:8000/gettranscript/'
     files = [('audio', (filepath, open(filepath, 'rb'), 'audio/wav'))]
     payload = {'language': selected_option ,'question':letter}
     headers = {}
     response = requests.request("POST", url, headers=headers, data=payload, files=files)
 
-    # lc_res=[]
     if response.status_code == 200:
 
         lc_res = request.session.setdefault('lc_res', [])
@@ -5542,19 +5530,17 @@ def letter_answer(request):
         else:
             lc_res = request.session.get("lc_res")
             lc_res.append(response.text)
-            # lc_res.clear()                                                                              #Reset
 
             request.session["lc_res"] = lc_res
             print("testing the data", lc_res)
             if len(lc_res)==5:
-                    request.session['lc_rec'] = lc_res
-                    context = {'l_res': lc_res}
-                    url = reverse('lans_page')
-                    if len(lc_res)==5:
-                        
-                        return redirect(url,context)
+                request.session['lc_rec'] = lc_res
+                context = {'l_res': lc_res}
+                url = reverse('lans_page')
+                if len(lc_res)==5:
+                    return redirect(url,context)
         if len(l_audio_files) == 4:
-                return redirect('letter_recording')
+            return redirect('letter_recording')
     else:
         return render(request, 'Error/pages-500.html' )
             
@@ -5801,13 +5787,13 @@ def save_letter1(request):
     print("data_id", data_id)
     
     if json_file_path:
-            data = json_file_path
-            if data is not None:
-                Word = None
-                for d in data['Letter']:
-                    if d['id'] == l_dataid[0]:
-                        val = d['data']
-                        break
+        data = json_file_path
+        if data is not None:
+            Word = None
+            for d in data['Letter']:
+                if d['id'] == l_dataid[0]:
+                    val = d['data']
+                    break
 
     if selected_option == 'English':
         request.session['l_dataid[0]'] = l_dataid[0]
@@ -5840,11 +5826,11 @@ def save_letter1(request):
             request.session["lc_res"] = lc_res
             print("testing the data", lc_res)
             if len(lc_res)==5:
-                    request.session['lc_rec'] = lc_res
-                    context = {'l_res': lc_res}
-                    url = reverse('lans_page')
-                    if len(lc_res)==5:
-                        return redirect(url,context)
+                request.session['lc_rec'] = lc_res
+                context = {'l_res': lc_res}
+                url = reverse('lans_page')
+                if len(lc_res)==5:
+                    return redirect(url,context)
                     
     else:
         return render(request, 'Error/pages-500.html' )
@@ -5897,19 +5883,17 @@ def save_letter2(request):
     print("data_id", data_id)
     
     if json_file_path:
-            data = json_file_path
-            if data is not None:
-                Word = None
-                for d in data['Letter']:
-                    if d['id'] == l_dataid[1]:
-                        val = d['data']
-                        break
+        data = json_file_path
+        if data is not None:
+            Word = None
+            for d in data['Letter']:
+                if d['id'] == l_dataid[1]:
+                    val = d['data']
+                    break
 
     if selected_option == 'English':
         request.session['l_dataid[1]'] = l_dataid[1]
         print("data_id",l_dataid[1])
-        # with open(json_eng) as f:
-        #     data = json.load(f)
         data = json_eng
         Letter = None
         for d in data['Letter']:
@@ -5935,12 +5919,11 @@ def save_letter2(request):
             request.session["lc_res"] = lc_res
             print("testing the data", lc_res)
             if len(lc_res)==5:
-                    request.session['lc_rec'] = lc_res
-                    context = {'l_res': lc_res}
-                    url = reverse('lans_page')
-                    if len(lc_res)==5:
-                        
-                        return redirect(url,context)
+                request.session['lc_rec'] = lc_res
+                context = {'l_res': lc_res}
+                url = reverse('lans_page')
+                if len(lc_res)==5:
+                    return redirect(url,context)
                     
     else:
         return render(request, 'Error/pages-500.html' )
@@ -5979,30 +5962,24 @@ def retake_letter3(request):
 def save_letter3(request):
     l_dataid = request.session.setdefault('l_dataid', [])
     filepath = request.session.get('filepath')
-    print(filepath)
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     request.session['l_dataid[2]'] = l_dataid[2]
-    print("data_id", l_dataid[2])
     json_file_path = json_files.get(selected_option)
-    print('@###############################', json_file_path)
     data_id = request.session.get('data_id')
     print("data_id", data_id)
     
     if json_file_path:
-            data = json_file_path
-            if data is not None:
-                Word = None
-                for d in data['Letter']:
-                    if d['id'] == l_dataid[2]:
-                        val = d['data']
-                        break
+        data = json_file_path
+        if data is not None:
+            Word = None
+            for d in data['Letter']:
+                if d['id'] == l_dataid[2]:
+                    val = d['data']
+                    break
 
     if selected_option == 'English':
         request.session['l_dataid[2]'] = l_dataid[2]
         print("data_id",l_dataid[2])
-        # with open(json_eng) as f:
-        #     data = json.load(f)
         data = json_eng
         Letter = None
         for d in data['Letter']:
@@ -6029,11 +6006,11 @@ def save_letter3(request):
             request.session["lc_res"] = lc_res
             print("testing the data", lc_res)
             if len(lc_res)==5:
-                    request.session['lc_rec'] = lc_res
-                    context = {'l_res': lc_res}
-                    url = reverse('lans_page')
-                    if len(lc_res)==5:
-                        return redirect(url,context)
+                request.session['lc_rec'] = lc_res
+                context = {'l_res': lc_res}
+                url = reverse('lans_page')
+                if len(lc_res)==5:
+                    return redirect(url,context)
                     
     else:
         return render(request, 'Error/pages-500.html' )
@@ -6068,7 +6045,7 @@ def retake_letter4(request):
         print("###",l_copy_audio_files)
         request.session['filepath'] = filepath
         return render(request, 'letter_answer.html', { 'audio_url': filepath})
-    
+
 
 def save_letter4(request):
     l_dataid = request.session.setdefault('l_dataid', [])
@@ -6082,15 +6059,15 @@ def save_letter4(request):
     print('@###############################', json_file_path)
     data_id = request.session.get('data_id')
     print("data_id", data_id)
-    
+
     if json_file_path:
-            data = json_file_path
-            if data is not None:
-                Word = None
-                for d in data['Letter']:
-                    if d['id'] == l_dataid[3]:
-                        val = d['data']
-                        break
+        data = json_file_path
+        if data is not None:
+            Word = None
+            for d in data['Letter']:
+                if d['id'] == l_dataid[3]:
+                    val = d['data']
+                    break
 
     if selected_option == 'English':
         request.session['l_dataid[3]'] = l_dataid[3]
@@ -6123,11 +6100,11 @@ def save_letter4(request):
             request.session["lc_res"] = lc_res
             print("testing the data", lc_res)
             if len(lc_res)==5:
-                    request.session['lc_rec'] = lc_res
-                    context = {'l_res': lc_res}
-                    url = reverse('lans_page')
-                    if len(lc_res)==5:
-                        return redirect(url,context)
+                request.session['lc_rec'] = lc_res
+                context = {'l_res': lc_res}
+                url = reverse('lans_page')
+                if len(lc_res)==5:
+                    return redirect(url,context)
     else:
         return render(request, 'Error/pages-500.html' )
 
@@ -6164,39 +6141,27 @@ def retake_letter5(request):
     
 def save_letter5(request):
     l_dataid = request.session.setdefault('l_dataid', [])
-    
     filepath = request.session.get('filepath')
-    print(filepath)
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     request.session['l_dataid[4]'] = l_dataid[4]
-    print("data_id", l_dataid[4])
     json_file_path = json_files.get(selected_option)
-    print('@###############################', json_file_path)
     data_id = request.session.get('data_id')
-    print("data_id", data_id)
     
     if json_file_path:
-            data = json_file_path
-            if data is not None:
-                Word = None
-                for d in data['Letter']:
-                    if d['id'] == l_dataid[4]:
-                        val = d['data']
-                        break
+        data = json_file_path
+        if data is not None:
+            for d in data['Letter']:
+                if d['id'] == l_dataid[4]:
+                    val = d['data']
+                    break
 
     if selected_option == 'English':
         request.session['l_dataid[4]'] = l_dataid[4]
-        print("data_id",l_dataid[4])
-        # with open(json_eng) as f:
-        #     data = json.load(f)
         data = json_eng
-        Letter = None
         for d in data['Letter']:
             if d['id'] == l_dataid[4]:
                 val = d['data']
-                break
-    
+                break    
     if val:
         print("the val",val)
     url = 'http://3.7.133.80:8000/gettranscript/'
@@ -6204,7 +6169,6 @@ def save_letter5(request):
     payload = {'language': selected_option ,'question':val}
     headers = {}
     response = requests.request("POST", url, headers=headers, data=payload, files=files)
-    # lc_res=[]
     if response.status_code == 200:
 
         lc_res = request.session.setdefault('lc_res', [])
@@ -6212,20 +6176,18 @@ def save_letter5(request):
             lc_res = []
         else:
             lc_res = request.session.get("lc_res")
-            # lc_res[4] = response.text
             if len(lc_res) ==5:
                 lc_res[4] = response.text
             else:
                 lc_res.insert(4, response.text)
-            # lc_res.clear()
             request.session["lc_res"] = lc_res
             print("testing the data", lc_res)
             if len(lc_res)==5:
-                    request.session['lc_rec'] = lc_res
-                    context = {'l_res': lc_res}
-                    url = reverse('lans_page')
-                    if len(lc_res)==5:
-                        return redirect(url,context)
+                request.session['lc_rec'] = lc_res
+                context = {'l_res': lc_res}
+                url = reverse('lans_page')
+                if len(lc_res)==5:
+                    return redirect(url,context)
                     
     else:
         return render(request, 'Error/pages-500.html' )
