@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls.static import static
 from django.conf import settings
 from django.urls import path
-# from django.views.i18n import set_language
+from django.views.i18n import set_language
 # from django.utils.translation import gettext_lazy as _
 from . import views
 
@@ -28,7 +28,7 @@ urlpatterns = [
     # path(_('login'), views.login, name='login'),
     
     path('testing',  views.testing, name='testing'),
-    # path('language/', set_language, name='set_language'),
+    path('language/', set_language, name='set_language'),
     path('choose_avatar',  views.choose_avatar, name='choose_avatar'),
     path('select_profile', views.select_profile, name='select_profile'),
 

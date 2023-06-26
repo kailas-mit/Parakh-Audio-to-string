@@ -21,6 +21,7 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
   <script src="https://cdn.jsdelivr.net/jquery.knob/1.2.13/jquery.knob.min.js"></script>
 
@@ -156,29 +157,90 @@ element.style {
                   </ul> -->
 
                   <!-- <select id="language-select"  style="width: 35%;"> -->
-                    <option>
-        
-                      <!-- <li> -->
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                          Language
-                        </a>
-                        <ul class="dropdown-menu">
-                          {% get_current_language as LANGUAGE_CODE %}
-                          {% get_available_languages as LANGUAGES %}
-                          {% get_language_info_list for LANGUAGES as languages %}
-        
-                          {% for lang in languages %}
-                          <li>
-                            <a class="dropdown-item" href="/{{lang.code}}">
+
+                    <form action="{% url 'set_language' %}" method="POST">
+                      {% csrf_token %}
+                      <input name="next" type="hidden" value="{{ request.path }}">
+                      <select name="language" onchange="this.form.submit()">
+                        {% get_available_languages as languages %}
+                        {% for lang_code, lang_name in languages %}
+                          <option value="{{ lang_code }}" {% if lang_code == LANGUAGE_CODE %}selected{% endif %}>
+                            {{ lang_name }}
+                          </option>
+                        {% endfor %}
+                      </select>
+                    </form>
+
+
+
+                    <!-- <option>
+                      <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Language
+                      </a>
+                      <ul class="dropdown-menu">
+                        {% get_current_language as LANGUAGE_CODE %}
+                        {% get_available_languages as LANGUAGES %}
+                        {% get_language_info_list for LANGUAGES as languages %}
+                    
+                        {% for lang in languages %}
+                        <li>
+                          <a class="dropdown-item" href="/{{lang.code}}">
                             {{ lang.name_local }}
                           </a>
                         </li>
-        
-                          {% endfor %}  
-                         
-                        </ul>
-                      <!-- </li> -->
+                        {% endfor %}
+                      </ul>
                     </option>
+                    <p>Selected Language: <span id="selectedLanguage"></span></p>
+                    
+                    <script>
+                      // Retrieve the selected language from local storage
+                      var selectedLanguage = localStorage.getItem('selected_language');
+                      document.getElementById('selectedLanguage').innerText = selectedLanguage;
+                    </script> -->
+                    <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                    <script>
+                      // Retrieve the selected language from local storage
+                      var selectedLanguage = localStorage.getItem('selected_language');
+                    
+                      // Set the selected language in the dropdown
+                      $(document).ready(function() {
+                        $('.dropdown-menu a.dropdown-item').each(function() {
+                          if ($(this).attr('href') === '/' + selectedLanguage) {
+                            $(this).addClass('active');
+                          }
+                        });
+                      });
+                    
+                      // Store the selected language in local storage when a language is clicked
+                      $('.dropdown-menu a.dropdown-item').click(function() {
+                        var selectedLanguage = $(this).attr('href').replace('/', '');
+                        console.log('Selected Language:', selectedLanguage);
+                        console.log('Code is running');
+
+                        localStorage.setItem('selected_language', selectedLanguage);
+                      });
+                    </script>
+                    
+                    <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {% trans "Language" %}
+                      </a>
+                      <ul class="dropdown-menu">
+                        {% get_current_language as LANGUAGE_CODE %}
+                        {% get_available_languages as LANGUAGES %}
+                        {% get_language_info_list for LANGUAGES as languages %}
+                    
+                        {% for lang in languages %}
+                        <li>
+                          <a class="dropdown-item {% if '/'|add:lang.code == request.path_info %}active{% endif %}" href="/{{ lang.code }}">
+                            {{ lang.name_local }}
+                          </a>
+                        </li>
+                        {% endfor %}
+                      </ul>
+                    </li>
+                    <p>Selected Language: {{ selectedLanguage }}</p> -->
                   <!-- </select><br><br> -->
 
 
@@ -215,7 +277,12 @@ element.style {
   </div>
 
  
-
+<script>
+  $('.dropdown-menu a.dropdown-item').click(function() {
+  var selectedLanguage = $(this).attr('href').replace('/', '');
+  localStorage.setItem('selected_language', selectedLanguage);
+});
+</script>
 
 
   <script>

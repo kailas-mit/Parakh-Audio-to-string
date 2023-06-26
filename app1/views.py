@@ -106,18 +106,34 @@ json_advance_eng = json_advance_eng_data
 
 base_path = os.path.join(settings.MEDIA_ROOT, "")
 
+# from django.utils.translation import get_language, activate, gettext
+# def testing(request):
+#     # trans = _('Paragraph')
+#     trans = translate(language='hi')
+#     return render(request, 'testing.html', {'trans' : trans})
+
+# def translate(language):
+#     cur_language = get_language()
+#     try:
+#         activate(language)
+#         text = gettext('START')
+
+#     finally:
+#         activate(cur_language)
+#     return text
+
 from django.utils.translation import get_language, activate, gettext
+
 def testing(request):
-    # trans = _('Paragraph')
-    trans = translate(language='hi')
-    return render(request, 'testing.html', {'trans' : trans})
+    selected_language = 'en'  # Replace with the actual value of the selected language
+    trans = translate(language=selected_language)
+    return render(request, 'home.html', {'trans': trans})
 
 def translate(language):
     cur_language = get_language()
     try:
         activate(language)
         text = gettext('START')
-
     finally:
         activate(cur_language)
     return text
@@ -125,6 +141,11 @@ def translate(language):
 def first(request):
     options = Program.OPTION_CHOICES
     if request.method == 'POST':
+        #newly added
+        selected_language = request.POST.get('selectedLanguage')  # Assuming you have a language selection dropdown in your form
+        print('selected language is ',selected_language)
+        request.session['selected_language'] = selected_language
+        # added above 
         my_program = request.POST.get('option')
         request.session['my_program'] = my_program  # Save selected option in session
         if my_program == 'General Program':

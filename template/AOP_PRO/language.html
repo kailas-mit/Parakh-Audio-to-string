@@ -1,6 +1,6 @@
 {% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ selectedLanguage }}">
 {% load static %}
 
 <head>
@@ -30,27 +30,28 @@
     function disableBackButton() {
       history.pushState(null, null, document.URL);
       window.addEventListener('popstate', function () {
-          history.pushState(null, null, document.URL);
+        history.pushState(null, null, document.URL);
       });
     }
-  
+
     // Function to click the button every 3 seconds
     function clickButton() {
       document.getElementById("myButton").click();
       setTimeout(clickButton, 3000);
     }
-  
+
     // Call the clickButton function
     clickButton();
-  
+
     // Disable the back button when the button is clicked
     document.getElementById("myButton").addEventListener("click", disableBackButton);
   </script>
-  
+
 </head>
+
 <body>
   <!-- <form action="/backblock"> -->
-      <button style="display: none;" id="myButton">Click to Disable</button>
+  <button style="display: none;" id="myButton">Click to Disable</button>
 
 
   <!-- </form> -->
@@ -59,17 +60,18 @@
 
   <style>
     .background-image {
-  background-image: url("{% static 'images/parakh 1.png'%}");
-  background-size: cover;
-  background-position: center center;
-  background-attachment: fixed;
-  height: 100%;
-  width: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: -1;
-}
+      background-image: url("{% static 'images/parakh 1.png'%}");
+      background-size: cover;
+      background-position: center center;
+      background-attachment: fixed;
+      height: 100%;
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+
     .a {
       background-color: #093966;
       border: none;
@@ -98,10 +100,11 @@
       border-radius: 10px;
     } */
 
-    text{
+    text {
       color: #093966;
       font-size: 32px;
     }
+
     .button {
       background-color: #093966;
       border: none;
@@ -117,22 +120,23 @@
     }
   </style>
 
-<style>
-  @media screen and (max-width: 767px) {
-  /* Center the modal vertically */
-  #myModal1 .modal-dialog {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-  }
+  <style>
+    @media screen and (max-width: 767px) {
 
-  /* Set the modal content to full width */
-  #myModal1 .modal-content {
-    width: 100%;
-  }
-}
-</style>
+      /* Center the modal vertically */
+      #myModal1 .modal-dialog {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+      }
+
+      /* Set the modal content to full width */
+      #myModal1 .modal-content {
+        width: 100%;
+      }
+    }
+  </style>
 
 
   <!-- Button trigger modal -->
@@ -142,60 +146,80 @@
 
   <!--pop up all  Modal 1 -->
   <div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
-    data-backdrop="static">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-body">
-              <!-- <img src="{% static 'images/top_user.png'%}" alt="top_user" style="position: absolute; top: 0; left: 0;"> -->
-              <a href="{% url 'select_profile' %}">
-            <img src="{% static 'images/top_user.png' %}" alt="top_user" style="position: absolute; top: 0; left: 0;">
-              </a>
-             <img src="{% static 'images/pratham_center.png'%}" style="position: absolute; top: 0; right: 0; padding-right: 5px; padding-top: 5px; width: 80px; height: 50px;" alt="top_user"> <br> <br>
+  data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        <a href="{% url 'select_profile' %}">
+          <img src="{% static 'images/top_user.png' %}" alt="top_user" style="position: absolute; top: 0; left: 0;">
+        </a>
+        <img src="{% static 'images/pratham_center.png' %}"
+          style="position: absolute; top: 0; right: 0; padding-right: 5px; padding-top: 5px; width: 80px; height: 50px;"
+          alt="top_user"> <br> <br>
 
-              <center>
-                <form action="/language" method="post"><br> <br> <br>
-                  <input type="hidden" name="option" value="{{ selected_option }}">
-
+        <center>
+          <p>{% trans "Selected Language:" %} <span id="selectedLanguage"></span></p>
+          <form action="/language" method="post"><br> <br> <br>
             {% csrf_token %}
+            <br><br>
+            <p><b>{% blocktrans %}Student Name:{% endblocktrans %}</b> {{ child_name }}</p>
+            <br><br>
+            <img src="{% static 'images/dash_user.png' %}" width="120" height="120" alt="Avatar Image"
+              style="border-radius: 50%;"> <br> <br>
 
-                    <text style="display: none;"> <b> Student Name: {{ child_name }} </b> </text><br><br>
-                <!-- <img   src="{{ avatar_url }}" width="200" height="200" alt="Avatar Image" style="border-radius: 50%;"> <br> <br> -->
-                <img   src="{% static 'images/dash_user.png' %}" width="120" height="120" alt="Avatar Image" style="border-radius: 50%;"> <br> <br>
+            <p style="font-family: Roboto;">{% trans "Choose Language" %}</p><br><br>
 
-                <text style=" font-family: Roboto ;">Choose Language</text><br><br>
+            <select name="option" class="form-select"
+              style="width: 80%; border: 3px solid gray; font-family: Roboto ; font-size: 18px;"
+              id="assessment-select" name="assessment">
+              {% for choice in eng_option %}
+              <option style="font-weight: 18px; font-family: Roboto ;" value="{{ choice.0 }}">{{ choice.1 }}</option>
+              {% endfor %}
+            </select><br>
+            <select name="option" class="form-select"
+              style="width: 80%; border: 3px solid gray; font-family: Roboto ; font-size: 18px;"
+              id="assessment-select" name="assessment">
+              {% for choice in options %}
+              <option style="font-weight: 18px; font-family: Roboto ;" value="{{ choice.0 }}">{{ choice.1 }}</option>
+              {% endfor %}
+            </select>
+            <br> <br>
 
-                <!-- <text style="font-family: Roboto;">{% trans "Choose Language" %}</text><br><br> -->
-
-                <select name="option" class="form-select" style="width: 80%;  border: 3px solid gray; font-family: Roboto ; font-size: 18px;" id="assessment-select" name="assessment">
-                    {% for choice in eng_option %}
-                          <option style="font-weight: 18px; font-family: Roboto ;" value="{{ choice.0 }}">{{ choice.1 }}</option>
-                      {% endfor %}
-                  </select><br>
-                <select name="option" class="form-select" style="width: 80%; border: 3px solid gray; font-family: Roboto ; font-size: 18px;" id="assessment-select" name="assessment">
-                  {% for choice in options %}
-                        <option style="font-weight: 18px; font-family: Roboto ;" value="{{ choice.0 }}">{{ choice.1 }}</option>
-                    {% endfor %}
-                </select>
-                <br> <br>
-                
-                 
-                <input class="a" type="submit" value="Submit"><br>
-
-     
-                </div>
-
-                </form>
-                
-            </center>
-        </div>
-       
+            <input class="a" type="submit" value="{% trans 'Submit' %}"><br>
+          </form>
+        </center>
       </div>
     </div>
   </div>
+</div>
+
+  <script>
+    // Retrieve the selected language from local storage
+    var selectedLanguage = localStorage.getItem('selected_language');
+
+    // Use the selected language in your code
+    document.getElementById('selectedLanguage').innerText = selectedLanguage;
+
+    // Additional code based on your requirements
+    // ...
+  </script>
+
+
+  <script>
+    document.getElementById("languageForm").addEventListener("submit", function (event) {
+      event.preventDefault(); // Prevent the form from submitting normally
+
+      var selectedLanguage = document.getElementById("assessment-select").value;
+      var formAction = "/" + selectedLanguage + "/aop_language";
+
+      this.action = formAction;
+      this.submit(); // Submit the form
+    });
+  </script>
   <script>
     const assessmentSelect = document.getElementById('assessment-select');
     const englishLevelSelect = document.getElementById('english-level-select');
-  
+
     assessmentSelect.addEventListener('change', (event) => {
       if (event.target.value === 'english') {
         englishLevelSelect.style.display = 'block';
@@ -205,20 +229,20 @@
     });
   </script>
 
- 
 
 
- <script>
-  history.pushState(null, null, document.URL);
-  window.addEventListener('popstate', function () {
+
+  <script>
+    history.pushState(null, null, document.URL);
+    window.addEventListener('popstate', function () {
       history.pushState(null, null, document.URL);
-  });
-</script>
- <script>
-  function disableBack() { window.history.forward(); }
-        setTimeout("disableBack()", 0);
-        window.onunload = function () { null };
- </script>
+    });
+  </script>
+  <script>
+    function disableBack() { window.history.forward(); }
+    setTimeout("disableBack()", 0);
+    window.onunload = function () { null };
+  </script>
 
 
 
