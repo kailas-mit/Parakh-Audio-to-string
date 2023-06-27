@@ -539,6 +539,44 @@
     </div>
 
     <script>
+      var audioUrls = [
+        "{{ audio_url1 }}",
+        "{{ audio_url2 }}",
+        "{{ audio_url3 }}",
+        "{{ audio_url4 }}",
+        "{{ audio_url5 }}"
+      ];
+    
+      var audioPlayers = document.querySelectorAll("audio");
+      var audioToggles = document.querySelectorAll("img[id^='audio-toggle']");
+    
+      audioToggles.forEach(function(audioToggle, i) {
+        var audioPlayer = audioPlayers[i];
+        var audioUrl = audioUrls[i];
+    
+        // Add the current date and time to the audio URL
+        var currentDate = new Date();
+        var currentDateTime = currentDate.toISOString().replace(/[-:.]/g, "");
+        var updatedAudioUrl = audioUrl + "?v=" + currentDateTime;
+    
+        audioPlayer.src = updatedAudioUrl;
+    
+        audioToggle.addEventListener("click", function() {
+          if (audioPlayer.paused) {
+            audioPlayer.play();
+            audioToggle.src = "{% static 'images/pause.ico'%}";
+          } else {
+            audioPlayer.pause();
+            audioToggle.src = "{% static 'images/play.ico'%}";
+          }
+        });
+    
+        audioPlayer.addEventListener("ended", function() {
+          audioToggle.src = "{% static 'images/play.ico'%}";
+        });
+      });
+    </script>
+    <!-- <script>
       // Get the current date and time
       // Get the current date and time
       var currentDate = new Date();
@@ -579,7 +617,7 @@
           audioToggle.src = "{% static 'images/play.ico'%}";
         });
       });
-    </script>
+    </script> -->
 
     <script>
       let misValues = [];

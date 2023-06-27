@@ -163,7 +163,7 @@
            {% endif %} -->
            {% if audio_url %}
               <img src="{% static 'images/play.ico'%}" style="width: 50px; height: 50px;  cursor: pointer;" id="audio-toggle">
-              <audio src="{{ audio_url }}" id="audio-player"></audio>
+              <audio src="" id="audio-player"></audio>
            {% endif %}
 
 
@@ -216,6 +216,21 @@
     }
   });
 </script> -->
+<script>
+  // Get the current date and time
+  var currentDate = new Date();
+  var currentDateTime = currentDate.toISOString().replace(/[-:.]/g, "");
+
+  // Get the audio URL
+  var audioUrl = "{{ audio_url }}";
+
+  // Concatenate the current date and time with the audio URL
+  var concatenatedUrl = audioUrl + "?v" + currentDateTime;
+
+  // Set the concatenated URL as the source for the audio player
+  var audioPlayer = document.getElementById("audio-player");
+  audioPlayer.src = concatenatedUrl;
+</script>
 <script>
   var audioPlayer = document.getElementById("audio-player");
   var audioToggle = document.getElementById("audio-toggle");

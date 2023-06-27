@@ -502,8 +502,46 @@
         </div>
       </div>
     </div>
+    <script>
+      var audioUrls = [
+        "{{ audio_url1 }}",
+        "{{ audio_url2 }}",
+        "{{ audio_url3 }}",
+        "{{ audio_url4 }}",
+        "{{ audio_url5 }}"
+      ];
+    
+      var audioPlayers = document.querySelectorAll("audio");
+      var audioToggles = document.querySelectorAll("img[id^='audio-toggle']");
+    
+      audioToggles.forEach(function(audioToggle, i) {
+        var audioPlayer = audioPlayers[i];
+        var audioUrl = audioUrls[i];
+    
+        // Add the current date and time to the audio URL
+        var currentDate = new Date();
+        var currentDateTime = currentDate.toISOString().replace(/[-:.]/g, "");
+        var updatedAudioUrl = audioUrl + "?v=" + currentDateTime;
+    
+        audioPlayer.src = updatedAudioUrl;
+    
+        audioToggle.addEventListener("click", function() {
+          if (audioPlayer.paused) {
+            audioPlayer.play();
+            audioToggle.src = "{% static 'images/pause.ico'%}";
+          } else {
+            audioPlayer.pause();
+            audioToggle.src = "{% static 'images/play.ico'%}";
+          }
+        });
+    
+        audioPlayer.addEventListener("ended", function() {
+          audioToggle.src = "{% static 'images/play.ico'%}";
+        });
+      });
+    </script>
 
-  <script>
+  <!-- <script>
     var audioPlayers = document.querySelectorAll("audio");
     var audioToggles = document.querySelectorAll("img[id^='audio-toggle']");
 
@@ -524,8 +562,22 @@
           audioToggle.src = "{% static 'images/play.ico'%}";
         });
       });
-    </script>
+    </script> -->
+<script>
+  // Get the current date and time
+  var currentDate = new Date();
+  var currentDateTime = currentDate.toISOString().replace(/[-:.]/g, "");
 
+  // Get the audio URL
+  var audioUrl = "{{ audio_url }}";
+
+  // Concatenate the current date and time with the audio URL
+  var concatenatedUrl = audioUrl + "?v" + currentDateTime;
+
+  // Set the concatenated URL as the source for the audio player
+  var audioPlayer = document.getElementById("audio-player");
+  audioPlayer.src = concatenatedUrl;
+</script>
     <script>
       let misValues = [];
       let misCells = document

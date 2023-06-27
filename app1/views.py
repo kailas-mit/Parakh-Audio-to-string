@@ -2120,31 +2120,60 @@ def ml2_answer_final(request):
 
 @csrf_exempt
 def save_file_ml2(request):
+    """
+    View function to save an audio file for ML2 processing.
+
+    - Accepts a POST request with an audio file.
+    - Saves the file in the media folder with a unique filename.
+    - Updates the session variables with the file path and name.
+    - Renders the 'ml2_answer.html' template with the file path.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response object.
+
+    Raises:
+        None
+    """
     if request.method == 'POST' and request.FILES.get('audio_blob'):
         data_id = request.session.get('data_id')
         val = request.POST.get('val')
-        print(val)
         filename = f'{data_id}.wav'
         media_folder = os.path.join(settings.MEDIA_ROOT)
         os.makedirs(media_folder, exist_ok=True)
         filepath = os.path.join(media_folder, filename)
-        print(filename)
         with open(os.path.join(media_folder, filename), 'wb') as audio_file:
             audio_file.write(request.FILES['audio_blob'].read())
-            print(filepath)
             request.session['filepath'] = filepath
             request.session['filename'] = filename
             return render(request, 'AOP_PRO/ml2_answer.html', { 'filepath': filepath})
 
 
 def ml2_answer(request):
+    """
+    View function to process ML2 answer.
+
+    - Retrieves the file path, selected option, and data ID from session variables.
+    - Sends a POST request to an external API to get the transcript for the audio file.
+    - Parses the API response and extracts relevant data.
+    - Formats the data and prepares the audio URL.
+    - Renders the 'ml2_answer.html' template with the transcript and other data.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response object.
+
+    Raises:
+        None
+    """
     filepath = request.session.get('filepath')
     filename = request.session.get('filename')
-    print(filename)
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     data_id = request.session.get('data_id')
-    print("data_id",data_id)
     data = json_l2_data
     paragraph = None
     for d in data['Paragraph']:
@@ -2159,11 +2188,9 @@ def ml2_answer(request):
     payload = {'language': 'English' ,'question':val}
     headers = {}
     response = requests.request("POST", url, headers=headers, data=payload, files=files)
-    print('***', response.text)
     request.session['ml2_res'] = response.text
 
     if response.status_code == 200:
-        print("text",val)
         data_string = response.json().get('text')
         mistake = response.json().get('no_mistakes')
         fluency = response.json().get('wcpm') 
@@ -2187,8 +2214,24 @@ def ml2_answer(request):
 
 
 def ml2_retake(request):
+    """
+    View function to retake ML2 recording.
+
+    - Removes the audio file from the media folder.
+    - Retrieves the data ID from session variables.
+    - Sets the 'audio_recorded' flag in the session.
+    - Renders the 'ml2_retake.html' template for recording.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response object.
+
+    Raises:
+        None
+    """
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     media_folder = os.path.join(settings.MEDIA_ROOT)
     for file in os.listdir(media_folder):
         file_path = os.path.join(media_folder, file)
@@ -2199,7 +2242,6 @@ def ml2_retake(request):
             print(e)
 
     data_id = request.session.get('data_id')
-    print("data_id",data_id)
     request.session['audio_recorded'] = True
     data = json_l2_data
     paragraph = None
@@ -2214,214 +2256,129 @@ def ml2_retake(request):
    
 
 def ml2_skip(request):
-    # selected_option = request.session.get('selected_option')
-    # print("@",selected_option)
-    
-    # if selected_option == 'English':
-    #     data_id = request.session.get('data_id')
-    #     print("data_id",data_id)
-    #     with open(json_eng) as f:
-    #         data = json.load(f)
-    #         paragraph = None
-    #         for d in data['Paragraph']:
-    #             if d['id'] == data_id:
-    #                 val = d['data']
-    #                 break
-    # elif selected_option == 'ML2':
-    #     data_id = request.session.get('data_id')
-    #     print("data_id",data_id)
-    #     with open(json_l3, 'r', encoding='utf-8') as f:
-    #         data = json.load(f)
-    #         paragraph = None
-    #         for d in data['Paragraph']:
-    #             if d['id'] == data_id:
-    #                 val = d['data']
-    #                 break
-    # else:
-        data_id = request.session.get('data_id')
-        print("data_id",data_id)
-        data = json_l3_data
-        paragraph = None
-        for d in data['Paragraph']:
-            if d['id'] == data_id:
-                val = d['data']
-                break
+    """
+    View function to skip ML2 recording and generate a mock transcript.
 
-        words = val.split()
-        my_list = list(words)
-        # for i, word in enumerate(my_list):
-        #     print("The index of", word, "in the list is:", i)
-        last_index = len(my_list) 
-        del_details = ', '.join([f"{i + 1}-{word}" for i, word in enumerate(my_list[1:])])
-        print('del_details',del_details)
+    - Retrieves the data ID from session variables.
+    - Retrieves the corresponding data paragraph from the JSON data.
+    - Generates a mock transcript with no mistakes and deletion details.
+    - Formats the transcript and sets it in the session.
+    - Renders the 'ml2_answer.html' template with the mock transcript.
 
-        sub_details_index = 0
-        sub_details = f"{sub_details_index}-{my_list[sub_details_index]}"
-        print('sub_details',sub_details)
-        ml2_response = {
-            "no_mistakes": last_index,
-            "no_del": last_index - 1,
-            "del_details": del_details,
-            "no_sub": 1,
-            "sub_details": sub_details,
-            "status": "success",
-            "wcpm": 0.0,
-            "text": "",
-            "audio_url": "",
-            "process_time": 0.7457363605499268
-        }
-        transcript = json.dumps(ml2_response)
-        request.session['ml2_res'] = transcript
-        return render(request, 'AOP_PRO/ml2_answer.html', {'originaltext':val ,'wcpm': None,'no_mistakes': last_index})
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response object.
+
+    Raises:
+        None
+    """
+    data_id = request.session.get('data_id')
+    data = json_l3_data
+    paragraph = None
+    for d in data['Paragraph']:
+        if d['id'] == data_id:
+            val = d['data']
+            break
+
+    words = val.split()
+    my_list = list(words)
+    last_index = len(my_list) 
+    del_details = ', '.join([f"{i + 1}-{word}" for i, word in enumerate(my_list[1:])])
+    sub_details_index = 0
+    sub_details = f"{sub_details_index}-{my_list[sub_details_index]}"
+    ml2_response = {
+        "no_mistakes": last_index,
+        "no_del": last_index - 1,
+        "del_details": del_details,
+        "no_sub": 1,
+        "sub_details": sub_details,
+        "status": "success",
+        "wcpm": 0.0,
+        "text": "",
+        "audio_url": "",
+        "process_time": 0.7457363605499268
+    }
+    transcript = json.dumps(ml2_response)
+    request.session['ml2_res'] = transcript
+    return render(request, 'AOP_PRO/ml2_answer.html', {'originaltext':val ,'wcpm': None,'no_mistakes': last_index})
 
 
 def ml2_skip_next(request):
-    # selected_option = request.session.get('selected_option')
-    # print("@",selected_option)
-    
-    # if selected_option == 'English':
-    #     data_id = request.session.get('data_id')
-    #     print("data_id",data_id)
-    #     with open(json_eng) as f:
-    #         data = json.load(f)
-    #         paragraph = None
-    #         for d in data['Paragraph']:
-    #             if d['id'] == data_id:
-    #                 val = d['data']
-    #                 break
-    # elif selected_option == 'ML2':
-    #     data_id = request.session.get('data_id')
-    #     print("data_id",data_id)
-    #     with open(json_l3, 'r', encoding='utf-8') as f:
-    #         data = json.load(f)
-    #         paragraph = None
-    #         for d in data['Paragraph']:
-    #             if d['id'] == data_id:
-    #                 val = d['data']
-    #                 break
-    # else:
-        data_id = request.session.get('data_id')
-        print("data_id",data_id)
-        data = json_l3_data
-        paragraph = None
-        for d in data['Paragraph']:
-            if d['id'] == data_id:
-                val = d['data']
-                break
+    """
+    View function to skip ML2 recording and generate a mock transcript for the next step.
 
-        words = val.split()
-        my_list = list(words)
-        # for i, word in enumerate(my_list):
-        #     print("The index of", word, "in the list is:", i)
-        last_index = len(my_list) 
-        del_details = ', '.join([f"{i + 1}-{word}" for i, word in enumerate(my_list[1:])])
-        print('del_details',del_details)
+    - Retrieves the data ID from session variables.
+    - Retrieves the corresponding data paragraph from the JSON data.
+    - Generates a mock transcript with no mistakes and deletion details.
+    - Formats the transcript and sets it in the session.
+    - Renders the 'ml2_answer_final.html' template with the mock transcript.
 
-        sub_details_index = 0
-        sub_details = f"{sub_details_index}-{my_list[sub_details_index]}"
-        print('sub_details',sub_details)
-        ml2_response = {
-            "no_mistakes": last_index,
-            "no_del": last_index - 1,
-            "del_details": del_details,
-            "no_sub": 1,
-            "sub_details": sub_details,
-            "status": "success",
-            "wcpm": 0.0,
-            "text": "",
-            "audio_url": "",
-            "process_time": 0.7457363605499268
-        }
-        transcript = json.dumps(ml2_response)
-        request.session['ml2_res'] = transcript
-        return render(request, 'AOP_PRO/ml2_answer_final.html', {'originaltext':val ,'wcpm': None,'no_mistakes': last_index})
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response object.
+
+    Raises:
+        None
+    """
+    data_id = request.session.get('data_id')
+    data = json_l3_data
+    paragraph = None
+    for d in data['Paragraph']:
+        if d['id'] == data_id:
+            val = d['data']
+            break
+
+    words = val.split()
+    my_list = list(words)
+    last_index = len(my_list) 
+    del_details = ', '.join([f"{i + 1}-{word}" for i, word in enumerate(my_list[1:])])
+    sub_details_index = 0
+    sub_details = f"{sub_details_index}-{my_list[sub_details_index]}"
+    ml2_response = {
+        "no_mistakes": last_index,
+        "no_del": last_index - 1,
+        "del_details": del_details,
+        "no_sub": 1,
+        "sub_details": sub_details,
+        "status": "success",
+        "wcpm": 0.0,
+        "text": "",
+        "audio_url": "",
+        "process_time": 0.7457363605499268
+    }
+    transcript = json.dumps(ml2_response)
+    request.session['ml2_res'] = transcript
+    return render(request, 'AOP_PRO/ml2_answer_final.html', {'originaltext':val ,'wcpm': None,'no_mistakes': last_index})
 
 
 def ml2_store(request):
-  if request.method == 'POST':
-    try:
-        fluency_adjustment = request.POST.get('fluency_adjustment')
-        print("fluency_adjustment", fluency_adjustment)
-        
-        if fluency_adjustment == '0':
-            request.session['ans_next_level'] = 'L4'
-        else:
-            request.session['ans_next_level'] = 'L3'
+    """
+    View function to store ML2 response and redirect to the next step.
 
-        enrollment_id = request.session.get('enrollment_id')
-        status = request.session.get('status')
-        filepath = request.session.get('filepath')
-        ml1_res = request.session.get('ml1_res')
-        print('ml1_res:', ml1_res)
-        transcript_dict = json.loads(ml1_res)
-        no_mistakes = transcript_dict.get('no_mistakes')
-        no_del = transcript_dict.get('no_del')
-        del_details = transcript_dict.get('del_details')
-        sub_details = transcript_dict.get('sub_details')
-        text = transcript_dict.get('text')
-        audio_url = transcript_dict.get('audio_url')
-        no_sub = transcript_dict.get('no_sub')
-        process_time = transcript_dict.get('process_time')
-        id_value = request.session.get('id_value')
-        print("student_id",id_value)
-        data_id = request.session.get('data_id')
-        print("sample_id",data_id)
-        my_program = request.session.get('my_program')
-        print('my program is saveprogress',my_program)
-        data = json_l1_data
-        paragraph = None
-        for d in data['Paragraph']:
-            if d['id'] == data_id:
-                val = d['data']
-                break
+    - Retrieves the fluency adjustment value from the POST request.
+    - Validates the adjustment value and sets the 'ans_next_level' session variable accordingly.
+    - Retrieves various data from session variables and ML1 transcript.
+    - Constructs the data dictionary for saving progress.
+    - Sends a POST request to the API to save progress.
+    - Redirects to the appropriate next step based on the adjustment value.
 
-        if val:
-            print("question",val)
+    Args:
+        request (HttpRequest): The HTTP request object.
 
-        print(status)
-        ans_next_level = request.session.get('ans_next_level')
-        data={}
-        data["student_id"]=id_value
-        data["sample_id"]= "data_id"
-        data["level"]= 'L2'
-        data["question"]= val
-        data["section "]= 'reading'
-        data["answer"]= text
-        data["audio_url"]= audio_url
-        data["mistakes_count"]= '0'
-        data["no_mistakes"]= no_mistakes
-        data["no_mistakes_edited"]= fluency_adjustment
-        data["api_process_time"]= process_time
-        data["language"]= 'English'
-        data["no_del"]= no_del
-        data["del_details"]= del_details
-        data["no_sub"]= no_sub
-        data["sub_details"]= sub_details
-        data["test_type"]= status
-        data["next_level"]= ans_next_level
-        data["program"] = my_program
-        print(data)
-        url = 'https://parakh.pradigi.org/v1/saveprogress/'
-        files = []
-        payload = {'data': json.dumps(data)}
-        headers = {}
-        response = requests.request("POST", url, headers=headers, data=payload, files=files)
-        response_data = json.loads(response.text)
-        print(fluency_adjustment)
-        if fluency_adjustment == '0':
-            return redirect('ml2_mcq_next')  # redirect to bl_mcq function
-        else:
-            return redirect('ml2_next')
-    except TypeError:
-        return HttpResponse("Invalid adjustment value")
+    Returns:
+        HttpResponse: The HTTP response object.
 
-
-def ml2_next_store(request):
-  if request.method == 'POST':
-    try:
+    Raises:
+        TypeError: If the fluency adjustment value is invalid.
+    """
+    if request.method == 'POST':
+        try:
             fluency_adjustment = request.POST.get('fluency_adjustment')
-            print("fluency_adjustment", fluency_adjustment)
-            
+            number = int(fluency_adjustment)
             if fluency_adjustment == '0':
                 request.session['ans_next_level'] = 'L4'
             else:
@@ -2431,7 +2388,6 @@ def ml2_next_store(request):
             status = request.session.get('status')
             filepath = request.session.get('filepath')
             ml1_res = request.session.get('ml1_res')
-            print('ml1_res:', ml1_res)
             transcript_dict = json.loads(ml1_res)
             no_mistakes = transcript_dict.get('no_mistakes')
             no_del = transcript_dict.get('no_del')
@@ -2442,12 +2398,9 @@ def ml2_next_store(request):
             no_sub = transcript_dict.get('no_sub')
             process_time = transcript_dict.get('process_time')
             id_value = request.session.get('id_value')
-            print("student_id",id_value)
             data_id = request.session.get('data_id')
-            print("sample_id",data_id)
             my_program = request.session.get('my_program')
-            print('my program is saveprogress',my_program)
-            data = json_l1
+            data = json_l1_data
             paragraph = None
             for d in data['Paragraph']:
                 if d['id'] == data_id:
@@ -2457,7 +2410,6 @@ def ml2_next_store(request):
             if val:
                 print("question",val)
 
-            print(status)
             ans_next_level = request.session.get('ans_next_level')
             data={}
             data["student_id"]=id_value
@@ -2479,46 +2431,142 @@ def ml2_next_store(request):
             data["test_type"]= status
             data["next_level"]= ans_next_level
             data["program"] = my_program
-            print(data)
             url = 'https://parakh.pradigi.org/v1/saveprogress/'
             files = []
             payload = {'data': json.dumps(data)}
             headers = {}
             response = requests.request("POST", url, headers=headers, data=payload, files=files)
-            # print('student_id', response.text)
             response_data = json.loads(response.text)
-            print(fluency_adjustment)
+            if number == 0:
+                return redirect('ml2_mcq_next')  # redirect to bl_mcq function
+            else:
+                return redirect('ml2_next')
+        except TypeError:
+            return HttpResponse("Invalid adjustment value")
+
+
+def ml2_next_store(request):
+    """
+    View function to store ML2 response for the next step.
+
+    - Retrieves the fluency adjustment value from the POST request.
+    - Validates the adjustment value and sets the 'ans_next_level' session variable accordingly.
+    - Retrieves various data from session variables and ML1 transcript.
+    - Constructs the data dictionary for saving progress.
+    - Sends a POST request to the API to save progress.
+    - Redirects to the appropriate next step based on the adjustment value.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response object.
+
+    Raises:
+        TypeError: If the fluency adjustment value is invalid.
+    """
+    if request.method == 'POST':
+        try:
+            fluency_adjustment = request.POST.get('fluency_adjustment')
+            
+            if fluency_adjustment == '0':
+                request.session['ans_next_level'] = 'L4'
+            else:
+                request.session['ans_next_level'] = 'L3'
+
+            enrollment_id = request.session.get('enrollment_id')
+            status = request.session.get('status')
+            filepath = request.session.get('filepath')
+            ml1_res = request.session.get('ml1_res')
+            transcript_dict = json.loads(ml1_res)
+            no_mistakes = transcript_dict.get('no_mistakes')
+            no_del = transcript_dict.get('no_del')
+            del_details = transcript_dict.get('del_details')
+            sub_details = transcript_dict.get('sub_details')
+            text = transcript_dict.get('text')
+            audio_url = transcript_dict.get('audio_url')
+            no_sub = transcript_dict.get('no_sub')
+            process_time = transcript_dict.get('process_time')
+            id_value = request.session.get('id_value')
+            data_id = request.session.get('data_id')
+            my_program = request.session.get('my_program')
+            data = json_l1
+            paragraph = None
+            for d in data['Paragraph']:
+                if d['id'] == data_id:
+                    val = d['data']
+                    break
+
+            if val:
+                print("question",val)
+
+            ans_next_level = request.session.get('ans_next_level')
+            data={}
+            data["student_id"]=id_value
+            data["sample_id"]= "data_id"
+            data["level"]= 'L2'
+            data["question"]= val
+            data["section "]= 'reading'
+            data["answer"]= text
+            data["audio_url"]= audio_url
+            data["mistakes_count"]= '0'
+            data["no_mistakes"]= no_mistakes
+            data["no_mistakes_edited"]= fluency_adjustment
+            data["api_process_time"]= process_time
+            data["language"]= 'English'
+            data["no_del"]= no_del
+            data["del_details"]= del_details
+            data["no_sub"]= no_sub
+            data["sub_details"]= sub_details
+            data["test_type"]= status
+            data["next_level"]= ans_next_level
+            data["program"] = my_program
+            url = 'https://parakh.pradigi.org/v1/saveprogress/'
+            files = []
+            payload = {'data': json.dumps(data)}
+            headers = {}
+            response = requests.request("POST", url, headers=headers, data=payload, files=files)
+            response_data = json.loads(response.text)
             if fluency_adjustment == '0':
                 return redirect('ml2_mcq_next')  # redirect to bl_mcq function
             else:
                 phone_number = request.session.get('phone_number')
-                print("ph", phone_number)
                 enrollment_id = request.session.get('enrollment_id')
-                print("enrollment_id",enrollment_id)
             
                 context = {
                     'mobile_number': phone_number,
                     'level' : "L2-sentence"
                 }
                 return render(request, "AOP_PRO/ans_page_aop.html", context=context)
-    except TypeError:
-        return HttpResponse("Invalid adjustment value")
+        except TypeError:
+            return HttpResponse("Invalid adjustment value")
 
 
 def ml2_mcq_api(request):
+    """
+    API endpoint to handle the ML2 MCQ submission.
+
+    - Retrieves the selected MCQ option, language, and other relevant data from the request.
+    - Constructs the data payload to be sent for saving progress.
+    - Sends a POST request to the save progress API.
+    - Redirects to the 'ml3' view.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response object.
+    """
     selected_option = request.session.get('selected_option')
     selected_level = request.session.get('selected_level')
     if request.method == 'POST':
         selected_lan = request.POST.get('selected_language_input')
-        print("lan",selected_lan)
         status = request.session.get('status')
         selected_language = request.POST.get('selected_language')
         selected_div = request.POST.get('selected-div')
-        print("#################################################################")
         data_id = request.session.get('data_id')
         id_value = request.session.get('id_value')
         ml2_res = request.session.get('ml2_res')
-        print('ml2_res:', ml2_res)
         transcript_dict = json.loads(ml2_res)
         no_mistakes = transcript_dict.get('no_mistakes')
         no_del = transcript_dict.get('no_del')
@@ -2529,71 +2577,42 @@ def ml2_mcq_api(request):
         process_time = transcript_dict.get('process_time')
         ans_next_level = request.session.get('ans_next_level')
         my_program = request.session.get('my_program')
-        print('my program is saveprogres',my_program)
-        print('text:', text)
-        print('audio_url:', audio_url)
-        print('process_time:', process_time)
         data = json_l3_data
         Sentence = None
         for d in data['Sentence']:
             if d['id'] == data_id:
                 val = d['data']
                 break
-        print("@",selected_option)
         if selected_language == 'hindi':
-                print("selected",'hindi')
-                request.session['lan'] = selected_language
+            request.session['lan'] = selected_language
 
         elif selected_language == 'marathi':
-            print('selected','marathi')
             request.session['lan'] = selected_language
 
         if selected_language == 'hindi':
-                data = json_l3_data
-                # find the data with matching data_id
-                selected_data = next((item for item in data['Sentence'] if item['id'] == data_id), None)
-                if selected_data:
-                    languages = selected_data['language']
-                    selected_language = languages.get(selected_language)
-                    options = selected_language.get('options')
-                    answer = selected_language.get('answers')
-                else:
-                    print("Data not found for the given data_id")
+            data = json_l3_data
+            # find the data with matching data_id
+            selected_data = next((item for item in data['Sentence'] if item['id'] == data_id), None)
+            if selected_data:
+                languages = selected_data['language']
+                selected_language = languages.get(selected_language)
+                options = selected_language.get('options')
+                answer = selected_language.get('answers')
+            else:
+                print("Data not found for the given data_id")
         elif selected_language == 'marathi':
-                data = json_l3_data
-                # find the data with matching data_id
-                selected_data = next((item for item in data['Sentence'] if item['id'] == data_id), None)
-                if selected_data:
-                    
-                    languages = selected_data['language']
-                    selected_language = languages.get(selected_language)
-                    options = selected_language.get('options')
-                    answer = selected_language.get('answers')
-                else:
-                    print("Data not found for the given data_id")
+            data = json_l3_data
+            # find the data with matching data_id
+            selected_data = next((item for item in data['Sentence'] if item['id'] == data_id), None)
+            if selected_data:
+                languages = selected_data['language']
+                selected_language = languages.get(selected_language)
+                options = selected_language.get('options')
+                answer = selected_language.get('answers')
+            else:
+                print("Data not found for the given data_id")
            
-        print("student_id",id_value)
-        print("sample_id",data_id)
-        print("level")
-        print("section")
-        print("question",val)
-        print("answer",selected_div) 
-        print('audio_url:', audio_url)
-        print('mistakes_count', audio_url)
-        print('no_mistakes:', no_mistakes)
-        print('no_mistakes_edited', no_mistakes)
-        print('process_time:', process_time)
-        print('language:', 'English')
-        print('no_del:', no_del)
-        print('del_details:', del_details)
-        print('no_sub:', "no_sub")
-        print('sub_details:', sub_details)
-        print("test_type",status)
-        print("next level",ans_next_level)
-        print("correct_answer:", answer)
-        print("answer_check_status:", "answer")
         lan = request.session.get('lan')
-        print("lan",lan)
         data={}
         data["student_id"]=id_value
         data["sample_id"]= "data_id"
@@ -2618,39 +2637,57 @@ def ml2_mcq_api(request):
         data["mcq_language"]= lan
         data["program"] = my_program
         
-        print(data)
         url = 'https://parakh.pradigi.org/v1/saveprogress/'
         files = []
         payload = {'data': json.dumps(data)}
         headers = {}
         response = requests.request("POST", url, headers=headers, data=payload, files=files)
-        print('student_id', response.text)
         response_data = json.loads(response.text)
-        print(response.text)
         return redirect('ml3')
 
 
 def ml2_final_mcq(request):
+    """
+    View function to render the ML2 MCQ page.
+
+    - Retrieves the ML2 context from the session.
+    - Handles the POST request to save the selected MCQ option and language.
+    - Renders the ML2 MCQ page with the updated context.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response object.
+    """
     context = request.session.get('ml2_context', {})
     if request.method == 'POST':
         selected_div = request.POST.get('selected-div')
         selected_divid = request.POST.get('selected-div_id')
         context['selected_divid'] = selected_divid
-        print('selected-div',selected_divid)
         context['selected_div'] = selected_div
-        print('selected-div',selected_div)
         selected_language = request.POST.get('selected_language')
         context['selected_language'] = selected_language
-        print('selected_language',selected_language)
         return render(request, "AOP_PRO/ml2_mcq.html", context)
     return render(request, "AOP_PRO/ml2_mcq.html", context)
 
             
 def ml2_mcq(request):
+    """
+    Renders the ML2 MCQ page.
+
+    - Retrieves the selected option, level, and a random ML2 sentence for the MCQ.
+    - Constructs the context for rendering the page.
+    - Redirects to the 'ml3' view upon form submission.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response object.
+    """
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     selected_level = request.session.get('selected_level')
-    print("@",selected_level)
     data = get_random_ml2_sentence(request)
     context = {"val": data['data'], "recording": True, "data_id": data['data_id'], "languages": data['languages']}
     if request.method == 'POST':
@@ -2659,6 +2696,19 @@ def ml2_mcq(request):
 
 
 def ml2_mcq_next(request):
+    """
+    Renders the next ML2 MCQ page.
+
+    - Retrieves a random ML2 sentence for the next MCQ.
+    - Constructs the context for rendering the page.
+    - Redirects to the 'ml2' view upon form submission.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response object.
+    """
     data = get_random_ml2_sentence(request)
     context = {"val": data['data'], "recording": True, "data_id": data['data_id'], "languages": data['languages']}
     request.session['ml2_context'] = context
@@ -2670,17 +2720,41 @@ def ml2_mcq_next(request):
 #############################################################################################
 
 def get_random_ml3(request):
-            data = json_l4_data
-            data1 = random.choice(data['Paragraph'])
-            print("the value ",data1['id'])
-            data_id = data1['id']
-            request.session['data_id'] = data_id
-            print(data_id)
-            print("dta",data1['data'])
-            return data1['data'], data_id
+    """
+    Retrieves a random ML3 paragraph and its corresponding data ID.
+
+    - Fetches the ML3 data from a predefined data source.
+    - Randomly selects a paragraph.
+    - Extracts the paragraph data and data ID.
+    - Stores the data ID in the session for future reference.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        tuple: A tuple containing the ML3 paragraph data and its corresponding data ID.
+    """
+    data = json_l4_data
+    data1 = random.choice(data['Paragraph'])
+    data_id = data1['id']
+    request.session['data_id'] = data_id
+    return data1['data'], data_id
             
 
 def nextpage(request):
+    """
+    Handles the form submission on the next page.
+
+    - Retrieves the selected option from the form data.
+    - Stores the selected option in a list.
+    - Retrieves the selected option from the list and returns it as an HTTP response.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response containing the selected option.
+    """
     if request.method == 'POST':
         selected_option = request.POST.get('selected_option')
         nomistake_list = []
@@ -2690,74 +2764,148 @@ def nextpage(request):
     
 
 def ml3(request):
+    """
+    Renders the ML3 start recording page.
+
+    - If the request method is POST, redirects to the 'start_recording_ml3' view.
+    - If the request method is GET, renders the ML3 start recording template.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response.
+    """
     if request.method == 'POST':
         return redirect('start_recording_ml3')
     return render(request, 'AOP_PRO/ml3_startrecording.html')
 
 
 def start_recording_ml3(request):
+    """
+    Renders the ML3 recording page.
+
+    - Retrieves a random ML3 paragraph and its data ID using the 'get_random_ml3' function.
+    - Constructs the context with the paragraph data and data ID.
+    - Renders the ML3 recording template with the constructed context.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response.
+    """
     paragraph, data_id = get_random_ml3(request)
     context = {"val": paragraph, "recording": True, "data_id": data_id}
     return render(request, "AOP_PRO/ml3_recording.html", context)
 
 
 def ml3_next(request):
+    """
+    Renders the ML3 start recording next page.
+
+    - Retrieves the selected option and level from the session.
+    - If the request method is POST, redirects to the 'start_recording_next_ml3' view.
+    - If the request method is GET, renders the ML3 start recording next template.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response.
+    """
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     selected_level = request.session.get('selected_level')
-    print("@",selected_level)
     if request.method == 'POST':
         return redirect('start_recording_next_ml3')
     return render(request, 'AOP_PRO/ml3_startrecording_next.html')
 
 
 def get_random_ml3_sentence(request):
+    """
+    Retrieves a random ML3 sentence and its corresponding data ID.
+
+    - Retrieves the selected option from the session.
+    - If the selected option is 'EL' (English Language), fetches the ML3 sentence from the predefined data source.
+    - Randomly selects a sentence.
+    - Extracts the sentence data, data ID, and language information.
+    - Stores the data ID in the session for future reference.
+    - Constructs and returns a dictionary containing the sentence data, data ID, and language information.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        dict: A dictionary containing the ML3 sentence data, data ID, and language information.
+    """
     selected_option = request.session.get('selected_option')
-    print("get_random_sentence",selected_option)
     if selected_option == 'EL':
-            data = json_l4_data
-            data1 = random.choice(data['Sentence'])
-            print("the value ",data1['id'])
-            data_id = data1['id']
-            request.session['data_id'] = data_id
-            print(data_id)
-            print("dta",data1['data'])
-            languages = data1['language']
-            return {
-                'data': data1['data'],
-                'data_id': data_id,
-                'languages': languages,
-            }
+        data = json_l4_data
+        data1 = random.choice(data['Sentence'])
+        data_id = data1['id']
+        request.session['data_id'] = data_id
+        languages = data1['language']
+        return {
+            'data': data1['data'],
+            'data_id': data_id,
+            'languages': languages,
+        }
     else:
-            data = json_l4_data
-            data1 = random.choice(data['Sentence'])
-            print("the value ",data1['id'])
-            data_id = data1['id']
-            request.session['data_id'] = data_id
-            print(data_id)
-            print("dta",data1['data'])
-            languages = data1['language']
-            return {
-                'data': data1['data'],
-                'data_id': data_id,
-                'languages': languages,
-            }
+        data = json_l4_data
+        data1 = random.choice(data['Sentence'])
+        data_id = data1['id']
+        request.session['data_id'] = data_id
+        languages = data1['language']
+        return {
+            'data': data1['data'],
+            'data_id': data_id,
+            'languages': languages,
+        }
 
 
 def start_recording_next_ml3(request):
+    """
+    Renders the ML3 next recording page.
+
+    - Retrieves a random paragraph and its data ID using the 'get_random_paragraph' function.
+    - Constructs the context with the paragraph data and data ID.
+    - Renders the ML3 next recording template with the constructed context.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response.
+    """
     paragraph, data_id = get_random_paragraph(request)
     context = {"val": paragraph, "recording": True, "data_id": data_id}
     return render(request, "AOP_PRO/ml3_recording_next.html", context)
 
 
 def ml3_answer_final(request):
+    """
+    Handles the submission of ML3 answer and displays the final result.
+
+    - Retrieves the file path, file name, selected option, and data ID from the session.
+    - Retrieves the ML3 paragraph data based on the data ID.
+    - Sends a POST request to the transcript API to get the transcription and analysis.
+    - Stores the API response in the session.
+    - If the response is successful, extracts the relevant information from the response.
+    - Formats the Words Correct Per Minute (WCPM) to have two decimal places.
+    - Checks if the audio file exists and constructs the audio URL.
+    - Renders the ML3 answer final template with the transcript, original text, analysis details, and audio URL.
+    - If the response is not successful, renders the error page.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response.
+    """
     filepath = request.session.get('filepath')
     filename = request.session.get('filename')
-    print(filename)
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     data_id = request.session.get('data_id')
-    print("data_id",data_id)
     data = json_l4_data
     paragraph = None
     for d in data['Paragraph']:
@@ -2772,10 +2920,8 @@ def ml3_answer_final(request):
     payload = {'language': 'English' ,'question':val}
     headers = {}
     response = requests.request("POST", url, headers=headers, data=payload, files=files)
-    print('***', response.text)
     request.session['ml3_res'] = response.text
     if response.status_code == 200:
-        print("text",val)
         data_string = response.json().get('text')
         mistake = response.json().get('no_mistakes')
         fluency = response.json().get('wcpm') 
@@ -2800,31 +2946,62 @@ def ml3_answer_final(request):
 
 @csrf_exempt
 def save_file_ml3(request):
+    """
+    Handles the saving of the ML3 audio file.
+
+    - Checks if the request method is POST and if the 'audio_blob' file is present.
+    - Retrieves the data ID and val from the request parameters.
+    - Generates the filename based on the data ID.
+    - Creates the media folder if it doesn't exist.
+    - Constructs the file path for saving the audio file.
+    - Writes the audio file to the specified file path.
+    - Stores the file path and file name in the session.
+    - Renders the ML3 answer template with the file path.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response.
+    """
     if request.method == 'POST' and request.FILES.get('audio_blob'):
         data_id = request.session.get('data_id')
         val = request.POST.get('val')
-        print(val)
         filename = f'{data_id}.wav'
         media_folder = os.path.join(settings.MEDIA_ROOT)
         os.makedirs(media_folder, exist_ok=True)
         filepath = os.path.join(media_folder, filename)
-        print(filename)
         with open(os.path.join(media_folder, filename), 'wb') as audio_file:
             audio_file.write(request.FILES['audio_blob'].read())
-            print(filepath)
             request.session['filepath'] = filepath
             request.session['filename'] = filename
             return render(request, 'AOP_PRO/ml3_answer.html', { 'filepath': filepath})
 
 
 def ml3_answer(request):
+    """
+    Handles the submission of ML3 answer and displays the result.
+
+    - Retrieves the file path, file name, selected option, and data ID from the session.
+    - Retrieves the ML3 paragraph data based on the data ID.
+    - Sends a POST request to the transcript API to get the transcription and analysis.
+    - Stores the API response in the session.
+    - If the response is successful, extracts the relevant information from the response.
+    - Formats the Words Correct Per Minute (WCPM) to have two decimal places.
+    - Checks if the audio file exists and constructs the audio URL.
+    - Renders the ML3 answer template with the transcript, original text, analysis details, and audio URL.
+    - If the response is not successful, renders the error page.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response.
+    """
     filepath = request.session.get('filepath')
     filename = request.session.get('filename')
-    print(filename)
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     data_id = request.session.get('data_id')
-    print("data_id",data_id)
     data = json_l4_data
     paragraph = None
     for d in data['Paragraph']:
@@ -2839,11 +3016,9 @@ def ml3_answer(request):
     payload = {'language': 'English' ,'question':val}
     headers = {}
     response = requests.request("POST", url, headers=headers, data=payload, files=files)
-    print('***', response.text)
     request.session['ml3_res'] = response.text
 
     if response.status_code == 200:
-        print("text",val)
         data_string = response.json().get('text')
         mistake = response.json().get('no_mistakes')
         fluency = response.json().get('wcpm') 
@@ -2867,8 +3042,21 @@ def ml3_answer(request):
 
 
 def ml3_retake(request):
+    """
+    Handles the retake action for ML3.
+
+    - Retrieves the selected option, media folder path, and data ID from the session.
+    - Deletes all files in the media folder.
+    - Retrieves the ML3 paragraph data based on the data ID.
+    - Renders the ML3 retake template with the recording enabled and the paragraph data.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response.
+    """
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     media_folder = os.path.join(settings.MEDIA_ROOT)
     for file in os.listdir(media_folder):
         file_path = os.path.join(media_folder, file)
@@ -2879,7 +3067,6 @@ def ml3_retake(request):
             print(e)
 
     data_id = request.session.get('data_id')
-    print("data_id",data_id)
     request.session['audio_recorded'] = True
     data = json_l4_data
     paragraph = None
@@ -2893,9 +3080,26 @@ def ml3_retake(request):
    
 
 def ml3_skip(request):
+    """
+    Handles the skip action for ML3.
+
+    - Retrieves the selected option and data ID from the session.
+    - Retrieves the ML3 paragraph data based on the data ID.
+    - Splits the paragraph into words.
+    - Generates the deletion details by joining the words with their indices.
+    - Sets the substitution details as the first word and its index.
+    - Constructs a mock ML3 response with the generated details.
+    - Converts the response to JSON and stores it in the session.
+    - Renders the ML3 answer template with the original text and the mock analysis details.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response.
+    """
     selected_option = request.session.get('selected_option')
     data_id = request.session.get('data_id')
-    print("data_id",data_id)
     data = json_l4_data
     paragraph = None
     for d in data['Paragraph']:
@@ -2907,11 +3111,8 @@ def ml3_skip(request):
     my_list = list(words)
     last_index = len(my_list) 
     del_details = ', '.join([f"{i + 1}-{word}" for i, word in enumerate(my_list[1:])])
-    print('del_details',del_details)
-
     sub_details_index = 0
     sub_details = f"{sub_details_index}-{my_list[sub_details_index]}"
-    print('sub_details',sub_details)
     ml3_response = {
         "no_mistakes": last_index,
         "no_del": last_index - 1,
@@ -2930,32 +3131,26 @@ def ml3_skip(request):
 
 
 def ml3_skip_next(request):
+    """
+    Handles the skip next action for ML3.
+
+    - Retrieves the selected option and data ID from the session.
+    - Retrieves the ML3 paragraph data based on the data ID.
+    - Splits the paragraph into words.
+    - Generates the deletion details by joining the words with their indices.
+    - Sets the substitution details as the first word and its index.
+    - Constructs a mock ML3 response with the generated details.
+    - Converts the response to JSON and stores it in the session.
+    - Renders the ML3 answer final template with the original text and the mock analysis details.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response.
+    """
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
-    
-    # if selected_option == 'English':
-    #     data_id = request.session.get('data_id')
-    #     print("data_id",data_id)
-    #     with open(json_eng) as f:
-    #         data = json.load(f)
-    #         paragraph = None
-    #         for d in data['Paragraph']:
-    #             if d['id'] == data_id:
-    #                 val = d['data']
-    #                 break
-    # elif selected_option == 'EL':
-    #     data_id = request.session.get('data_id')
-    #     print("data_id",data_id)
-    #     with open(json_l4, 'r', encoding='utf-8') as f:
-    #         data = json.load(f)
-    #         paragraph = None
-    #         for d in data['Paragraph']:
-    #             if d['id'] == data_id:
-    #                 val = d['data']
-    #                 break
-    # else:
     data_id = request.session.get('data_id')
-    print("data_id",data_id)
     data = json_l4_data
     paragraph = None
     for d in data['Paragraph']:
@@ -2965,14 +3160,10 @@ def ml3_skip_next(request):
 
     words = val.split()
     my_list = list(words)
-    
     last_index = len(my_list) 
     del_details = ', '.join([f"{i + 1}-{word}" for i, word in enumerate(my_list[1:])])
-    print('del_details',del_details)
-
     sub_details_index = 0
     sub_details = f"{sub_details_index}-{my_list[sub_details_index]}"
-    print('sub_details',sub_details)
     ml3_response = {
         "no_mistakes": last_index,
         "no_del": last_index - 1,
@@ -2991,194 +3182,212 @@ def ml3_skip_next(request):
 
 
 def ml3_store(request):
-   if request.method == 'POST':
-    try:
-        fluency_adjustment = request.POST.get('fluency_adjustment')
-        print("fluency_adjustment", fluency_adjustment)
-        
-        if fluency_adjustment == '0':
-            request.session['ans_next_level'] = 'L4'
-        else:
-            request.session['ans_next_level'] = 'L4'
+    """
+    Handles the storage of ML3 data for the current question.
 
-        enrollment_id = request.session.get('enrollment_id')
-        status = request.session.get('status')
-        filepath = request.session.get('filepath')
-        ml3_res = request.session.get('ml3_res')
-        print('ml3_res:', ml3_res)
-        transcript_dict = json.loads(ml3_res)
-        no_mistakes = transcript_dict.get('no_mistakes')
-        no_del = transcript_dict.get('no_del')
-        del_details = transcript_dict.get('del_details')
-        no_sub = transcript_dict.get('no_sub')
-        sub_details = transcript_dict.get('sub_details')
-        text = transcript_dict.get('text')
-        audio_url = transcript_dict.get('audio_url')
-        process_time = transcript_dict.get('process_time')
-        id_value = request.session.get('id_value')
-        print("student_id",id_value)
-        data_id = request.session.get('data_id')
-        print("sample_id",data_id)
-        data =json_l4_data
-        paragraph = None
-        for d in data['Paragraph']:
-            if d['id'] == data_id:
-                val = d['data']
-                break
+    - Retrieves the fluency adjustment value from the request.
+    - Converts the adjustment value to an integer.
+    - Sets the 'ans_next_level' session variable based on the adjustment value.
+    - Retrieves various session variables related to ML3 data and analysis.
+    - Constructs a data dictionary with the retrieved values.
+    - Sends a POST request to the 'saveprogress' API with the data.
+    - Redirects the user to the appropriate view based on the adjustment value.
 
-        if val:
-            print("question",val)
-        selected_option = request.session.get('selected_option')
-        print("test_type",selected_option)
-        ans_next_level = request.session.get('ans_next_level')
-        print("next level",ans_next_level)
-        my_program = request.session.get('my_program')
-        print('my program is saveprogres',my_program)
+    Args:
+        request (HttpRequest): The HTTP request object.
 
-        data={}
-        data["student_id"]=id_value
-        data["sample_id"]= "data_id"
-        data["level"]= 'L2'
-        data["question"]= val
-        data["section "]= 'reading'
-        data["answer"]= text
-        data["audio_url"]= audio_url
-        data["mistakes_count"]= '0'
-        data["no_mistakes"]= no_mistakes
-        data["no_mistakes_edited"]= fluency_adjustment
-        data["api_process_time"]= process_time
-        data["language"]= 'English'
-        data["no_del"]= no_del
-        data["del_details"]= del_details
-        data["no_sub"]= no_sub
-        data["sub_details"]= sub_details
-        data["test_type"]= status
-        data["next_level"]= ans_next_level
-        data["program"] = my_program
-        print(data)
-        url = 'https://parakh.pradigi.org/v1/saveprogress/'
-        files = []
-        payload = {'data': json.dumps(data)}
-        headers = {}
-        response = requests.request("POST", url, headers=headers, data=payload, files=files)
-        print('student_id', response.text)
-        response_data = json.loads(response.text)
-        print(fluency_adjustment)
-        if fluency_adjustment == '0':
-            return redirect('ml3_mcq_next')  # redirect to bl_mcq function
-        else:
-            return redirect('ml3_next')
-    except TypeError:
-      return HttpResponse("Invalid adjustment value")
+    Returns:
+        HttpResponse: The HTTP response.
+    """
+    if request.method == 'POST':
+        try:
+            fluency_adjustment = request.POST.get('fluency_adjustment')
+            number = int(fluency_adjustment)
+            if fluency_adjustment == '0':
+                request.session['ans_next_level'] = 'L4'
+            else:
+                request.session['ans_next_level'] = 'L4'
+
+            enrollment_id = request.session.get('enrollment_id')
+            status = request.session.get('status')
+            filepath = request.session.get('filepath')
+            ml3_res = request.session.get('ml3_res')
+            transcript_dict = json.loads(ml3_res)
+            no_mistakes = transcript_dict.get('no_mistakes')
+            no_del = transcript_dict.get('no_del')
+            del_details = transcript_dict.get('del_details')
+            no_sub = transcript_dict.get('no_sub')
+            sub_details = transcript_dict.get('sub_details')
+            text = transcript_dict.get('text')
+            audio_url = transcript_dict.get('audio_url')
+            process_time = transcript_dict.get('process_time')
+            id_value = request.session.get('id_value')
+            data_id = request.session.get('data_id')
+            data =json_l4_data
+            paragraph = None
+            for d in data['Paragraph']:
+                if d['id'] == data_id:
+                    val = d['data']
+                    break
+
+            if val:
+                print("question",val)
+            selected_option = request.session.get('selected_option')
+            ans_next_level = request.session.get('ans_next_level')
+            my_program = request.session.get('my_program')
+
+            data={}
+            data["student_id"]=id_value
+            data["sample_id"]= "data_id"
+            data["level"]= 'L2'
+            data["question"]= val
+            data["section "]= 'reading'
+            data["answer"]= text
+            data["audio_url"]= audio_url
+            data["mistakes_count"]= '0'
+            data["no_mistakes"]= no_mistakes
+            data["no_mistakes_edited"]= fluency_adjustment
+            data["api_process_time"]= process_time
+            data["language"]= 'English'
+            data["no_del"]= no_del
+            data["del_details"]= del_details
+            data["no_sub"]= no_sub
+            data["sub_details"]= sub_details
+            data["test_type"]= status
+            data["next_level"]= ans_next_level
+            data["program"] = my_program
+            url = 'https://parakh.pradigi.org/v1/saveprogress/'
+            files = []
+            payload = {'data': json.dumps(data)}
+            headers = {}
+            response = requests.request("POST", url, headers=headers, data=payload, files=files)
+            response_data = json.loads(response.text)
+            if number == 0:
+                return redirect('ml3_mcq_next')  # redirect to bl_mcq function
+            else:
+                return redirect('ml3_next')
+        except TypeError:
+            return HttpResponse("Invalid adjustment value")
     
 
 def ml3_next_store(request):
-   if request.method == 'POST':
-    try:
-        fluency_adjustment = request.POST.get('fluency_adjustment')
-        print("fluency_adjustment", fluency_adjustment)
-        
-        if fluency_adjustment == '0':
-            request.session['ans_next_level'] = 'L4'
-        else:
-            request.session['ans_next_level'] = 'L4'
+    """
+    Handles the storage of ML3 data for the next question.
 
-        enrollment_id = request.session.get('enrollment_id')
-        status = request.session.get('status')
-        filepath = request.session.get('filepath')
-        ml3_res = request.session.get('ml3_res')
-        print('ml3_res:', ml3_res)
-        transcript_dict = json.loads(ml3_res)
-        no_mistakes = transcript_dict.get('no_mistakes')
-        no_del = transcript_dict.get('no_del')
-        del_details = transcript_dict.get('del_details')
-        no_sub = transcript_dict.get('no_sub')
-        sub_details = transcript_dict.get('sub_details')
-        text = transcript_dict.get('text')
-        audio_url = transcript_dict.get('audio_url')
-        process_time = transcript_dict.get('process_time')
-        id_value = request.session.get('id_value')
-        print("student_id",id_value)
-        data_id = request.session.get('data_id')
-        print("sample_id",data_id)
-        data = json_l4_data
-        paragraph = None
-        for d in data['Paragraph']:
-            if d['id'] == data_id:
-                val = d['data']
-                break
+    - Retrieves the fluency adjustment value from the request.
+    - Converts the adjustment value to an integer.
+    - Sets the 'ans_next_level' session variable based on the adjustment value.
+    - Retrieves various session variables related to ML3 data and analysis.
+    - Constructs a data dictionary with the retrieved values.
+    - Sends a POST request to the 'saveprogress' API with the data.
+    - Redirects the user to the appropriate view based on the adjustment value.
 
-        if val:
-            print("question",val)
-        selected_option = request.session.get('selected_option')
-        print("test_type",selected_option)
-        ans_next_level = request.session.get('ans_next_level')
-        print("next level",ans_next_level)
-        my_program = request.session.get('my_program')
-        print('my program is saveprogres',my_program)
+    Args:
+        request (HttpRequest): The HTTP request object.
 
-        data={}
-        data["student_id"]=id_value
-        data["sample_id"]= "data_id"
-        data["level"]= 'L2'
-        data["question"]= val
-        data["section "]= 'reading'
-        data["answer"]= text
-        data["audio_url"]= audio_url
-        data["mistakes_count"]= '0'
-        data["no_mistakes"]= no_mistakes
-        data["no_mistakes_edited"]= fluency_adjustment
-        data["api_process_time"]= process_time
-        data["language"]= 'English'
-        data["no_del"]= no_del
-        data["del_details"]= del_details
-        data["no_sub"]= no_sub
-        data["sub_details"]= sub_details
-        data["test_type"]= status
-        data["next_level"]= ans_next_level
-        data["program"] = my_program
-        print(data)
-        url = 'https://parakh.pradigi.org/v1/saveprogress/'
-        files = []
-        payload = {'data': json.dumps(data)}
-        headers = {}
-        response = requests.request("POST", url, headers=headers, data=payload, files=files)
-        print('student_id', response.text)
-        response_data = json.loads(response.text)
-        print(fluency_adjustment)
-        if fluency_adjustment == '0':
-            return redirect('ml3_mcq_next')  # redirect to bl_mcq function
-        else:
-            phone_number = request.session.get('phone_number')
-            print("ph", phone_number)
+    Returns:
+        HttpResponse: The HTTP response.
+    """
+    if request.method == 'POST':
+        try:
+            fluency_adjustment = request.POST.get('fluency_adjustment')
+            number = int(fluency_adjustment)
+            
+            if fluency_adjustment == '0':
+                request.session['ans_next_level'] = 'L4'
+            else:
+                request.session['ans_next_level'] = 'L4'
+
             enrollment_id = request.session.get('enrollment_id')
-            print("enrollment_id",enrollment_id)
-        
-            context = {
-                'mobile_number': phone_number,
-                'level' : "L3-sentence"
-            }
-            return render(request, "AOP_PRO/ans_page_aop.html", context=context)
-    except TypeError:
-        return HttpResponse("Invalid adjustment value")
+            status = request.session.get('status')
+            filepath = request.session.get('filepath')
+            ml3_res = request.session.get('ml3_res')
+            transcript_dict = json.loads(ml3_res)
+            no_mistakes = transcript_dict.get('no_mistakes')
+            no_del = transcript_dict.get('no_del')
+            del_details = transcript_dict.get('del_details')
+            no_sub = transcript_dict.get('no_sub')
+            sub_details = transcript_dict.get('sub_details')
+            text = transcript_dict.get('text')
+            audio_url = transcript_dict.get('audio_url')
+            process_time = transcript_dict.get('process_time')
+            id_value = request.session.get('id_value')
+            data_id = request.session.get('data_id')
+            data = json_l4_data
+            paragraph = None
+            for d in data['Paragraph']:
+                if d['id'] == data_id:
+                    val = d['data']
+                    break
+
+            if val:
+                print("question",val)
+            selected_option = request.session.get('selected_option')
+            ans_next_level = request.session.get('ans_next_level')
+            my_program = request.session.get('my_program')
+
+            data={}
+            data["student_id"]=id_value
+            data["sample_id"]= "data_id"
+            data["level"]= 'L2'
+            data["question"]= val
+            data["section "]= 'reading'
+            data["answer"]= text
+            data["audio_url"]= audio_url
+            data["mistakes_count"]= '0'
+            data["no_mistakes"]= no_mistakes
+            data["no_mistakes_edited"]= fluency_adjustment
+            data["api_process_time"]= process_time
+            data["language"]= 'English'
+            data["no_del"]= no_del
+            data["del_details"]= del_details
+            data["no_sub"]= no_sub
+            data["sub_details"]= sub_details
+            data["test_type"]= status
+            data["next_level"]= ans_next_level
+            data["program"] = my_program
+            url = 'https://parakh.pradigi.org/v1/saveprogress/'
+            files = []
+            payload = {'data': json.dumps(data)}
+            headers = {}
+            response = requests.request("POST", url, headers=headers, data=payload, files=files)
+            response_data = json.loads(response.text)
+            if number == 0:
+                return redirect('ml3_mcq_next')  # redirect to bl_mcq function
+            else:
+                phone_number = request.session.get('phone_number')
+                enrollment_id = request.session.get('enrollment_id')
+            
+                context = {
+                    'mobile_number': phone_number,
+                    'level' : "L3-sentence"
+                }
+                return render(request, "AOP_PRO/ans_page_aop.html", context=context)
+        except TypeError:
+            return HttpResponse("Invalid adjustment value")
     
 
 def ml3_mcq_api(request):
+    """
+    API view for saving progress and rendering the answer page.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response containing the rendered answer page.
+    """
     selected_option = request.session.get('selected_option')
     selected_level = request.session.get('selected_level')
 
     if request.method == 'POST':
         selected_lan = request.POST.get('selected_language_input')
-        print("lan",selected_lan)
         status = request.session.get('status')
         selected_language = request.POST.get('selected_language')
         selected_div = request.POST.get('selected-div')
         data_id = request.session.get('data_id')
         id_value = request.session.get('id_value')
         ml3_res = request.session.get('ml3_res')
-
-        # transcript = request.session.get('transcript')
-        print('ml3_res:', ml3_res)
         transcript_dict = json.loads(ml3_res)
         no_mistakes = transcript_dict.get('no_mistakes')
         no_del = transcript_dict.get('no_del')
@@ -3188,28 +3397,21 @@ def ml3_mcq_api(request):
         audio_url = transcript_dict.get('audio_url')
         process_time = transcript_dict.get('process_time')
         ans_next_level = request.session.get('ans_next_level')
-
-        print('text:', text)
-        print('audio_url:', audio_url)
-        print('process_time:', process_time)
         data = json_l4_data
         Sentence = None
         for d in data['Sentence']:
             if d['id'] == data_id:
                 val = d['data']
                 break
-        print("@",selected_option)
         if selected_language == 'hindi':
-            print("selected",'hindi')
             request.session['lan'] = selected_language
 
         elif selected_language == 'marathi':
-            print('selected','marathi')
             request.session['lan'] = selected_language
 
         if selected_language == 'hindi':
             data = json_l4_data
-            # find the data with matching data_id
+            # Find the data with matching data_id
             selected_data = next((item for item in data['Sentence'] if item['id'] == data_id), None)
             if selected_data:
                 languages = selected_data['language']
@@ -3223,7 +3425,6 @@ def ml3_mcq_api(request):
                 # find the data with matching data_id
             selected_data = next((item for item in data['Sentence'] if item['id'] == data_id), None)
             if selected_data:
-                
                 languages = selected_data['language']
                 selected_language = languages.get(selected_language)
                 options = selected_language.get('options')
@@ -3231,32 +3432,11 @@ def ml3_mcq_api(request):
             else:
                 print("Data not found for the given data_id")
            
-        print("student_id",id_value)
-        print("sample_id",data_id)
-        print("level")
-        print("section")
-        print("question",val)
-        print("answer",selected_div) 
-        print('audio_url:', audio_url)
-        print('mistakes_count', audio_url)
-        print('no_mistakes:', no_mistakes)
-        print('no_mistakes_edited', no_mistakes)
-        print('process_time:', process_time)
-        print('language:', 'English')
-        print('no_del:', no_del)
-        print('del_details:', del_details)
-        print('no_sub:', "no_sub")
-        print('sub_details:', sub_details)
-        print("test_type",status)
-        print("next level",ans_next_level)
-        print("correct_answer:", answer)
-        print("answer_check_status:", "answer")
+        
         lan = request.session.get('lan')
-        print("lan",lan)
         my_program = request.session.get('my_program')
-        print('my program is saveprogres',my_program)
-        data={}
 
+        data={}
         data["student_id"]=id_value
         data["sample_id"]= "data_id"
         data["level"]= 'L3'
@@ -3280,19 +3460,14 @@ def ml3_mcq_api(request):
         data["mcq_language"]= lan
         data["program"] = my_program
 
-        print(data)
         url = 'https://parakh.pradigi.org/v1/saveprogress/'
         files = []
         payload = {'data': json.dumps(data)}
         headers = {}
         response = requests.request("POST", url, headers=headers, data=payload, files=files)
-        print('student_id', response.text)
         response_data = json.loads(response.text)
-        print(response.text)
         phone_number = request.session.get('phone_number')
-        print("ph", phone_number)
         enrollment_id = request.session.get('enrollment_id')
-        print("enrollment_id",enrollment_id)
     
         context = {
             'mobile_number': phone_number,
@@ -3302,63 +3477,95 @@ def ml3_mcq_api(request):
 
 
 def ml3_ans(request):
+    # Render the congratulatory page for ML3
     return render(request, "AOP_PRO/ml3_cong.html")
     
 
 def ml3_final_mcq(request):
+    # Get the context from the session
     context = request.session.get('ml3_context', {})
+    
     if request.method == 'POST':
+        # Get the selected div and language from the form submission
         selected_div = request.POST.get('selected-div')
         selected_divid = request.POST.get('selected-div_id')
+        
+        # Update the context with the selected div and language
         context['selected_divid'] = selected_divid
-        print('selected-div',selected_divid)
         context['selected_div'] = selected_div
-        print('selected-div',selected_div)
         selected_language = request.POST.get('selected_language')
         context['selected_language'] = selected_language
-        print('selected_language',selected_language)
+        
+        # Render the ML3 MCQ page with the updated context
         return render(request, "AOP_PRO/ml3_mcq.html", context)
+    
+    # Render the ML3 MCQ page with the context
     return render(request, "AOP_PRO/ml3_mcq.html", context)
     
 
 def ml3_mcq(request):
+    # Get the selected option and level from the session
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     selected_level = request.session.get('selected_level')
-    print("@",selected_level)
+    
+    # Get random ML3 sentence data
     data = get_random_ml3_sentence(request)
+    
+    # Prepare the context for rendering the ML3 MCQ page
     context = {"val": data['data'], "recording": True, "data_id": data['data_id'], "languages": data['languages']}
+    
+    # Render the ML3 MCQ page with the context
     return render(request, "AOP_PRO/ml3_mcq.html", context)
 
+
 def ml3_mcq_next(request):
+    # Get random ML3 sentence data
     data = get_random_ml3_sentence(request)
+
+    # Prepare the context for rendering the ML3 MCQ Next page
     context = {"val": data['data'], "recording": True, "data_id": data['data_id'], "languages": data['languages']}
+
+    # Store the context in the session
     request.session['ml3_context'] = context
+    
     if request.method == 'POST':
+        # Redirect to the ML3 MCQ page
         return redirect('ml3')
+    
+    # Render the ML3 MCQ Next page with the context
     return render(request, "AOP_PRO/ml3_mcq_next.html", context)
+
 
 #############################################################################################
 
-
 def start_recording(request):
+    # Get a random paragraph and its data ID
     paragraph, data_id = get_random_paragraph(request)
+    
+    # Prepare the context for rendering the recording page
     context = {"val": paragraph, "recording": True, "data_id": data_id}
+    
+    # Render the recording page with the context
     return render(request, "para_rec.html", context)
 
 
-#                   Paragraph Recording
 def paragraph(request):
+    # Get the selected option from the session
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
+    
     if request.method == 'POST':
+        # Redirect to the start_recording view
         return redirect('start_recording')
+    
+    # Render the paragraph start page
     return render(request, 'para_start.html')
 
 
 def get_random_paragraph(request):
+    # Get the selected option from the session
     selected_option = request.session.get('selected_option')
-    print("get_random_paragraph",selected_option)
+    
+    # Mapping of selected option to JSON files
     json_files = {
         'English': json_eng,
         'Hindi': json_hin,
@@ -3373,137 +3580,104 @@ def get_random_paragraph(request):
         'Tamil': json_tami,
         'Telugu': json_tel,
         'Urdu': json_urdu,
-        'BL' : json_l1_data,
+        'BL': json_l1_data,
         'ML1': json_l2,
-        'ML2' : json_l3,
-        'EL' : json_l4
+        'ML2': json_l3,
+        'EL': json_l4
     }
+    
     if selected_option in json_files:
         json_file = json_files[selected_option]
+        
+        # Get a random paragraph from the JSON file
         data1 = random.choice(json_file['Paragraph'])
-        print("the value ", data1['id'])
         data_id = data1['id']
+        
+        # Store the data ID and data value in the session
         request.session['data_id'] = data_id
-        print(data_id)
-        print("data", data1['data'])
         request.session['data_value'] = data1['data']
+        
         return data1['data'], data_id
 
-    # elif selected_option == 'BL':
-    #     data = json_l1_data
-    #     data1 = random.choice(data['Paragraph'])
-    #     print("the value ",data1['id'])
-    #     data_id = data1['id']
-    #     request.session['data_id'] = data_id
-    #     print(data_id)
-    #     print("dta",data1['data'])
-    #     return data1['data'], data_id
-    # elif selected_option == 'ML1':
-    #     data = json_l2
-    #     data1 = random.choice(data['Paragraph'])
-    #     print("the value ",data1['id'])
-    #     data_id = data1['id']
-    #     request.session['data_id'] = data_id
-    #     print(data_id)
-    #     print("dta",data1['data'])
-    #     return data1['data'], data_id
-    # elif selected_option == 'ML2':
-    #     data = json_l3
-    #     data1 = random.choice(data['Paragraph'])
-    #     print("the value ",data1['id'])
-    #     data_id = data1['id']
-    #     request.session['data_id'] = data_id
-    #     print(data_id)
-    #     print("dta",data1['data'])
-    #     return data1['data'], data_id
-    # elif selected_option == 'EL':
-    #     data = json_l4
-    #     data1 = random.choice(data['Paragraph'])
-    #     print("the value ",data1['id'])
-    #     data_id = data1['id']
-    #     request.session['data_id'] = data_id
-    #     print(data_id)
-    #     print("dta",data1['data'])
-    #     return data1['data'], data_id
-    
 
 @csrf_exempt
 def save_file(request):
     if request.method == 'POST' and request.FILES.get('audio_blob'):
+        # Get the data ID and value from the session
         data_id = request.session.get('data_id')
         val = request.POST.get('val')
-        print(val)
+        
+        # Generate the filename and file path for saving the audio file
         filename = f'{data_id}.wav'
         media_folder = os.path.join(settings.MEDIA_ROOT)
         os.makedirs(media_folder, exist_ok=True)
         filepath = os.path.join(media_folder, filename)
-        print(filename)
+        
         with open(os.path.join(media_folder, filename), 'wb') as audio_file:
+            # Write the audio file from the request to disk
             audio_file.write(request.FILES['audio_blob'].read())
-            print(filepath)
+            
+            # Store the filepath and filename in the session
             request.session['filepath'] = filepath
             request.session['filename'] = filename
-            return render(request, 'para_ans.html', { 'filepath': filepath})
+            
+            # Render the paragraph answer page with the filepath
+            return render(request, 'para_ans.html', {'filepath': filepath})
 
 
 def answer(request):
+    # Retrieve necessary session data
     filepath = request.session.get('filepath')
     filename = request.session.get('filename')
-    print(filename)
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     data_id = request.session.get('data_id')
+    
     if selected_option is not None:
-        data_id = request.session.get('data_id')
-        print("data_id", data_id)
+        # Get the JSON file based on the selected option
         json_file = json_files[selected_option]
         paragraph = None
+        
+        # Find the paragraph with the corresponding data ID
         for d in json_file['Paragraph']:
             if d['id'] == data_id:
                 val = d['data']
                 break
-    # #        
-    # if selected_option == 'English':
-    #     data_id = request.session.get('data_id')
-    #     print("data_id",data_id)
-    #     data = json_eng
-    #     paragraph = None
-    #     for d in data['Paragraph']:
-    #         if d['id'] == data_id:
-    #             val = d['data']
-    #             break
-    # elif selected_option == 'BL':
-    #     data_id = request.session.get('data_id')
-    #     print("data_id",data_id)
-    #     data = json_l1_data
-    #     print("data", data)
-    #     paragraph = None
-    #     for d in data['Paragraph']:
-    #         if d['id'] == data_id:
-    #             val = d['data']
-    #             break
-
+    
     if val:
-        print("the val",val)
+        print("the val", val)
+    
+    # Set the URL for the transcription API
     url = 'http://3.7.133.80:8000/gettranscript/'
+    
+    # Prepare the file for sending in the request
     files = [('audio', (filepath, open(filepath, 'rb'), 'audio/wav'))]
-    payload = {'language': selected_option ,'question':val}
+    
+    # Prepare the payload data for the request
+    payload = {'language': selected_option, 'question': val}
+    
     headers = {}
+    
+    # Send the POST request to the transcription API
     response = requests.request("POST", url, headers=headers, data=payload, files=files)
-    print('***', response.text)
-
+    
     if response.status_code == 200:
-        print("text",val)
+        # Store the original paragraph value in the session
         request.session['val'] = val
+        
+        # Retrieve the transcription and analysis data from the API response
         data_string = response.json().get('text')
         mistake = response.json().get('no_mistakes')
-        fluency = response.json().get('wcpm') 
-        index = response.json().get('sub_details') 
-        deld = response.json().get('del_details') 
-    # Format wcpm to have only two decimal places
-        wcpm_formatted = '{:.2f}'.format(float(fluency)) if fluency else None              
+        fluency = response.json().get('wcpm')
+        index = response.json().get('sub_details')
+        deld = response.json().get('del_details')
+        
+        # Format wcpm to have only two decimal places
+        wcpm_formatted = '{:.2f}'.format(float(fluency)) if fluency else None
+        
+        # Retrieve the filepath for the audio file
         filepath = request.session.get('filepath')
         audio_url = None
+        
         if filepath:
             # Check if the file exists
             if os.path.exists(filepath):
@@ -3511,58 +3685,50 @@ def answer(request):
                 filename = os.path.basename(filepath)
                 audio_url = request.build_absolute_uri(settings.MEDIA_URL + filename)
             else:
-                filepath = None  
-        return render(request, 'para_ans.html', {'transcript': data_string, 'text':data_string, 'originaltext':val , 'sub_details':index,'del_details':deld, 'audio_url': audio_url, 'no_mistakes': mistake, 'wcpm': wcpm_formatted})
+                filepath = None
+        
+        # Render the answer page with the obtained data
+        return render(request, 'para_ans.html', {'transcript': data_string, 'text': data_string, 'originaltext': val, 'sub_details': index, 'del_details': deld, 'audio_url': audio_url, 'no_mistakes': mistake, 'wcpm': wcpm_formatted})
     else:
-        return render(request, 'Error/pages-500.html' )
-    
+        # Render the error page if the request to the transcription API fails
+        return render(request, 'Error/pages-500.html')
+
 
 def skip_answer(request):
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     data_id = request.session.get('data_id')
-    print("data_id",data_id)
     json_file = json_files[selected_option]
+    
     if json_file is not None:
         data = json_file
         paragraph = None
+        
+        # Find the paragraph with the corresponding data ID
         for d in data['Paragraph']:
             if d['id'] == data_id:
                 val = d['data']
                 break
-    # if selected_option == 'English':
-    #     data_id = request.session.get('data_id')
-    #     print("data_id",data_id)
-    #     data = json_eng
-    #     paragraph = None
-    #     for d in data['Paragraph']:
-    #         if d['id'] == data_id:
-    #             val = d['data']
-    #             break
-    # elif selected_option == 'BL':
-    #     data_id = request.session.get('data_id')
-    #     print("data_id",data_id)
-    #     data = json_l1_data
-    #     paragraph = None
-    #     for d in data['Paragraph']:
-    #         if d['id'] == data_id:
-    #             val = d['data']
-    #             break
-
+    
     if val:
-        print("the val",val)
+        print("the val", val)
+    
     words = val.split()
     my_list = list(words)
-    last_index = len(my_list) 
+    last_index = len(my_list)
+    
+    # Render the answer page with the skipped paragraph data
     return render(request, 'para_ans.html', {'originaltext': val, 'wcpm': None, 'no_mistakes': last_index})
 
 
 def next_page(request):
     if request.method == 'POST':
+        # Retrieve the total number of mistakes from the request
         total_mis = request.POST.get('total_mis')
-        print("total_mis",total_mis)
         number = int(total_mis)
+        
         media_folder = os.path.join(settings.MEDIA_ROOT)
+        
+        # Remove all files in the media folder
         for file in os.listdir(media_folder):
             file_path = os.path.join(media_folder, file)
             try:
@@ -3570,22 +3736,28 @@ def next_page(request):
                     os.remove(file_path)
             except Exception as e:
                 print(e)
+        
         audio_file_name = request.session.setdefault('audio_file_name', [])
         audio_file_name.clear()
+        
         if number <= 1:
+            # Redirect to the appropriate page based on the number of mistakes
             child_name = request.session.get('child_name')
             level = "Word"
-            return render(request,'answer_page_gen.html',{'child_name': child_name, 'level': level})
-            # return redirect("word_msg")
+            return render(request, 'answer_page_gen.html', {'child_name': child_name, 'level': level})
         else:
             return redirect("letter")
 
+
 def next_page_para(request):
     if request.method == 'POST':
+        # Retrieve the number of mistakes from the request
         word_mistakes = request.POST.get('no_mistakes')
-        print("no_mistakes",word_mistakes)
         number = int(word_mistakes)
+        
         media_folder = os.path.join(settings.MEDIA_ROOT)
+        
+        # Remove all files in the media folder
         for file in os.listdir(media_folder):
             file_path = os.path.join(media_folder, file)
             try:
@@ -3593,20 +3765,26 @@ def next_page_para(request):
                     os.remove(file_path)
             except Exception as e:
                 print(e)
+        
         audio_file_name = request.session.setdefault('audio_file_name', [])
         audio_file_name.clear()
-
+        
         if number <= 3:
+            # Redirect to the appropriate page based on the number of mistakes
             return redirect("story")
         else:
             return redirect("word")
 
+
 def next_page_story(request):
     if request.method == 'POST':
+        # Retrieve the number of mistakes from the request
         word_mistakes = request.POST.get('no_mistakes')
-        print("no_mistakes",word_mistakes)
         number = int(word_mistakes)
+        
         media_folder = os.path.join(settings.MEDIA_ROOT)
+        
+        # Remove all files in the media folder
         for file in os.listdir(media_folder):
             file_path = os.path.join(media_folder, file)
             try:
@@ -3614,27 +3792,30 @@ def next_page_story(request):
                     os.remove(file_path)
             except Exception as e:
                 print(e)
+        
         audio_file_name = request.session.setdefault('audio_file_name', [])
         audio_file_name.clear()
-
         
         if number <= 3:
+            # Redirect to the appropriate page based on the number of mistakes
             child_name = request.session.get('child_name')
             level = "Story"
-            return render(request,'answer_page_gen.html',{'child_name': child_name, 'level': level})
-            # return redirect("next_answer")
+            return render(request, 'answer_page_gen.html', {'child_name': child_name, 'level': level})
         else:
             child_name = request.session.get('child_name')
             level = "Paragraph"
-            return render(request,'answer_page_gen.html',{'child_name': child_name, 'level': level})
-            # return redirect("word_msg")
+            return render(request, 'answer_page_gen.html', {'child_name': child_name, 'level': level})
+
 
 def next_page_letter(request):
     if request.method == 'POST':
+        # Retrieve the total number of mistakes from the request
         total_mis = request.POST.get('total_mis')
-        print("total_mis",total_mis)
         number = int(total_mis)
+        
         media_folder = os.path.join(settings.MEDIA_ROOT)
+        
+        # Remove all files in the media folder
         for file in os.listdir(media_folder):
             file_path = os.path.join(media_folder, file)
             try:
@@ -3642,92 +3823,106 @@ def next_page_letter(request):
                     os.remove(file_path)
             except Exception as e:
                 print(e)
+        
         audio_file_name = request.session.setdefault('audio_file_name', [])
         audio_file_name.clear()
-
+        
         if number <= 1:
+            # Redirect to the appropriate page based on the number of mistakes
             child_name = request.session.get('child_name')
             level = "Letter"
-            return render(request,'answer_page_gen.html',{'child_name': child_name, 'level': level})
+            return render(request, 'answer_page_gen.html', {'child_name': child_name, 'level': level})
         else:
             child_name = request.session.get('child_name')
             level = "Beginner"
-            return render(request,'answer_page_gen.html',{'child_name': child_name, 'level': level})
+            return render(request, 'answer_page_gen.html', {'child_name': child_name, 'level': level})
 
-        
+
 def next_para(request):
+    """
+    View function for rendering the next paragraph recording page.
+
+    The function waits for 2 seconds using the `time.sleep` function.
+    It retrieves the selected option from the session variables and the media folder path.
+    Then, it removes all files in the media folder.
+    If the selected option is not None, it retrieves the JSON file corresponding to the selected option
+    and finds the paragraph with the corresponding data ID.
+    The paragraph text is then passed as a context variable to the template.
+    The next paragraph recording page ('para_rec_next.html') is rendered with the provided context.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response for rendering the next paragraph recording page.
+    """
     t.sleep(2)
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     media_folder = os.path.join(settings.MEDIA_ROOT)
-
+    
+    # Remove all files in the media folder
     for file in os.listdir(media_folder):
         file_path = os.path.join(media_folder, file)
         try:
             if os.path.isfile(file_path):
                 os.remove(file_path)
-                print("the file is removed")
         except Exception as e:
             print(e)
-
+    
     if selected_option is not None:
         data_id = request.session.get('data_id')
-        print("data_id", data_id)
         json_file = json_files[selected_option]
         paragraph = None
+        
+        # Find the paragraph with the corresponding data ID
         for d in json_file['Paragraph']:
             if d['id'] == data_id:
                 val = d['data']
                 break
     
-    # # old code remove upto API
-    # if selected_option == 'English':
-    #     data_id = request.session.get('data_id')
-    #     print("data_id",data_id)
-    #     request.session['audio_recorded'] = True
-    #     data = json_eng
-    #     paragraph = None
-    #     for d in data['Paragraph']:
-    #         if d['id'] == data_id:
-    #             val = d['data']
-    #             break
-    # elif selected_option == 'BL':
-    #     data_id = request.session.get('data_id')
-    #     print("data_id",data_id)
-    #     request.session['audio_recorded'] = True
-    #     data = json_l1_data
-    #     paragraph = None
-    #     for d in data['Paragraph']:
-    #         if d['id'] == data_id:
-    #             val = d['data']
-    #             break
-
-    # elif selected_option == 'Hindi':
-    #     data_id = request.session.get('data_id')
-    #     print("data_id", data_id)
-    #     json_file = json_files[selected_option]
-    #     paragraph = None
-    #     for d in json_file['Paragraph']:
-    #         if d['id'] == data_id:
-    #             val = d['data']
-    #             break
-
-
     if val:
-        print("the val",val)
-    return render(request, "para_rec_next.html", {"recording": True,"val":val })
+        print("the val", val)
+    
+    # Render the next paragraph recording page
+    return render(request, "para_rec_next.html", {"recording": True, "val": val})
    
 
 #                   Story Recording
 def story(request):
+    """
+    View function for rendering the story start page.
+
+    If the request method is POST, it redirects to the story recording page.
+    Otherwise, it renders the story start page ('story_start.html').
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response for rendering the story start page or redirecting to the story recording page.
+    """
     if request.method == 'POST':
+        # Redirect to the story recording page
         return redirect('story_recording')
+    # Render the story start page
     return render(request, 'story_start.html')
 
 
 def get_random_story(request):
+    """
+    Function for retrieving a random story and its data_id.
+
+    It retrieves the selected option from the session variables and retrieves the corresponding JSON file.
+    It selects a random story from the JSON file and retrieves its data and data_id.
+    The data_id and data_value are stored in session variables.
+    
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        tuple: A tuple containing the story data and data_id.
+    """
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     json_files = {
         'English': json_eng,
         'Hindi': json_hin,
@@ -3750,46 +3945,79 @@ def get_random_story(request):
     if selected_option in json_files:
         json_file = json_files[selected_option]
         data1 = random.choice(json_file['Story'])
-        print("the value ", data1['id'])
         data_id = data1['id']
         request.session['data_id'] = data_id
-        print(data_id)
-        print("data", data1['data'])
         request.session['data_value'] = data1['data']
         return data1['data'], data_id
 
 
 def story_recording(request):
+    """
+    View function for rendering the story recording page.
+
+    The function calls the `get_random_story` function to retrieve a random story and its corresponding data_id.
+    The story and data_id are then passed as context variables to the template.
+    The story recording page ('story_rec.html') is rendered with the provided context.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response for rendering the story recording page.
+    """
     Story, data_id = get_random_story(request)
     context = {"val": Story, "recording": True, "data_id": data_id}
+    # Render the story recording page
     return render(request, "story_rec.html", context)
+
 
 @csrf_exempt
 def save_story(request):
+    """
+    View function for saving the recording of a story and rendering the story answer page.
+
+    If the request method is POST and there is a file in the request named 'audio_blob',
+    the function retrieves the data_id and val from the request.
+    It creates a filename using the data_id and saves the audio file to the media folder.
+    The file path is stored in the session variable 'filepath'.
+    The function renders the story answer page ('story_ans.html') and passes the audio URL in the context.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response for rendering the story answer page with the audio URL.
+    """
     if request.method == 'POST' and request.FILES.get('audio_blob'):
         data_id = request.session.get('data_id')
         val = request.POST.get('val')
-        print(val)
         filename = f'{data_id}.wav'
         media_folder = os.path.join(settings.MEDIA_ROOT)
         os.makedirs(media_folder, exist_ok=True)
         filepath = os.path.join(media_folder, filename)
         with open(os.path.join(media_folder, filename), 'wb') as audio_file:
             audio_file.write(request.FILES['audio_blob'].read())
-            print(filepath)
             request.session['filepath'] = filepath
-            return render(request, 'story_ans.html', { 'audio_url': filepath})
+            # Render the story answer page with the audio URL
+            return render(request, 'story_ans.html', {'audio_url': filepath})
 
     
 def story_answer(request):
+    """
+    Renders the story answer page with the transcription and analysis of the recorded story.
+
+    Args:
+        request: The HTTP request object.
+
+    Returns:
+        The rendered story answer page with the transcription and analysis data.
+
+    """
     filepath = request.session.get('filepath')
-    print(filepath)
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
 
     if selected_option is not None:
         data_id = request.session.get('data_id')
-        print("data_id",data_id)
         data = json_files[selected_option]
         story = None
         for d in data['Story']:
@@ -3804,11 +4032,9 @@ def story_answer(request):
     payload = {'language': selected_option,'question':val}
     headers = {}
     response = requests.request("POST", url, headers=headers, data=payload, files=files)
-    print('***', response.text)
 
     if response.status_code == 200: 
         filepath = request.session.get('filepath')
-        print("filepath",filepath)
         data_string = response.json().get('text')
         mistake = response.json().get('no_mistakes')
         fluency = response.json().get('wcpm') 
@@ -3829,123 +4055,26 @@ def story_answer(request):
     else:
         return render(request, 'Error/pages-500.html' )
    
-def skip_story_answer(request):
-    selected_option = request.session.get('selected_option')
-    print("@",selected_option)
-    if selected_option == 'English':
-        data_id = request.session.get('data_id')
-        print("data_id",data_id)
-        data = json_eng
-        story = None
-        for d in data['Story']:
-            if d['id'] == data_id:
-                val = d['data']
-                break
-    elif selected_option == 'Hindi':
-        data_id = request.session.get('data_id')
-        print("data_id",data_id)
-        data = json_hin
-        story = None
-        for d in data['Story']:
-            if d['id'] == data_id:
-                val = d['data']
-                break
 
-    elif selected_option == 'Assamese':
-        data_id = request.session.get('data_id')
-        print("data_id",data_id)
-        data = json_ass
-        story = None
-        for d in data['Story']:
-            if d['id'] == data_id:
-                val = d['data']
-                break
-    elif selected_option == 'Bengali':
-        data_id = request.session.get('data_id')
-        print("data_id",data_id)
-        data = json_ben
-        story = None
-        for d in data['Story']:
-            if d['id'] == data_id:
-                val = d['data']
-                break
-    elif selected_option == 'Gujarati':
-        data_id = request.session.get('data_id')
-        print("data_id",data_id)
-        data = json_guj
-        story = None
-        for d in data['Story']:
-            if d['id'] == data_id:
-                val = d['data']
-                break
-    elif selected_option == 'Marathi':
-        data_id = request.session.get('data_id')
-        print("data_id",data_id)
-        data = json_mar
-        story = None
-        for d in data['Story']:
-            if d['id'] == data_id:
-                val = d['data']
-                break
-    elif selected_option == 'Kannada':
-        data_id = request.session.get('data_id')
-        print("data_id",data_id)
-        data = json_kan
-        story = None
-        for d in data['Story']:
-            if d['id'] == data_id:
-                val = d['data']
-                break
-    elif selected_option == 'Malayalam':
-        data_id = request.session.get('data_id')
-        print("data_id",data_id)
-        data = json_mal
-        story = None
-        for d in data['Story']:
-            if d['id'] == data_id:
-                val = d['data']
-                break
-    elif selected_option == 'Odiya':
-        data_id = request.session.get('data_id')
-        print("data_id",data_id)
-        data = json_odi
-        story = None
-        for d in data['Story']:
-            if d['id'] == data_id:
-                val = d['data']
-                break
-    elif selected_option == 'Punjabi':
-        data_id = request.session.get('data_id')
-        print("data_id",data_id)
-        data = json_pun
-        story = None
-        for d in data['Story']:
-            if d['id'] == data_id:
-                val = d['data']
-                break
-    elif selected_option == 'Tamil':
-        data_id = request.session.get('data_id')
-        print("data_id",data_id)
-        data = json_tami
-        story = None
-        for d in data['Story']:
-            if d['id'] == data_id:
-                val = d['data']
-                break
-    elif selected_option == 'Telugu':
-        data_id = request.session.get('data_id')
-        print("data_id",data_id)
-        data = json_tel
-        story = None
-        for d in data['Story']:
-            if d['id'] == data_id:
-                val = d['data']
-                break
-    elif selected_option == 'Urdu':
-        data_id = request.session.get('data_id')
-        print("data_id",data_id)
-        data = json_urdu
-        story = None
+def skip_story_answer(request):
+    """
+    Renders the story answer page without recording, displaying the original story and analysis data.
+
+    Args:
+        request: The HTTP request object.
+
+    Returns:
+        The rendered story answer page without recording, displaying the original story and analysis data.
+
+    """
+    selected_option = request.session.get('selected_option')
+    data_id = request.session.get('data_id')
+    json_file = json_files[selected_option]
+    
+    if json_file is not None:
+        data = json_file
+        
+        # Find the story with the corresponding data ID
         for d in data['Story']:
             if d['id'] == data_id:
                 val = d['data']
@@ -3960,9 +4089,18 @@ def skip_story_answer(request):
 
 
 def next_story(request):
+    """
+    Renders the next story recording page, clearing previous recordings and preparing for the next story.
+
+    Args:
+        request: The HTTP request object.
+
+    Returns:
+        The rendered next story recording page.
+
+    """
     t.sleep(2)
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     media_folder = os.path.join(settings.MEDIA_ROOT)
     for file in os.listdir(media_folder):
         file_path = os.path.join(media_folder, file)
@@ -3974,7 +4112,6 @@ def next_story(request):
 
     if selected_option is not None:
         data_id = request.session.get('data_id')
-        print("data_id", data_id)
         json_file = json_files[selected_option]
         Story = None
         for d in json_file['Story']:
@@ -3995,6 +4132,17 @@ def fourteen(request):
 
 #                   Word Recording
 def word(request):
+    """
+    Handles the word exercise, including recording and storing audio files.
+
+    Args:
+        request: The HTTP request object.
+
+    Returns:
+        If the request method is POST, redirects to the 'word_recording_next' view.
+        If the request method is GET, renders the 'word_start.html' template.
+
+    """
     d_audio_files = request.session.setdefault('d_audio_files', [])
     d_audio_files_name = request.session.setdefault('d_audio_files_name', [])
     qword = request.session.setdefault('qword', [])
@@ -4005,7 +4153,6 @@ def word(request):
     word_ids = request.session.setdefault('word_ids', [])
     dc_res = request.session.setdefault('dc_res', [])
 
-    print(dc_res)
     del request.session['skip_val']
     del request.session['dc_res']
     del request.session['word_ids']
@@ -4017,24 +4164,17 @@ def word(request):
     del request.session['d_audio_files']
     
     if request.method == 'POST':
-        print("qword",qword)
-        
         if len(dc_res) == 5:
             dc_res.clear()
             d_dataid.clear()
             skip_val.clear()
-            print(dc_res)
-            print(d_dataid)
-            print(d_dataid)
             qword.clear()
             word_ids.clear()
             d_audio_files.clear()
             d_audio_files_name.clear()
             dc_res.clear()
             d_dataid.clear()
-            print(audio_file)
             audio_file.clear()  # clear the audio_file list
-            print(audio_file)
             file.clear()
             if len(d_audio_files)>5:
                 d_audio_files.clear()
@@ -4042,17 +4182,13 @@ def word(request):
         elif len(dc_res)==4:
             dc_res.clear()
             d_dataid.clear()
-            print(dc_res)
-            print(d_dataid)
             qword.clear()
             word_ids.clear()
             d_audio_files.clear()
             d_audio_files_name.clear()
             dc_res.clear()
             d_dataid.clear()
-            print(audio_file)
             audio_file.clear()  # clear the audio_file list
-            print(audio_file)
             file.clear()
             if len(d_audio_files)>5:
                 d_audio_files.clear()
@@ -4060,17 +4196,13 @@ def word(request):
         elif len(dc_res)==3:
             dc_res.clear()
             d_dataid.clear()
-            print(dc_res)
-            print(d_dataid)
             qword.clear()
             word_ids.clear()
             d_audio_files.clear()
             d_audio_files_name.clear()
             dc_res.clear()
             d_dataid.clear()
-            print(audio_file)
             audio_file.clear()  # clear the audio_file list
-            print(audio_file)
             file.clear()
             if len(d_audio_files)>5:
                 d_audio_files.clear()
@@ -4078,17 +4210,13 @@ def word(request):
         elif len(dc_res)==2:
             dc_res.clear()
             d_dataid.clear()
-            print(dc_res)
-            print(d_dataid)
             qword.clear()
             word_ids.clear()
             d_audio_files.clear()
             d_audio_files_name.clear()
             dc_res.clear()
             d_dataid.clear()
-            print(audio_file)
             audio_file.clear()  # clear the audio_file list
-            print(audio_file)
             file.clear()
             if len(d_audio_files)>5:
                 d_audio_files.clear()
@@ -4096,17 +4224,13 @@ def word(request):
         elif len(dc_res)==1:
             dc_res.clear()
             d_dataid.clear()
-            print(dc_res)
-            print(d_dataid)
             qword.clear()
             word_ids.clear()
             d_audio_files.clear()
             d_audio_files_name.clear()
             dc_res.clear()
             d_dataid.clear()
-            print(audio_file)
             audio_file.clear()  # clear the audio_file list
-            print(audio_file)
             file.clear()
             if len(d_audio_files)>5:
                 d_audio_files.clear()
@@ -4114,17 +4238,13 @@ def word(request):
         elif len(dc_res) ==0:
             dc_res.clear()
             d_dataid.clear()
-            print(dc_res)
-            print(d_dataid)
             qword.clear()
             word_ids.clear()
             d_audio_files.clear()
             d_audio_files_name.clear()
             dc_res.clear()
             d_dataid.clear()
-            print(audio_file)
             audio_file.clear()  # clear the audio_file list
-            print(audio_file)
             file.clear()
             if len(d_audio_files)>5:
                 d_audio_files.clear()
@@ -4134,42 +4254,55 @@ def word(request):
 
 
 def get_random_word(request):
+    """
+    Retrieves a random word from the JSON data based on the selected language.
+
+    Args:
+        request: The HTTP request object.
+
+    Returns:
+        A tuple containing the randomly selected word and its corresponding data ID.
+
+    """
     word_ids = request.session.setdefault('word_ids', [])
     d_dataid = request.session.setdefault('d_dataid', [])
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     json_file = json_files[selected_option]
 
     if json_file is not None:
         data = json_file  # Assuming json_hin contains the actual JSON data for Hindi
         data1 = random.choice(data['Word'])
-        print("the value ", data1['id'])
         data_id = data1['id']
         while data_id in word_ids:
             data1 = random.choice(data['Word'])
             data_id = data1['id']
         word_ids.append(data_id)
         request.session['word_ids'] = word_ids
-        print("word_ids", word_ids)
         request.session['data_id'] = data_id
-        print("dta", data1['data'])
         if len(word_ids) == 5:
             d_dataid = word_ids.copy()
-            print(d_dataid)
             request.session['d_dataid'] = d_dataid
-
             word_ids.clear()
         return data1['data'], data_id
 
 
 def word_recording(request):
+    """
+    Handles the word recording process.
+
+    Args:
+        request: The HTTP request object.
+
+    Returns:
+        Renders the 'word_rec.html' template with the randomly selected word and data ID.
+
+    """
     d_dataid = request.session.setdefault('d_dataid', [])
     dc_res = request.session.setdefault('dc_res', [])
     if len(dc_res) == 5:
         dc_res.clear()
         d_dataid.clear()
 
-    print(d_dataid)
     Word, data_id = get_random_word(request)
     context = {"val": Word, "recording": True, "data_id": data_id}
     request.session['submit_id'] = context
@@ -4177,25 +4310,33 @@ def word_recording(request):
 
 
 def word_recording_next(request):
+    """
+    Handles the next word recording process.
+
+    Args:
+        request: The HTTP request object.
+
+    Returns:
+        Renders the 'word_rec_next.html' template with the randomly selected word and data ID.
+
+    """
     word_ids = request.session.setdefault('word_ids', [])
     d_dataid = request.session.setdefault('d_dataid', [])
     dc_res = request.session.setdefault('dc_res', [])
     qword = request.session.setdefault('qword', [])
-    print("qword",qword)
 
     if len(qword)==5:
         qword.clear()
         dc_res.clear()
-        print("qword",qword) 
 
     if len(dc_res) == 4:
         dc_res.clear()
         d_dataid.clear()
-        print(d_dataid)
    
     Word, data_id = get_random_word(request)
     context = {"val": Word, "recording": True, "data_id": data_id}
     return render(request, "word_rec_next.html", context)
+
 
 json_files = {
             'English': json_eng,
@@ -4218,22 +4359,27 @@ json_files = {
         }
 
 def word_skip(request):
+    """
+    Handles the skipping of a word during the recording process.
+
+    Args:
+        request: The HTTP request object.
+
+    Returns:
+        - If the word recording is incomplete (less than 5 recordings), redirects to 'word_recording' or 'word_recording_next' view.
+        - If the word recording is complete (5 recordings), redirects to 'wans_page' view.
+
+    """
     if request.method == 'POST':
         val = request.POST.get('val')
         skip_val = request.session.setdefault('skip_val', [])
-
         d_audio_files = request.session.get('d_audio_files', [])
         d_audio_files_name = request.session.get('d_audio_files_name', [])
         word_ids = request.session.get('word_ids', [])
         qword = request.session.setdefault('qword', [])
 
-        print("d_audio_files_name", d_audio_files_name)
-        print("word_ids next", word_ids)
-
         missing_indices = [i for i, id in enumerate(word_ids) if id not in d_audio_files_name]
 
-        # Print the missing indices
-        print("The missing indices are:", missing_indices)
         for word_id in word_ids:
             audio_file = word_id + '.wav'
             if audio_file not in d_audio_files_name:
@@ -4250,19 +4396,11 @@ def word_skip(request):
         request.session['skip_val'] = skip_val
         request.session['d_audio_files_name'] = d_audio_files_name
 
-        print("skip_val  word_answer", skip_val)
-        print("d_audio_files  word_answer", d_audio_files)
-
         selected_option = request.session.get('selected_option')
-        print("@", selected_option)
         if selected_option in json_files:
             json_file = json_files[selected_option]
-            print('@###############################',json_file)
             request.session['json_file'] = json_file
             data_id = request.session.get('data_id')
-            print("data_id", data_id)
-            # with open(json_file, 'r', encoding='utf-8') as f:
-            #     data = json.load(f)
             data = json_file
             val = None
             for d in data['Word']:
@@ -4280,21 +4418,17 @@ def word_skip(request):
         d_audio_files_name = request.session.setdefault('d_audio_files_name', [])
         copy_word_name = request.session.setdefault('copy_word_name', [])
 
-        print("d_audio_files_name", d_audio_files_name)
         if len(d_audio_files) == 5:
             d_copy_audio_files = d_audio_files.copy()
         if len(d_audio_files_name) == 5:
             copy_word_name = d_audio_files_name.copy()
         
-        print("copy_word_name", copy_word_name)
         request.session['copy_word_name'] = copy_word_name
 
         if val:
-            print("the val", val)
             qword = request.session.get("qword")
             qword.append(val)
             request.session["qword"] = qword
-            print("qword", qword)
             dc_res = request.session.setdefault('dc_res', [])
             if request.session.get("dc_res", None) is None:
                 dc_res = []
@@ -4303,7 +4437,6 @@ def word_skip(request):
             request.session["dc_res"] = dc_res
             dc_res.append(
                 '{"no_mistakes": 1, "no_del": 0, "del_details": "", "no_sub": 1, "sub_details": "0-\\u092a\\u0948\\u0938\\u093e:", "status": "success", "wcpm": 0.0, "text": "", "audio_url": "", "process_time": 0.47053098678588867}')
-            print("testing the data", dc_res)
             if len(dc_res) == 5:
                 request.session['dc_rec'] = dc_res
                 context = {'l_res': dc_res}
@@ -4315,6 +4448,17 @@ def word_skip(request):
 
 
 def submit_word_skip(request):
+    """
+    Handles the submission of skipped word during the recording process.
+
+    Args:
+        request: The HTTP request object.
+
+    Returns:
+        - If the word recording is incomplete (less than 5 recordings), redirects to 'word_recording' or 'word_recording_next' view.
+        - If the word recording is complete (5 recordings), redirects to 'wans_page' view.
+
+    """
     if request.method == 'POST':
         submit_id = request.session.get('submit_id')
         data_id = submit_id.get('data_id')
@@ -4365,18 +4509,26 @@ def submit_word_skip(request):
 
 
 def word_answer(request):
+    """
+    Retrieves the word from the selected JSON file and sends a POST request to get the word's transcription.
+
+    Args:
+        request: The HTTP request object.
+
+    Returns:
+        - If the transcription retrieval is successful and there are 5 recorded words, redirects to 'wans_page' view.
+        - If the transcription retrieval is successful and there are less than 5 recorded words, redirects to 'word_recording' or 'word_recording_next' view.
+        - If the transcription retrieval fails, renders an error page.
+
+    """
     filepath = request.session.get('filepath')
     selected_option = request.session.get('selected_option')
-    print("@", selected_option)
 
     if selected_option in json_files:
         json_file_path = json_files[selected_option]
-        print('@###############################', json_file_path)
         data_id = request.session.get('data_id')
-        print("data_id", data_id)
         data = json_file_path
         word = next((d['data'] for d in data['Word'] if d['id'] == request.session.get('data_id')), None)
-
 
     qword = request.session.setdefault('qword', [])
     if word:
@@ -4399,12 +4551,21 @@ def word_answer(request):
             return redirect('word_recording')
     else:
         return render(request, 'Error/pages-500.html' )
-            
     return redirect('word_recording_next')
 
 
 @csrf_exempt
 def save_word(request):
+    """
+    Saves the recorded word audio file and updates the session variables.
+
+    Args:
+        request: The HTTP request object.
+
+    Returns:
+        Renders the 'word_rec.html' template with the audio URL.
+
+    """
     d_audio_files = request.session.setdefault('d_audio_files', [])
     d_audio_files_name = request.session.setdefault('d_audio_files_name', [])
     if request.method == 'POST' and request.FILES.get('audio_blob'):
@@ -4413,7 +4574,6 @@ def save_word(request):
             d_audio_files_name.clear()  
         data_id = request.session.get('data_id')
         val = request.POST.get('val')
-        print(val)
         filename = f'{data_id}.wav'
         media_folder = os.path.join(settings.MEDIA_ROOT)
         os.makedirs(media_folder, exist_ok=True)
@@ -4422,22 +4582,24 @@ def save_word(request):
             audio_file.write(request.FILES['audio_blob'].read())
         d_audio_files.append(filepath)
         d_audio_files_name.append(filename)
-        print("###",d_audio_files)
         request.session['filepath'] = filepath
         return render(request, 'word_rec.html', { 'audio_url': filepath})
 
 
 def wans_page(request):
+    """
+    Renders the word answer page with audio files and related data.
+
+    Retrieves audio files, audio URLs, and other data from session variables.
+    Calculates total mistakes and words per minute.
+    Renders the 'word_answer.html' template with the provided context.
+    """
     d_copy_audio_files = request.session.get('d_copy_audio_files', [])
     d_audio_files = request.session.get('d_audio_files', [])
-    
-    print("d_audio_files",d_audio_files)
     d_audio_files_name = request.session.setdefault('d_audio_files_name', [])
     copy_word_name = request.session.setdefault('copy_word_name', [])
     skip_val = request.session.setdefault('skip_val', [])
-    print("skip", skip_val)
 
-    print("d_audio_files_name",d_audio_files_name)
     if len(d_audio_files)==5:
         d_copy_audio_files= d_audio_files.copy()
     if len(d_audio_files_name)==5:
@@ -4447,14 +4609,7 @@ def wans_page(request):
     if len(d_audio_files_name)==4:
         copy_word_name= d_audio_files_name.copy()
     
-    print("copy_word_name",copy_word_name)
     request.session['copy_word_name'] = copy_word_name
-    # skip_val = request.session['skip_val']
-    # print('skip_val',skip_val)
-    print('d_copy_audio_files',d_copy_audio_files)
-    
-
-
     audio_urls = []
     if d_copy_audio_files:
         for filepath in d_copy_audio_files:
@@ -4464,30 +4619,20 @@ def wans_page(request):
                 audio_urls.append(audio_url)
             else:
                 audio_urls.append('')  # Add a blank entry if filepath doesn't exist
-
-       
-                # d_copy_audio_files.remove(file_path)
         request.session['d_copy_audio_files'] = d_copy_audio_files
-
     
     text = []
     mis=[]
     wcpm=[]
     dc_res=[]
-
     dc_res = request.session.setdefault('dc_res', [])
     qword = request.session.setdefault('qword', [])
 
-
     for item in dc_res:
-        # text.append(eval(item)['text'])
         mis.append(eval(item)['no_mistakes'])
         wcpm.append(eval(item)['wcpm'])
     total_wcpm = sum(wcpm) 
     total_mis = sum(mis)
-    # print("total",total_wcpm)
-    print("qword",qword)
-    print('audio_urls', audio_urls)
     context = {
     'qword': qword,
     'mis': mis,
@@ -4499,11 +4644,17 @@ def wans_page(request):
     'audio_url4': audio_urls[3],
     'audio_url5': audio_urls[4],
     'total_mis': total_mis
-}
+    }
     return render(request, 'word_answer.html', context)
 
 
 def next_word(request):
+    """
+    Handles the next word recording page.
+
+    Performs actions based on the user's input.
+    Updates session variables and redirects accordingly.
+    """
     t.sleep(2)
     d_dataid = request.session.setdefault('d_dataid', [])
     copy_word_name = request.session.setdefault('copy_word_name', [])
@@ -4511,7 +4662,6 @@ def next_word(request):
         copy_word_name = request.session.get('copy_word_name')
         copy_word_name = request.session.setdefault('copy_word_name', [])
         d_dataid = request.session.get('d_dataid', [])
-        print("^^^",d_dataid)
         if "record" in request.POST:
             request.session['d_dataid[0]'] = d_dataid[0]
             filename = d_dataid[0] + '.wav'
@@ -4528,17 +4678,12 @@ def next_word(request):
                 print(f"An error occurred while deleting the file: {e}")
            
             selected_option = request.session.get('selected_option')
-            print("@",selected_option)
-
             if selected_option is not None:
                 print("d_dataid0",d_dataid[0])
                 request.session['d_dataid[0]'] = d_dataid[0]
                 request.session['audio_recorded'] = True
                 json_file_path = json_files[selected_option]
-                print('@###############################', json_file_path)
-                # request.session['json_file'] = json_file_path
                 data_id = request.session.get('data_id')
-                print("data_id", data_id)
                 if data_id is not None:
                     data = json_file_path
                     Word = None
@@ -4551,11 +4696,8 @@ def next_word(request):
                     return render(request, "retake_word/retake_word1.html", {"recording": True,"val":val })
 
         elif "record2" in request.POST:
-           
             selected_option = request.session.get('selected_option')
-            print("@",selected_option)
             request.session['d_dataid[1]'] = d_dataid[1]
-
             filename = d_dataid[1] + '.wav'
             media_folder = os.path.join(settings.MEDIA_ROOT)
             file_path = os.path.join(media_folder, filename)
@@ -4570,13 +4712,10 @@ def next_word(request):
                 print(f"An error occurred while deleting the file: {e}")
 
             if selected_option is not None:
-                print("d_dataid1",d_dataid[1])
                 request.session['d_dataid[1]'] = d_dataid[1]
                 request.session['audio_recorded'] = True
                 json_file_path = json_files[selected_option]
-                print('@###############################', json_file_path)
                 data_id = request.session.get('data_id')
-                print("data_id", data_id)
                 if data_id is not None:
                     data = json_file_path
                     Word = None
@@ -4590,9 +4729,7 @@ def next_word(request):
 
         elif "record3" in request.POST:
             selected_option = request.session.get('selected_option')
-            print("@",selected_option)
             request.session['d_dataid[2]'] = d_dataid[2]
-
             filename = d_dataid[2] + '.wav'
             media_folder = os.path.join(settings.MEDIA_ROOT)
             file_path = os.path.join(media_folder, filename)
@@ -4607,13 +4744,10 @@ def next_word(request):
                 print(f"An error occurred while deleting the file: {e}")
 
             if selected_option is not None:
-                print("d_dataid2",d_dataid[2])
                 request.session['d_dataid[2]'] = d_dataid[2]
                 request.session['audio_recorded'] = True
                 json_file_path = json_files[selected_option]
-                print('@###############################', json_file_path)
                 data_id = request.session.get('data_id')
-                print("data_id", data_id)
                 if data_id is not None:
                     data = json_file_path
                     Word = None
@@ -4627,9 +4761,7 @@ def next_word(request):
 
         elif "record4" in request.POST:
             selected_option = request.session.get('selected_option')
-            print("@",selected_option)
             request.session['d_dataid[3]'] = d_dataid[3]
-
             filename = d_dataid[3] + '.wav'
             media_folder = os.path.join(settings.MEDIA_ROOT)
             file_path = os.path.join(media_folder, filename)
@@ -4644,13 +4776,10 @@ def next_word(request):
                 print(f"An error occurred while deleting the file: {e}")
 
             if selected_option is not None:
-                print("d_dataid3",d_dataid[3])
                 request.session['d_dataid[3]'] = d_dataid[3]
                 request.session['audio_recorded'] = True
                 json_file_path = json_files[selected_option]
-                print('@###############################', json_file_path)
                 data_id = request.session.get('data_id')
-                print("data_id", data_id)
                 if data_id is not None:
                     data = json_file_path
                     Word = None
@@ -4664,7 +4793,6 @@ def next_word(request):
         
         elif "record5" in request.POST:
             selected_option = request.session.get('selected_option')
-            print("@",selected_option)
             request.session['d_dataid[4]'] = d_dataid[4]
             filename = d_dataid[4] + '.wav'
             media_folder = os.path.join(settings.MEDIA_ROOT)
@@ -4680,13 +4808,10 @@ def next_word(request):
                 print(f"An error occurred while deleting the file: {e}")
 
             if selected_option is not None:
-                print("d_dataid3",d_dataid[4])
                 request.session['d_dataid[4]'] = d_dataid[4]
                 request.session['audio_recorded'] = True
                 json_file_path = json_files[selected_option]
-                print('@###############################', json_file_path)
                 data_id = request.session.get('data_id')
-                print("data_id", data_id)
                 if data_id is not None:
                     data = json_file_path
                     Word = None
@@ -4703,6 +4828,13 @@ def next_word(request):
 
 @csrf_exempt
 def retake_word(request):
+    """
+    Handles the retake word recording page.
+
+    Retrieves session variables and performs actions based on the user's input.
+    Saves the recorded audio file and updates session variables accordingly.
+    Renders the 'word_answer.html' template with the updated context.
+    """
     d_audio_files = request.session.setdefault('d_audio_files', [])
     d_copy_audio_files = request.session.get('d_copy_audio_files', [])
     d_audio_files_name = request.session.setdefault('d_audio_files_name', [])
@@ -4710,13 +4842,11 @@ def retake_word(request):
     if request.method == 'POST' and request.FILES.get('audio_blob'):
         data_id = request.session.get('data_id')
         val = request.POST.get('val')
-        print(val)
         request.session['d_dataid[0]'] = d_dataid[0]
         filename = d_dataid[0]+'.wav'
         media_folder = os.path.join(settings.MEDIA_ROOT)
         os.makedirs(media_folder, exist_ok=True)
         filepath = os.path.join(media_folder, filename)
-        print("$$$$$$$$$$$$$$$$$$$$$$$", filepath)
 
         try:
             with open(filepath, 'wb') as audio_file:
@@ -4732,22 +4862,24 @@ def retake_word(request):
 
             if len(d_copy_audio_files)==0:
                 d_copy_audio_files.insert(0, filepath)
-        print("###",d_copy_audio_files)
         request.session['filepath'] = filepath
         return render(request, 'word_answer.html', { 'audio_url': filepath})
     
 def save_word1(request):
+    """
+    Handles the saving of the word recording and performing transcription.
+
+    Retrieves session variables and performs actions based on the user's input.
+    Sends the audio file and associated data for transcription.
+    Updates session variables with the transcription results.
+    Redirects to the word answer page or renders an error page accordingly.
+    """
     d_dataid = request.session.setdefault('d_dataid', [])
     filepath = request.session.get('filepath')
-    print(filepath)
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     request.session['d_dataid[0]'] = d_dataid[0]
-    print("data_id", d_dataid[0])
     json_file_path = json_files.get(selected_option)
-    print('@###############################', json_file_path)
     data_id = request.session.get('data_id')
-    print("data_id", data_id)
     if json_file_path:
         data = json_file_path
         if data is not None:
@@ -4764,7 +4896,6 @@ def save_word1(request):
     payload = {'language': selected_option,'question':val}
     headers = {}
     response = requests.request("POST", url, headers=headers, data=payload, files=files)
-    # dc_res=[]
     if response.status_code == 200:
         dc_res = request.session.setdefault('dc_res', [])
         if request.session.get("dc_res",None) is None:
@@ -4776,7 +4907,6 @@ def save_word1(request):
             else:
                 dc_res.insert(0, response.text)
             request.session["dc_res"] = dc_res
-            print("testing the data", dc_res)
             if len(dc_res)==5:
                 request.session['dc_rec'] = dc_res
                 context = {'l_res': dc_res}
@@ -4796,6 +4926,13 @@ def save_word1(request):
 
 @csrf_exempt
 def retake_word2(request):
+    """
+    Handles the second retake word recording page.
+
+    Retrieves session variables and performs actions based on the user's input.
+    Saves the recorded audio file and updates session variables accordingly.
+    Renders the 'word_answer.html' template with the updated context.
+    """
     d_audio_files = request.session.setdefault('d_audio_files', [])
     d_copy_audio_files = request.session.get('d_copy_audio_files', [])
     d_audio_files_name = request.session.setdefault('d_audio_files_name', [])
@@ -4803,7 +4940,6 @@ def retake_word2(request):
     if request.method == 'POST' and request.FILES.get('audio_blob'):
         data_id = request.session.get('data_id')
         val = request.POST.get('val')
-        print(val)
         request.session['d_dataid[1]'] = d_dataid[1]
         filename = d_dataid[1]+'.wav'
         media_folder = os.path.join(settings.MEDIA_ROOT)
@@ -4816,23 +4952,25 @@ def retake_word2(request):
                 d_copy_audio_files[i] = filepath
             if len(d_copy_audio_files)<5:
                 d_copy_audio_files.append(filepath)
-        print("###",d_copy_audio_files)
         request.session['filepath'] = filepath
         return render(request, 'word_answer.html', { 'audio_url': filepath})
     
 
 def save_word2(request):
+    """
+    Handles the saving of the second word recording and performing transcription.
+
+    Retrieves session variables and performs actions based on the user's input.
+    Sends the audio file and associated data for transcription.
+    Updates session variables with the transcription results.
+    Redirects to the word answer page or renders an error page accordingly.
+    """
     d_dataid = request.session.setdefault('d_dataid', [])
     filepath = request.session.get('filepath')
-    print(filepath)
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     request.session['d_dataid[1]'] = d_dataid[1]
-    print("data_id", d_dataid[1])
     json_file_path = json_files.get(selected_option)
-    print('@###############################', json_file_path)
     data_id = request.session.get('data_id')
-    print("data_id", data_id)
     if json_file_path:
         data = json_file_path
         if data is not None:
@@ -4849,7 +4987,6 @@ def save_word2(request):
     payload = {'language': selected_option,'question':val}
     headers = {}
     response = requests.request("POST", url, headers=headers, data=payload, files=files)
-    # dc_res=[]
     if response.status_code == 200:
         dc_res = request.session.setdefault('dc_res', [])
         if request.session.get("dc_res",None) is None:
@@ -4860,9 +4997,7 @@ def save_word2(request):
                 dc_res[1] = response.text
             else:
                 dc_res.insert(1, response.text)
-            # dc_res.clear()
             request.session["dc_res"] = dc_res
-            print("testing the data", dc_res)
             if len(dc_res)==5:
                 request.session['dc_rec'] = dc_res
                 context = {'l_res': dc_res}
@@ -4875,6 +5010,13 @@ def save_word2(request):
 
 @csrf_exempt
 def retake_word3(request):
+    """
+    Handles the third retake word recording page.
+
+    Retrieves session variables and performs actions based on the user's input.
+    Saves the recorded audio file and updates session variables accordingly.
+    Renders the 'word_answer.html' template with the updated context.
+    """
     d_audio_files = request.session.setdefault('d_audio_files', [])
     d_copy_audio_files = request.session.get('d_copy_audio_files', [])
     d_audio_files_name = request.session.setdefault('d_audio_files_name', [])
@@ -4882,7 +5024,6 @@ def retake_word3(request):
     if request.method == 'POST' and request.FILES.get('audio_blob'):
         data_id = request.session.get('data_id')
         val = request.POST.get('val')
-        print(val)
         request.session['d_dataid[2]'] = d_dataid[2]
         filename = d_dataid[2]+'.wav'
         media_folder = os.path.join(settings.MEDIA_ROOT)
@@ -4895,23 +5036,25 @@ def retake_word3(request):
                 d_copy_audio_files[i] = filepath
             if len(d_copy_audio_files)<5:
                 d_copy_audio_files.append(filepath)
-        print("###",d_copy_audio_files)
         request.session['filepath'] = filepath
         return render(request, 'word_answer.html', { 'audio_url': filepath})
 
 
 def save_word3(request):
+    """
+    Handles the saving of the third word recording and performing transcription.
+
+    Retrieves session variables and performs actions based on the user's input.
+    Sends the audio file and associated data for transcription.
+    Updates session variables with the transcription results.
+    Redirects to the word answer page or renders an error page accordingly.
+    """
     d_dataid = request.session.setdefault('d_dataid', [])
     filepath = request.session.get('filepath')
-    print(filepath)
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     request.session['d_dataid[2]'] = d_dataid[2]
-    print("data_id", d_dataid[2])
     json_file_path = json_files.get(selected_option)
-    print('@###############################', json_file_path)
     data_id = request.session.get('data_id')
-    print("data_id", data_id)
     if json_file_path:
         data = json_file_path
         if data is not None:
@@ -4923,7 +5066,6 @@ def save_word3(request):
     
     if selected_option == 'English':
         request.session['d_dataid[2]'] = d_dataid[2]
-        print("data_id",d_dataid[2])
         data = json_eng
         Word = None
         for d in data['Word']:
@@ -4949,7 +5091,6 @@ def save_word3(request):
             else:
                 dc_res.insert(2, response.text)
             request.session["dc_res"] = dc_res
-            print("testing the data", dc_res)
             if len(dc_res)==5:
                 request.session['dc_rec'] = dc_res
                 context = {'l_res': dc_res}
@@ -4962,6 +5103,13 @@ def save_word3(request):
 
 @csrf_exempt
 def retake_word4(request):
+    """
+    Handles the fourth retake word recording page.
+
+    Retrieves session variables and performs actions based on the user's input.
+    Saves the recorded audio file and updates session variables accordingly.
+    Renders the 'word_answer.html' template with the updated context.
+    """
     d_audio_files = request.session.setdefault('d_audio_files', [])
     d_copy_audio_files = request.session.get('d_copy_audio_files', [])
     d_audio_files_name = request.session.setdefault('d_audio_files_name', [])
@@ -4970,7 +5118,6 @@ def retake_word4(request):
     if request.method == 'POST' and request.FILES.get('audio_blob'):
         data_id = request.session.get('data_id')
         val = request.POST.get('val')
-        print(val)
         request.session['d_dataid[3]'] = d_dataid[3]
         filename = d_dataid[3]+'.wav'
         media_folder = os.path.join(settings.MEDIA_ROOT)
@@ -4983,23 +5130,25 @@ def retake_word4(request):
                 d_copy_audio_files[i] = filepath
             if len(d_copy_audio_files)<5:
                 d_copy_audio_files.append(filepath)
-        print("###",d_copy_audio_files)
         request.session['filepath'] = filepath
         return render(request, 'word_answer.html', { 'audio_url': filepath})
     
 
 def save_word4(request):
+    """
+    Handles the saving of the fourth word recording and performing transcription.
+
+    Retrieves session variables and performs actions based on the user's input.
+    Sends the audio file and associated data for transcription.
+    Updates session variables with the transcription results.
+    Redirects to the word answer page or renders an error page accordingly.
+    """
     d_dataid = request.session.setdefault('d_dataid', [])
     filepath = request.session.get('filepath')
-    print(filepath)
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     request.session['d_dataid[3]'] = d_dataid[3]
-    print("data_id", d_dataid[3])
     json_file_path = json_files.get(selected_option)
-    print('@###############################', json_file_path)
     data_id = request.session.get('data_id')
-    print("data_id", data_id)
     
     if json_file_path:
         data = json_file_path
@@ -5017,7 +5166,6 @@ def save_word4(request):
     payload = {'language': selected_option,'question':val}
     headers = {}
     response = requests.request("POST", url, headers=headers, data=payload, files=files)
-    # dc_res=[]
     if response.status_code == 200:
         dc_res = request.session.setdefault('dc_res', [])
         if request.session.get("dc_res",None) is None:
@@ -5028,10 +5176,8 @@ def save_word4(request):
                 dc_res[3] = response.text
             else:
                 dc_res.insert(3, response.text)
-            # dc_res.clear()
 
             request.session["dc_res"] = dc_res
-            print("testing the data", dc_res)
             if len(dc_res)==5:
                 request.session['dc_rec'] = dc_res
                 context = {'l_res': dc_res}
@@ -5044,6 +5190,13 @@ def save_word4(request):
 
 @csrf_exempt
 def retake_word5(request):
+    """
+    Handles the fifth retake word recording page.
+
+    Retrieves session variables and performs actions based on the user's input.
+    Saves the recorded audio file and updates session variables accordingly.
+    Renders the 'word_answer.html' template with the updated context.
+    """
     d_audio_files = request.session.setdefault('d_audio_files', [])
     d_copy_audio_files = request.session.get('d_copy_audio_files', [])
     d_audio_files_name = request.session.setdefault('d_audio_files_name', [])
@@ -5052,7 +5205,6 @@ def retake_word5(request):
     if request.method == 'POST' and request.FILES.get('audio_blob'):
         data_id = request.session.get('data_id')
         val = request.POST.get('val')
-        print(val)
         request.session['d_dataid[4]'] = d_dataid[4]
         filename = d_dataid[4]+'.wav'
         media_folder = os.path.join(settings.MEDIA_ROOT)
@@ -5068,25 +5220,25 @@ def retake_word5(request):
                 d_copy_audio_files.append(filepath)
             if len(d_copy_audio_files)<4:
                 d_copy_audio_files.append(filepath)
-        print("###",d_copy_audio_files)
-        # if len(d_audio_files) < 5:
-        #     d_audio_files.clear()
-        #     d_audio_files_name.clear()
         request.session['filepath'] = filepath
         return render(request, 'word_answer.html', { 'audio_url': filepath})
     
+
 def save_word5(request):
+    """
+    Handles the saving of the fifth word recording and performing transcription.
+
+    Retrieves session variables and performs actions based on the user's input.
+    Sends the audio file and associated data for transcription.
+    Updates session variables with the transcription results.
+    Redirects to the word answer page or renders an error page accordingly.
+    """
     d_dataid = request.session.setdefault('d_dataid', [])
     filepath = request.session.get('filepath')
-    print(filepath)
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     request.session['d_dataid[4]'] = d_dataid[4]
-    print("data_id", d_dataid[4])
     json_file_path = json_files[selected_option]
-    print('@###############################', json_file_path)
     data_id = request.session.get('data_id')
-    print("data_id", data_id)
     
     if json_file_path:
         data = json_file_path
@@ -5099,7 +5251,6 @@ def save_word5(request):
     
     if selected_option == 'English':
         request.session['d_dataid[4]'] = d_dataid[4]
-        print("data_id",d_dataid[4])
         data = json_eng
         Word = None
         for d in data['Word']:
@@ -5114,9 +5265,7 @@ def save_word5(request):
     payload = {'language': selected_option,'question':val}
     headers = {}
     response = requests.request("POST", url, headers=headers, data=payload, files=files)
-    # dc_res=[]
     if response.status_code == 200:
-
         dc_res = request.session.setdefault('dc_res', [])
         if request.session.get("dc_res",None) is None:
             dc_res = []
@@ -5126,10 +5275,8 @@ def save_word5(request):
                 dc_res[4] = response.text
             else:
                 dc_res.insert(4, response.text)
-            # dc_res.clear()
 
             request.session["dc_res"] = dc_res
-            print("testing the data", dc_res)
             if len(dc_res)==5:
                 request.session['dc_rec'] = dc_res
                 context = {'l_res': dc_res}
@@ -5142,6 +5289,20 @@ def save_word5(request):
     
 #                   Letter Recording
 def letter(request):
+    """
+    View function for handling the letter recording process.
+
+    The function manages the session data related to letter recording,
+    clears certain session variables, and redirects to the appropriate
+    view based on the current state of recording.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response object.
+
+    """
     l_dataid = request.session.setdefault('l_dataid', [])
     lc_res = request.session.setdefault('lc_res', [])
     qletter = request.session.setdefault('qletter', [])
@@ -5159,13 +5320,9 @@ def letter(request):
     del request.session['skip_val_letter']
 
     if request.method == 'POST':
-        print("qword",qletter)
-        
         if len(lc_res) == 5:
             lc_res.clear()
             l_dataid.clear()
-            # qword.clear()
-            # print("qword",qword)
             qletter.clear()
             data_ids.clear()
             l_audio_files.clear()
@@ -5177,8 +5334,6 @@ def letter(request):
         elif len(lc_res) == 4:
             lc_res.clear()
             l_dataid.clear()
-            # qword.clear()
-            # print("qword",qword)
             qletter.clear()
             data_ids.clear()
             l_audio_files.clear()
@@ -5186,12 +5341,11 @@ def letter(request):
           
             if len(l_audio_files)>4:
                 l_audio_files.clear()
-                l_audio_files_name.clear() 
+                l_audio_files_name.clear()
+
         elif len(lc_res) == 3:
             lc_res.clear()
             l_dataid.clear()
-            # qword.clear()
-            # print("qword",qword)
             qletter.clear()
             data_ids.clear()
             l_audio_files.clear()
@@ -5199,12 +5353,11 @@ def letter(request):
           
             if len(l_audio_files)>3:
                 l_audio_files.clear()
-                l_audio_files_name.clear() 
+                l_audio_files_name.clear()
+
         elif len(lc_res) == 2:
             lc_res.clear()
             l_dataid.clear()
-            # qword.clear()
-            # print("qword",qword)
             qletter.clear()
             data_ids.clear()
             l_audio_files.clear()
@@ -5212,12 +5365,11 @@ def letter(request):
           
             if len(l_audio_files)>2:
                 l_audio_files.clear()
-                l_audio_files_name.clear() 
+                l_audio_files_name.clear()
+
         elif len(lc_res) == 1:
             lc_res.clear()
             l_dataid.clear()
-            # qword.clear()
-            # print("qword",qword)
             qletter.clear()
             data_ids.clear()
             l_audio_files.clear()
@@ -5225,12 +5377,11 @@ def letter(request):
           
             if len(l_audio_files)>1:
                 l_audio_files.clear()
-                l_audio_files_name.clear() 
+                l_audio_files_name.clear()
+
         elif len(lc_res) == 0:
             lc_res.clear()
             l_dataid.clear()
-            # qword.clear()
-            # print("qword",qword)
             qletter.clear()
             data_ids.clear()
             l_audio_files.clear()
@@ -5244,15 +5395,28 @@ def letter(request):
 
 
 def get_random_letter(request):
+    """
+    View function for retrieving a random letter for recording.
+
+    The function retrieves a random letter from the JSON data based on
+    the selected language option. It ensures that the letter has not been
+    previously recorded by checking against the session data. Once a unique
+    letter is found, it updates the session data and returns the letter data
+    and its ID.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        tuple: A tuple containing the letter data and its ID.
+
+    """
     data_ids = request.session.setdefault('data_ids', [])
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
-    # data_ids.clear()
     json_file = json_files[selected_option]
     if json_file is not None:
         data = json_file 
         data1 = random.choice(data['Letter'])
-        print("the value ",data1['id'])
         data_id = data1['id']
         
         while data_id in data_ids:
@@ -5260,71 +5424,109 @@ def get_random_letter(request):
             data_id = data1['id']
         
         data_ids.append(data_id)
-        print("data_ids",data_ids)
         request.session['data_id'] = data_id
-        print("dta",data1['data'])
         if len(data_ids) ==5:
             l_dataid = data_ids.copy()
-            print(l_dataid)
             request.session['l_dataid'] = l_dataid
             data_ids.clear()
         return data1['data'], data_id
     
 
 def letter_recording(request):
+    """
+    View function for recording a letter.
+
+    The function retrieves a random letter using the `get_random_letter` function.
+    It initializes the necessary session data and renders the recording template
+    with the letter data and recording flag.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response containing the rendered template.
+
+    """
     l_dataid = request.session.setdefault('l_dataid', [])
     lc_res = request.session.setdefault('lc_res', [])
 
     if len(lc_res) == 5:
         lc_res.clear()
         l_dataid.clear()
-    print(l_dataid)
    
     Letter, data_id = get_random_letter(request)
     context = {"val": Letter, "recording": True, "data_id": data_id}
     request.session['submit_id_letter'] = context
     return render(request, "letter_rec.html", context)
 
+
 def letter_recording_next(request):
+    """
+    View function for recording the next letter.
+
+    The function retrieves a random letter using the `get_random_letter` function.
+    It initializes the necessary session data and renders the recording template
+    for the next letter with the letter data and recording flag.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response containing the rendered template.
+
+    """
     l_dataid = request.session.setdefault('l_dataid', [])
     lc_res = request.session.setdefault('lc_res', [])
     qletter = request.session.setdefault('qletter', [])
-    print("qletter",qletter)
     if len(lc_res) == 5:
         lc_res.clear()
         l_dataid.clear()
         qletter.clear()
-        print("qletter",qletter)
                                                                                                     
-    print(l_dataid)
     Letter, data_id = get_random_letter(request)
     context = {"val": Letter, "recording": True, "data_id": data_id}
     return render(request, "letter_rec_next.html", context)
 
 
 def letter_skip(request):
+    """
+    View function for skipping the current letter and proceeding to the next.
+
+    The function updates the necessary session variables to reflect the skipped letter.
+    It retrieves the selected option and corresponding JSON file from the session.
+    The function updates the session variables with the skipped letter information,
+    such as audio files, names, and skipped values.
+    If the selected option is 'English', it retrieves the data from the 'json_eng' variable.
+    The function then appends the skipped letter value to the 'qletter' session variable.
+    If the 'lc_res' session variable is not set, it initializes it as an empty list.
+    It appends a dummy response JSON to the 'lc_res' list to simulate successful recording.
+    If the 'lc_res' list has reached a length of 5, it sets the 'dc_rec' session variable,
+    prepares the context, and redirects to the 'lans_page' view.
+    Finally, if the length of 'l_audio_files' is 4, it redirects to the 'letter_recording' view.
+    Otherwise, it redirects to the 'letter_recording_next' view.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response for redirecting to the appropriate view.
+
+    """
     skip_val_letter = request.session.setdefault('skip_val_letter', [])
-    
     l_audio_files = request.session.get('l_audio_files', [])
     l_audio_files_name = request.session.get('l_audio_files_name', [])
     data_ids = request.session.get('data_ids', [])
     qletter = request.session.setdefault('qletter', [])
-
-    print("l_audio_files_name",l_audio_files_name)
-    print("data_ids",data_ids)
     data_ids = request.session.get('data_ids', [])
     l_audio_files_name = request.session.get('l_audio_files_name', [])
     missing_indices = [i for i, id in enumerate(data_ids) if id not in l_audio_files_name]
 
-    # Print the missing indices
-    print("The missing indices are:", missing_indices)
     for data_id in data_ids:
         audio_file = data_id + '.wav'
         if audio_file not in l_audio_files_name:
             l_audio_files_name.append(audio_file)
     # update the session variable with the new list
     for data_id in data_ids:
-        # wav_file = f"D:\\Parakh Final Project\\Parakh\\media\\{data_id}.wav"
         wav_file = os.path.join(base_path, f"{data_id}.wav")
 
         if wav_file not in l_audio_files:
@@ -5333,25 +5535,14 @@ def letter_skip(request):
 
     request.session['l_audio_files'] = l_audio_files
     request.session['skip_val_letter'] = skip_val_letter
-    print("l_audio_files  word_answer",l_audio_files)
     request.session['l_audio_files_name'] = l_audio_files_name
-    # filepath = os.path.join(settings.MEDIA_ROOT, 'skip_word.wav')
-    # if not os.path.exists(filepath):
-    #     return HttpResponseBadRequest('Audio file not found')
-    # print(filepath)
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     data_id = request.session.get('data_id')
-    print("data_id",data_id)
 
     if selected_option is not None:
         json_file = json_files[selected_option]
-        print('@###############################',json_file)
         request.session['json_file'] = json_file
         data_id = request.session.get('data_id')
-        print("data_id", data_id)
-            # with open(json_file, 'r', encoding='utf-8') as f:
-            #     data = json.load(f)
         data = json_file
         Letter = None
         for d in data['Letter']:
@@ -5361,9 +5552,6 @@ def letter_skip(request):
     
     if selected_option == 'English':
         data_id = request.session.get('data_id')
-        print("data_id",data_id)
-        # with open(json_eng) as f:
-        #     data = json.load(f)
         data = json_eng
         Letter = None
         for d in data['Letter']:
@@ -5372,12 +5560,9 @@ def letter_skip(request):
                 break
    
     if val:
-        print("the val",val)
         qletter = request.session.get("qletter")
         qletter.append(val)
         request.session["qletter"] = qletter
-
-        print("qletter",qletter)
         lc_res = request.session.setdefault('lc_res', [])
         if request.session.get("lc_res",None) is None:
             lc_res = []
@@ -5385,7 +5570,6 @@ def letter_skip(request):
             lc_res = request.session.get("lc_res")
             request.session["lc_res"] = lc_res
             lc_res.append('{"no_mistakes": 1, "no_del": 0, "del_details": "", "no_sub": 1, "sub_details": "0-\\u092a\\u0948\\u0938\\u093e:", "status": "success", "wcpm": 0.0, "text": "", "audio_url": "", "process_time": 0.47053098678588867}')
-            print("testing the data", lc_res)
             if len(lc_res)==5:
                 request.session['dc_rec'] = lc_res
                 context = {'l_res': lc_res}
@@ -5393,28 +5577,43 @@ def letter_skip(request):
                 return redirect(url,context)
         if len(l_audio_files) == 4:
             return redirect('letter_recording')
-        # if len(d_audio_files)==5:
-        #     return render(request, 'word_answer.html',{'qletter': qletter})
     return redirect('letter_recording_next')
 
 
 def submit_letter_skip(request):
+    """
+    View function for submitting the skipped letter.
+
+    The function updates the necessary session variables to reflect the skipped letter.
+    It retrieves the data ID and audio files from the session, and appends the skipped
+    audio file to the appropriate session variables.
+    It retrieves the selected option, JSON file, and data ID from the session.
+    If the selected option is not None, it retrieves the data value from the JSON file.
+    The function then appends the skipped letter value to the 'qletter' session variable.
+    If the 'lc_res' session variable is not set, it initializes it as an empty list.
+    It appends a dummy response JSON to the 'lc_res' list to simulate successful recording.
+    If the 'lc_res' list has reached a length of 5, it sets the 'dc_rec' session variable,
+    prepares the context, and redirects to the 'lans_page' view.
+    Finally, if the length of 'l_audio_files' is 4, it redirects to the 'letter_recording' view.
+    Otherwise, it redirects to the 'letter_recording_next' view.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response for redirecting to the appropriate view.
+
+    """
     skip_val_letter = request.session.setdefault('skip_val_letter', [])
     submit_id_letter = request.session.get('submit_id_letter')
-    print(submit_id_letter)
     data_id = submit_id_letter.get('data_id')
-    print('data_id:', data_id)
     l_audio_files = request.session.get('l_audio_files', [])
     l_audio_files_name = request.session.get('l_audio_files_name', [])
     data_ids = request.session.get('data_ids', [])
     qletter = request.session.setdefault('qletter', [])
-    print("l_audio_files_name",l_audio_files_name)
-    print("data_ids",data_ids)
     data_ids = request.session.get('data_ids', [])
     l_audio_files_name = request.session.get('l_audio_files_name', [])
     missing_indices = [i for i, id in enumerate(data_ids) if id not in l_audio_files_name]
-    # Print the missing indices
-    print("The missing indices are:", missing_indices)
     # for data_id in data_ids:
     audio_file = data_id + '.wav'
     if audio_file not in l_audio_files_name:
@@ -5427,12 +5626,9 @@ def submit_letter_skip(request):
 
     request.session['l_audio_files'] = l_audio_files
     request.session['skip_val_letter'] = skip_val_letter
-    print("l_audio_files  word_answer",l_audio_files)
     request.session['l_audio_files_name'] = l_audio_files_name
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     data_id = request.session.get('data_id')
-    print("data_id",data_id)
     json_file = json_files[selected_option]
 
     if selected_option is not None:
@@ -5444,11 +5640,9 @@ def submit_letter_skip(request):
                 break
 
     if val:
-        print("the val",val)
         qletter = request.session.get("qletter")
         qletter.append(val)
         request.session["qletter"] = qletter
-        print("qletter",qletter)
         lc_res = request.session.setdefault('lc_res', [])
         if request.session.get("lc_res",None) is None:
             lc_res = []
@@ -5457,7 +5651,6 @@ def submit_letter_skip(request):
             request.session["lc_res"] = lc_res
             lc_res.append('{"no_mistakes": 1, "no_del": 0, "del_details": "", "no_sub": 1, "sub_details": "0-\\u092a\\u0948\\u0938\\u093e:", "status": "success", "wcpm": 0.0, "text": "", "audio_url": "", "process_time": 0.47053098678588867}')
 
-            print("testing the data", lc_res)
             if len(lc_res)==5:
                 request.session['dc_rec'] = lc_res
                 context = {'l_res': lc_res}
@@ -5465,20 +5658,34 @@ def submit_letter_skip(request):
                 return redirect(url,context)
         if len(l_audio_files) == 4:
             return redirect('letter_recording')
-        # if len(d_audio_files)==5:
-        #     return render(request, 'word_answer.html',{'qletter': qletter})
     return redirect('letter_recording_next')
 
 
 @csrf_exempt
 def save_letter(request):
+    """
+    View function for saving the recorded letter audio.
+
+    The function handles the POST request containing the recorded audio file.
+    It retrieves the data ID and value from the session.
+    It saves the audio file to the media folder using the data ID as the filename.
+    The file path is then appended to the 'l_audio_files' and 'l_audio_files_name'
+    session variables, and the file path is stored in the session.
+    Finally, it renders the 'letter_rec.html' template with the audio URL.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response for rendering the 'letter_rec.html' template.
+
+    """
     l_audio_files = request.session.setdefault('l_audio_files', [])
     l_audio_files_name = request.session.setdefault('l_audio_files_name', [])
 
     if request.method == 'POST' and request.FILES.get('audio_blob'):
         data_id = request.session.get('data_id')
         val = request.POST.get('val')
-        print(val)
         filename = f'{data_id}.wav'
         media_folder = os.path.join(settings.MEDIA_ROOT)
         os.makedirs(media_folder, exist_ok=True)
@@ -5487,27 +5694,40 @@ def save_letter(request):
             audio_file.write(request.FILES['audio_blob'].read())
         l_audio_files.append(filepath)
         l_audio_files_name.append(filename)
-        print("###",l_audio_files)
-        # if len(l_audio_files)< 5:
-        #     l_audio_files.clear()
-        #     l_audio_files_name.clear()                                                          #reset
-
         request.session['filepath'] = filepath
         return render(request, 'letter_rec.html', { 'audio_url': filepath})
 
     
 def letter_answer(request):
+    """
+    View function for handling the letter answer and making a request for transcription.
+
+    The function retrieves the necessary session variables, such as 'l_audio_files',
+    'filepath', and 'selected_option'.
+    If the selected option exists in the 'json_files' dictionary, it retrieves the
+    corresponding JSON file and retrieves the letter value for the current data ID.
+    The letter value is then appended to the 'qletter' session variable.
+    A request is made to the transcription API with the audio file and question payload.
+    If the response status code is 200, the response text is appended to the 'lc_res'
+    session variable. If the length of 'lc_res' reaches 5, the 'lc_rec' session variable
+    is set, and the context is prepared for redirection to the 'lans_page' view.
+    If the length of 'l_audio_files' is 4, it redirects to the 'letter_recording' view.
+    Otherwise, it redirects to the 'letter_recording_next' view.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response for redirecting to the appropriate view or rendering the error template.
+
+    """
     l_audio_files = request.session.setdefault('l_audio_files', [])
     filepath = request.session.get('filepath')
-    print(filepath)
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
 
     if selected_option in json_files:
         json_file_path = json_files[selected_option]
-        print('@###############################', json_file_path)
         data_id = request.session.get('data_id')
-        print("data_id", data_id)
         data = json_file_path
         letter = next((d['data'] for d in data['Letter'] if d['id'] == request.session.get('data_id')), None)
 
@@ -5532,7 +5752,6 @@ def letter_answer(request):
             lc_res.append(response.text)
 
             request.session["lc_res"] = lc_res
-            print("testing the data", lc_res)
             if len(lc_res)==5:
                 request.session['lc_rec'] = lc_res
                 context = {'l_res': lc_res}
@@ -5543,15 +5762,42 @@ def letter_answer(request):
             return redirect('letter_recording')
     else:
         return render(request, 'Error/pages-500.html' )
-            
     return redirect('letter_recording_next')
 
+
 def lans_page(request):
+    """
+    View function for rendering the LANs (Letter and Number Sequencing) page.
+
+    The function retrieves session variables such as 'l_copy_audio_files',
+    'l_audio_files_name', 'l_audio_files', and 'copy_letter_name'.
+    If the length of 'l_audio_files' is 5, it copies the contents of 'l_audio_files'
+    to 'l_copy_audio_files'.
+    If the length of 'l_audio_files_name' is 5, it copies the contents of
+    'l_audio_files_name' to 'copy_letter_name'.
+    If the length of 'l_audio_files' is 4, it copies the contents of 'l_audio_files'
+    to 'l_copy_audio_files'.
+    If the length of 'l_audio_files_name' is 4, it copies the contents of
+    'l_audio_files_name' to 'copy_letter_name'.
+    The 'copy_letter_name' session variable is updated accordingly.
+    The audio URLs are generated for each file in 'l_copy_audio_files' if the file exists,
+    and the URLs are added to the 'audio_urls' list.
+    The session variables 'l_copy_audio_files', 'lc_res', and 'qletter' are retrieved.
+    The 'text', 'mis', and 'wcpm' lists are populated from the 'lc_res' session variable.
+    The total word correct per minute (WCPM) and total mistakes are calculated.
+    The context is prepared with all the necessary variables for rendering the template.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response for rendering the 'letter_answer.html' template.
+
+    """
     l_copy_audio_files = request.session.get('l_copy_audio_files', [])
     l_audio_files_name = request.session.setdefault('l_audio_files_name', [])
     l_audio_files = request.session.get('l_audio_files', [])
     copy_letter_name = request.session.setdefault('copy_letter_name', [])
-    print("l_audio_files_name",l_audio_files_name)
     if len(l_audio_files)==5:
         l_copy_audio_files= l_audio_files.copy()
     if len(l_audio_files_name)==5:
@@ -5560,8 +5806,6 @@ def lans_page(request):
         l_copy_audio_files= l_audio_files.copy()
     if len(l_audio_files_name)==4:
         copy_letter_name= l_audio_files_name.copy()
-    
-    print("copy_letter_name",copy_letter_name)
     request.session['copy_letter_name'] = copy_letter_name
 
     audio_urls = []
@@ -5571,10 +5815,8 @@ def lans_page(request):
                 filename = os.path.basename(filepath)
                 audio_url = request.build_absolute_uri(settings.MEDIA_URL + filename)
                 audio_urls.append(audio_url)
-                print('audiourls',audio_urls)
             else:
                 audio_urls.append('') 
-                # l_copy_audio_files.remove(file_path)
         request.session['l_copy_audio_files'] = l_copy_audio_files
 
     text = []
@@ -5590,8 +5832,6 @@ def lans_page(request):
         wcpm.append(eval(item)['wcpm'])
     total_wcpm = sum(wcpm) 
     total_mis = sum(mis)
-    print("total",total_wcpm)
-    print("qletter",qletter)
     context = {
     'qletter': qletter,
     'mis': mis,
@@ -5603,8 +5843,7 @@ def lans_page(request):
     'audio_url4': audio_urls[3],
     'audio_url5': audio_urls[4],
     'total_mis': total_mis
-}
-    # context = { 'text': text,'qletter': qletter, 'mis':mis ,'flu':wcpm,'l_copy_audio_files':l_copy_audio_files ,'total_wcpm': total_wcpm,'audio_urls':audio_urls ,'total_mis':total_mis}
+    }
     if len(l_audio_files)==5:
         l_audio_files.clear()
         l_audio_files_name.clear()
@@ -5612,30 +5851,37 @@ def lans_page(request):
 
 
 def next_letter(request):
+    """
+    View function for handling the submission of letter recording choices.
+
+    The function retrieves session variables such as 'l_dataid' and 'copy_letter_name'.
+    If the form data contains "record" in the POST request, it retrieves the selected option,
+    retrieves the corresponding letter data, and renders the 'retake_letter1.html' template
+    with the 'recording' flag set to True.
+    Similar logic is followed for "record2", "record3", "record4", and "record5" options.
+    The template context includes the 'val' variable containing the letter data.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response for rendering the respective 'retake_letter' template.
+
+    """
     t.sleep(2)    
     l_dataid = request.session.setdefault('l_dataid', [])
     copy_letter_name = request.session.setdefault('copy_letter_name', [])
 
     if request.method == "POST":
         copy_letter_name = request.session.get('copy_letter_name')
-        # copy_letter_name = request.session.setdefault('copy_letter_name', [])
-        # for file_name in copy_letter_name:
-        #     file_name_without_extension = file_name.split(".")[0]
-        #     l_dataid.append(file_name_without_extension)
         l_dataid = request.session.get('l_dataid', [])
-        print("^^^",l_dataid)
 
         if "record" in request.POST:
             selected_option = request.session.get('selected_option')
-            print("@",selected_option)
             if selected_option is not None:
-                print("l_dataid0",l_dataid[0])
                 request.session['l_dataid[0]'] = l_dataid[0]
                 json_file_path = json_files[selected_option]
-                print('@###############################', json_file_path)
-                # request.session['json_file'] = json_file_path
                 data_id = request.session.get('data_id')
-                print("data_id", data_id)
                 if data_id is not None:
                     data = json_file_path
                     Letter = None
@@ -5649,16 +5895,11 @@ def next_letter(request):
             
         elif "record2" in request.POST:
             selected_option = request.session.get('selected_option')
-            print("@",selected_option)
 
             if selected_option is not None:
-                print("l_dataid0",l_dataid[0])
                 request.session['l_dataid[1]'] = l_dataid[1]
                 json_file_path = json_files[selected_option]
-                print('@###############################', json_file_path)
-                # request.session['json_file'] = json_file_path
                 data_id = request.session.get('data_id')
-                print("data_id", data_id)
                 if data_id is not None:
                     data = json_file_path
                     Letter = None
@@ -5672,16 +5913,11 @@ def next_letter(request):
 
         elif "record3" in request.POST:
             selected_option = request.session.get('selected_option')
-            print("@",selected_option)
             if selected_option is not None:
-                print("l_dataid0",l_dataid[2])
                 request.session['l_dataid[2]'] = l_dataid[2]
                 request.session['audio_recorded'] = True
                 json_file_path = json_files[selected_option]
-                print('@###############################', json_file_path)
-                # request.session['json_file'] = json_file_path
                 data_id = request.session.get('data_id')
-                print("data_id", data_id)
                 if data_id is not None:
                     data = json_file_path
                     Letter = None
@@ -5695,15 +5931,11 @@ def next_letter(request):
 
         elif "record4" in request.POST:
             selected_option = request.session.get('selected_option')
-            print("@",selected_option)
             if selected_option is not None:
-                print("l_dataid0",l_dataid[3])
                 request.session['l_dataid[3]'] = l_dataid[3]
                 request.session['audio_recorded'] = True
                 json_file_path = json_files[selected_option]
-                print('@###############################', json_file_path)
                 data_id = request.session.get('data_id')
-                print("data_id", data_id)
                 if data_id is not None:
                     data = json_file_path
                     Letter = None
@@ -5717,15 +5949,11 @@ def next_letter(request):
         
         elif "record5" in request.POST:
             selected_option = request.session.get('selected_option')
-            print("@",selected_option)
             if selected_option is not None:
-                print("l_dataid0",l_dataid[4])
                 request.session['l_dataid[4]'] = l_dataid[4]
                 request.session['audio_recorded'] = True
                 json_file_path = json_files[selected_option]
-                print('@###############################', json_file_path)
                 data_id = request.session.get('data_id')
-                print("data_id", data_id)
                 if data_id is not None:
                     data = json_file_path
                     Letter = None
@@ -5741,6 +5969,26 @@ def next_letter(request):
 
 @csrf_exempt
 def retake_letter(request):
+    """
+    View function for handling the submission of retaken letter recordings.
+
+    The function retrieves session variables such as 'l_audio_files', 'l_copy_audio_files',
+    'l_audio_files_name', and 'l_dataid'.
+    If the request method is POST and there is a file in the request data, it retrieves
+    the letter data ID and the corresponding letter data.
+    It saves the audio file in the media folder using the data ID as the filename.
+    If the file path is already present in 'l_copy_audio_files', it updates the existing path.
+    If 'l_copy_audio_files' is empty, it appends the path to the list.
+    The 'filepath' session variable is updated with the newly saved file path.
+    The 'letter_answer.html' template is rendered with the 'audio_url' variable set to the file path.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response for rendering the 'letter_answer.html' template.
+
+    """
     l_audio_files = request.session.setdefault('l_audio_files', [])
     l_copy_audio_files = request.session.get('l_copy_audio_files', [])
     l_audio_files_name = request.session.setdefault('l_audio_files_name', [])
@@ -5749,7 +5997,6 @@ def retake_letter(request):
     if request.method == 'POST' and request.FILES.get('audio_blob'):
         data_id = request.session.get('data_id')
         val = request.POST.get('val')
-        print(val)
         request.session['l_dataid[0]'] = l_dataid[0]
         filename = l_dataid[0]+'.wav'
         media_folder = os.path.join(settings.MEDIA_ROOT)
@@ -5765,26 +6012,38 @@ def retake_letter(request):
             if len(l_copy_audio_files)==0:
                 l_copy_audio_files.append(filepath)
             
-        print("###",l_copy_audio_files)
-        # if len(l_audio_files) < 5:
-        #     l_audio_files.clear()
-        #     l_audio_files_name.clear()
-
         request.session['filepath'] = filepath
         return render(request, 'letter_answer.html', { 'audio_url': filepath})
     
+
 def save_letter1(request):
+    """
+    View function for saving the recording of letter 1 and sending it for transcription.
+
+    The function retrieves session variables such as 'l_dataid', 'filepath', 'selected_option',
+    and 'data_id'.
+    It retrieves the letter data corresponding to the selected option.
+    If the selected option is 'English', it retrieves the letter data from the 'json_eng' file.
+    The function then sends a POST request to a specified URL with the audio file and transcription parameters.
+    If the response status code is 200, it updates the 'lc_res' session variable with the transcription result.
+    If the 'lc_res' session variable is not present, it initializes it as an empty list.
+    The function checks the length of 'lc_res' and if it reaches 5, it redirects to the 'lans_page' URL,
+    passing the 'lc_res' as the 'l_res' context variable.
+    If the response status code is not 200, it renders an error page.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response for rendering the 'lans_page' URL or an error page.
+
+    """
     l_dataid = request.session.setdefault('l_dataid', [])
     filepath = request.session.get('filepath')
-    print(filepath)
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     request.session['l_dataid[0]'] = l_dataid[0]
-    print("data_id", l_dataid[0])
     json_file_path = json_files.get(selected_option)
-    print('@###############################', json_file_path)
     data_id = request.session.get('data_id')
-    print("data_id", data_id)
     
     if json_file_path:
         data = json_file_path
@@ -5797,9 +6056,6 @@ def save_letter1(request):
 
     if selected_option == 'English':
         request.session['l_dataid[0]'] = l_dataid[0]
-        print("data_id",l_dataid[0])
-        # with open(json_eng) as f:
-        #     data = json.load(f)
         data = json_eng
         Letter = None
         for d in data['Letter']:
@@ -5814,7 +6070,6 @@ def save_letter1(request):
     payload = {'language': selected_option ,'question':val}
     headers = {}
     response = requests.request("POST", url, headers=headers, data=payload, files=files)
-    # lc_res=[]
     if response.status_code == 200:
         lc_res = request.session.setdefault('lc_res', [])
         if request.session.get("lc_res",None) is None:
@@ -5822,9 +6077,7 @@ def save_letter1(request):
         else:
             lc_res = request.session.get("lc_res")
             lc_res[0] = response.text
-            # lc_res.clear()
             request.session["lc_res"] = lc_res
-            print("testing the data", lc_res)
             if len(lc_res)==5:
                 request.session['lc_rec'] = lc_res
                 context = {'l_res': lc_res}
@@ -5838,6 +6091,21 @@ def save_letter1(request):
 
 @csrf_exempt
 def retake_letter2(request):
+    """
+    View function for handling the retake of letter 2.
+
+    The function retrieves session variables such as 'l_audio_files', 'l_copy_audio_files',
+    'l_audio_files_name', and 'l_dataid'.
+    If the request method is POST and an audio file is present in the request,
+    it saves the audio file, updates the session variables, and renders the 'letter_answer' template.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response for rendering the 'letter_answer' template with the audio URL.
+
+    """
     l_audio_files = request.session.setdefault('l_audio_files', [])
     l_copy_audio_files = request.session.get('l_copy_audio_files', [])
     l_audio_files_name = request.session.setdefault('l_audio_files_name', [])
@@ -5846,7 +6114,6 @@ def retake_letter2(request):
     if request.method == 'POST' and request.FILES.get('audio_blob'):
         data_id = request.session.get('data_id')
         val = request.POST.get('val')
-        print(val)
         request.session['l_dataid[1]'] = l_dataid[1]
         filename = l_dataid[1]+'.wav'
         media_folder = os.path.join(settings.MEDIA_ROOT)
@@ -5861,26 +6128,38 @@ def retake_letter2(request):
                 l_copy_audio_files.append(filepath)
             if len(l_copy_audio_files)==0:
                 l_copy_audio_files.append(filepath)
-        print("###",l_copy_audio_files)
-        # if len(l_audio_files) < 5:
-        #     l_audio_files.clear()
-        #     l_audio_files_name.clear()
         request.session['filepath'] = filepath
         return render(request, 'letter_answer.html', { 'audio_url': filepath})
 
 
 def save_letter2(request):
+    """
+    View function for saving the recording of letter 2 and sending it for transcription.
+
+    The function retrieves session variables such as 'l_dataid', 'filepath', 'selected_option',
+    and 'data_id'.
+    It retrieves the letter data corresponding to the selected option.
+    If the selected option is 'English', it retrieves the letter data from the 'json_eng' file.
+    The function then sends a POST request to a specified URL with the audio file and transcription parameters.
+    If the response status code is 200, it updates the 'lc_res' session variable with the transcription result.
+    If the 'lc_res' session variable is not present, it initializes it as an empty list.
+    The function checks the length of 'lc_res' and if it reaches 5, it redirects to the 'lans_page' URL,
+    passing the 'lc_res' as the 'l_res' context variable.
+    If the response status code is not 200, it renders an error page.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response for rendering the 'lans_page' URL or an error page.
+
+    """
     l_dataid = request.session.setdefault('l_dataid', [])
     filepath = request.session.get('filepath')
-    print(filepath)
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     request.session['l_dataid[1]'] = l_dataid[1]
-    print("data_id", l_dataid[1])
     json_file_path = json_files.get(selected_option)
-    print('@###############################', json_file_path)
     data_id = request.session.get('data_id')
-    print("data_id", data_id)
     
     if json_file_path:
         data = json_file_path
@@ -5893,7 +6172,6 @@ def save_letter2(request):
 
     if selected_option == 'English':
         request.session['l_dataid[1]'] = l_dataid[1]
-        print("data_id",l_dataid[1])
         data = json_eng
         Letter = None
         for d in data['Letter']:
@@ -5917,7 +6195,6 @@ def save_letter2(request):
             lc_res = request.session.get("lc_res")
             lc_res[1] = response.text
             request.session["lc_res"] = lc_res
-            print("testing the data", lc_res)
             if len(lc_res)==5:
                 request.session['lc_rec'] = lc_res
                 context = {'l_res': lc_res}
@@ -5931,6 +6208,21 @@ def save_letter2(request):
 
 @csrf_exempt
 def retake_letter3(request):
+    """
+    View function for handling the retake of letter 3.
+
+    The function retrieves session variables such as 'l_audio_files', 'l_copy_audio_files',
+    'l_audio_files_name', and 'l_dataid'.
+    If the request method is POST and an audio file is present in the request,
+    it saves the audio file, updates the session variables, and renders the 'letter_answer' template.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response for rendering the 'letter_answer' template with the audio URL.
+
+    """
     l_audio_files = request.session.setdefault('l_audio_files', [])
     l_copy_audio_files = request.session.get('l_copy_audio_files', [])
     l_audio_files_name = request.session.setdefault('l_audio_files_name', [])
@@ -5939,7 +6231,6 @@ def retake_letter3(request):
     if request.method == 'POST' and request.FILES.get('audio_blob'):
         data_id = request.session.get('data_id')
         val = request.POST.get('val')
-        print(val)
         request.session['l_dataid[2]'] = l_dataid[2]
         filename = l_dataid[2]+'.wav'
         media_folder = os.path.join(settings.MEDIA_ROOT)
@@ -5954,24 +6245,42 @@ def retake_letter3(request):
                 l_copy_audio_files.append(filepath)
             if len(l_copy_audio_files)==0:
                 l_copy_audio_files.append(filepath)
-        print("###",l_copy_audio_files)
         request.session['filepath'] = filepath
         return render(request, 'letter_answer.html', { 'audio_url': filepath})
     
 
 def save_letter3(request):
+    """
+    View function for saving the recording of letter 3 and sending it for transcription.
+
+    The function retrieves session variables such as 'l_dataid', 'filepath', 'selected_option',
+    and 'data_id'.
+    It retrieves the letter data corresponding to the selected option.
+    If the selected option is 'English', it retrieves the letter data from the 'json_eng' file.
+    The function then sends a POST request to a specified URL with the audio file and transcription parameters.
+    If the response status code is 200, it updates the 'lc_res' session variable with the transcription result.
+    If the 'lc_res' session variable is not present, it initializes it as an empty list.
+    The function checks the length of 'lc_res' and if it reaches 5, it redirects to the 'lans_page' URL,
+    passing the 'lc_res' as the 'l_res' context variable.
+    If the response status code is not 200, it renders an error page.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response for rendering the 'lans_page' URL or an error page.
+
+    """
     l_dataid = request.session.setdefault('l_dataid', [])
     filepath = request.session.get('filepath')
     selected_option = request.session.get('selected_option')
     request.session['l_dataid[2]'] = l_dataid[2]
     json_file_path = json_files.get(selected_option)
     data_id = request.session.get('data_id')
-    print("data_id", data_id)
     
     if json_file_path:
         data = json_file_path
         if data is not None:
-            Word = None
             for d in data['Letter']:
                 if d['id'] == l_dataid[2]:
                     val = d['data']
@@ -5979,9 +6288,7 @@ def save_letter3(request):
 
     if selected_option == 'English':
         request.session['l_dataid[2]'] = l_dataid[2]
-        print("data_id",l_dataid[2])
         data = json_eng
-        Letter = None
         for d in data['Letter']:
             if d['id'] == l_dataid[2]:
                 val = d['data']
@@ -6001,10 +6308,7 @@ def save_letter3(request):
         else:
             lc_res = request.session.get("lc_res")
             lc_res[2] = response.text
-            # lc_res.clear()
-
             request.session["lc_res"] = lc_res
-            print("testing the data", lc_res)
             if len(lc_res)==5:
                 request.session['lc_rec'] = lc_res
                 context = {'l_res': lc_res}
@@ -6018,16 +6322,29 @@ def save_letter3(request):
 
 @csrf_exempt
 def retake_letter4(request):
+    """
+    View function for handling the retake of letter 4.
+
+    The function retrieves session variables such as 'l_audio_files', 'l_copy_audio_files',
+    'l_audio_files_name', and 'l_dataid'.
+    If the request method is POST and an audio file is present in the request,
+    it saves the audio file, updates the session variables, and renders the 'letter_answer' template.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response for rendering the 'letter_answer' template with the audio URL.
+
+    """
     l_audio_files = request.session.setdefault('l_audio_files', [])
     l_copy_audio_files = request.session.get('l_copy_audio_files', [])
-
     l_audio_files_name = request.session.setdefault('l_audio_files_name', [])
     l_dataid = request.session.setdefault('l_dataid', [])
 
     if request.method == 'POST' and request.FILES.get('audio_blob'):
         data_id = request.session.get('data_id')
         val = request.POST.get('val')
-        print(val)
         request.session['l_dataid[3]'] = l_dataid[3]
         filename = l_dataid[3]+'.wav'
         media_folder = os.path.join(settings.MEDIA_ROOT)
@@ -6042,28 +6359,42 @@ def retake_letter4(request):
                 l_copy_audio_files.append(filepath)
             if len(l_copy_audio_files)==0:
                 l_copy_audio_files.append(filepath)
-        print("###",l_copy_audio_files)
         request.session['filepath'] = filepath
         return render(request, 'letter_answer.html', { 'audio_url': filepath})
 
 
 def save_letter4(request):
+    """
+    View function for saving the recording of letter 4 and sending it for transcription.
+
+    The function retrieves session variables such as 'l_dataid', 'filepath', 'selected_option',
+    and 'data_id'.
+    It retrieves the letter data corresponding to the selected option.
+    If the selected option is 'English', it retrieves the letter data from the 'json_eng' file.
+    The function then sends a POST request to a specified URL with the audio file and transcription parameters.
+    If the response status code is 200, it updates the 'lc_res' session variable with the transcription result.
+    If the 'lc_res' session variable is not present, it initializes it as an empty list.
+    The function checks the length of 'lc_res' and if it reaches 5, it redirects to the 'lans_page' URL,
+    passing the 'lc_res' as the 'l_res' context variable.
+    If the response status code is not 200, it renders an error page.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response for rendering the 'lans_page' URL or an error page.
+
+    """
     l_dataid = request.session.setdefault('l_dataid', [])
     filepath = request.session.get('filepath')
-    print(filepath)
     selected_option = request.session.get('selected_option')
-    print("@",selected_option)
     request.session['l_dataid[3]'] = l_dataid[3]
-    print("data_id", l_dataid[3])
     json_file_path = json_files.get(selected_option)
-    print('@###############################', json_file_path)
     data_id = request.session.get('data_id')
-    print("data_id", data_id)
 
     if json_file_path:
         data = json_file_path
         if data is not None:
-            Word = None
             for d in data['Letter']:
                 if d['id'] == l_dataid[3]:
                     val = d['data']
@@ -6071,9 +6402,6 @@ def save_letter4(request):
 
     if selected_option == 'English':
         request.session['l_dataid[3]'] = l_dataid[3]
-        print("data_id",l_dataid[3])
-        # with open(json_eng) as f:
-        #     data = json.load(f)
         data = json_eng
         Letter = None
         for d in data['Letter']:
@@ -6096,9 +6424,7 @@ def save_letter4(request):
         else:
             lc_res = request.session.get("lc_res")
             lc_res[3] = response.text
-            # lc_res.clear()
             request.session["lc_res"] = lc_res
-            print("testing the data", lc_res)
             if len(lc_res)==5:
                 request.session['lc_rec'] = lc_res
                 context = {'l_res': lc_res}
@@ -6111,16 +6437,35 @@ def save_letter4(request):
 
 @csrf_exempt
 def retake_letter5(request):
+    """
+    View function for retaking the recording of letter 5.
+
+    The function retrieves session variables such as 'l_audio_files', 'l_copy_audio_files', 'l_audio_files_name',
+    and 'l_dataid'.
+    If the request method is POST and there is a file attached in the request, it saves the file and updates
+    the necessary session variables.
+    The function creates a file path based on the 'l_dataid' and saves the uploaded audio file with that name.
+    It then updates the 'l_copy_audio_files' session variable with the file path.
+    If the 'l_copy_audio_files' list has less than 5 items, it appends the new file path.
+    If the 'l_copy_audio_files' list has less than 4 items, it appends the new file path.
+    Finally, the function renders the 'letter_answer.html' template, passing the 'audio_url' context variable
+    as the file path of the saved audio file.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response for rendering the 'letter_answer.html' template with the 'audio_url' context.
+
+    """
     l_audio_files = request.session.setdefault('l_audio_files', [])
     l_copy_audio_files = request.session.get('l_copy_audio_files', [])
-
     l_audio_files_name = request.session.setdefault('l_audio_files_name', [])
     l_dataid = request.session.setdefault('l_dataid', [])
 
     if request.method == 'POST' and request.FILES.get('audio_blob'):
         data_id = request.session.get('data_id')
         val = request.POST.get('val')
-        print(val)
         request.session['l_dataid[4]'] = l_dataid[4]
         filename = l_dataid[4]+'.wav'
         media_folder = os.path.join(settings.MEDIA_ROOT)
@@ -6135,11 +6480,31 @@ def retake_letter5(request):
                 l_copy_audio_files.append(filepath)
             if len(l_copy_audio_files)<4:
                 l_copy_audio_files.append(filepath)
-        print("###",l_copy_audio_files)
         request.session['filepath'] = filepath
         return render(request, 'letter_answer.html', { 'audio_url': filepath})
     
 def save_letter5(request):
+    """
+    View function for saving the recording of letter 5 and sending it for transcription.
+
+    The function retrieves session variables such as 'l_dataid', 'filepath', 'selected_option',
+    and 'data_id'.
+    It retrieves the letter data corresponding to the selected option.
+    If the selected option is 'English', it retrieves the letter data from the 'json_eng' file.
+    The function then sends a POST request to a specified URL with the audio file and transcription parameters.
+    If the response status code is 200, it updates the 'lc_res' session variable with the transcription result.
+    If the 'lc_res' session variable is not present, it initializes it as an empty list.
+    The function checks the length of 'lc_res' and if it reaches 5, it redirects to the 'lans_page' URL,
+    passing the 'lc_res' as the 'l_res' context variable.
+    If the response status code is not 200, it renders an error page.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response for rendering the 'lans_page' URL or an error page.
+
+    """
     l_dataid = request.session.setdefault('l_dataid', [])
     filepath = request.session.get('filepath')
     selected_option = request.session.get('selected_option')
@@ -6147,21 +6512,36 @@ def save_letter5(request):
     json_file_path = json_files.get(selected_option)
     data_id = request.session.get('data_id')
     
+    # if json_file_path:
+    #     data = json_file_path
+    #     if data is not None:
+    #         for d in data['Letter']:
+    #             if d['id'] == l_dataid[4]:
+    #                 val = d['data']
+    #                 break
+
+    # if selected_option == 'English':
+    #     request.session['l_dataid[4]'] = l_dataid[4]
+    #     data = json_eng
+    #     for d in data['Letter']:
+    #         if d['id'] == l_dataid[4]:
+    #             val = d['data']
+    #             break
     if json_file_path:
         data = json_file_path
         if data is not None:
-            for d in data['Letter']:
-                if d['id'] == l_dataid[4]:
-                    val = d['data']
+            for letter_data in data['Letter']:
+                if letter_data['id'] == l_dataid[4]:
+                    val = letter_data['data']
                     break
 
     if selected_option == 'English':
         request.session['l_dataid[4]'] = l_dataid[4]
         data = json_eng
-        for d in data['Letter']:
-            if d['id'] == l_dataid[4]:
-                val = d['data']
-                break    
+        for letter_data in data['Letter']:
+            if letter_data['id'] == l_dataid[4]:
+                val = letter_data['data']
+                break 
     if val:
         print("the val",val)
     url = 'http://3.7.133.80:8000/gettranscript/'
@@ -6170,7 +6550,6 @@ def save_letter5(request):
     headers = {}
     response = requests.request("POST", url, headers=headers, data=payload, files=files)
     if response.status_code == 200:
-
         lc_res = request.session.setdefault('lc_res', [])
         if request.session.get("lc_res",None) is None:
             lc_res = []
@@ -6181,7 +6560,6 @@ def save_letter5(request):
             else:
                 lc_res.insert(4, response.text)
             request.session["lc_res"] = lc_res
-            print("testing the data", lc_res)
             if len(lc_res)==5:
                 request.session['lc_rec'] = lc_res
                 context = {'l_res': lc_res}
@@ -6193,27 +6571,83 @@ def save_letter5(request):
         return render(request, 'Error/pages-500.html' )
 
 
-def seventeen(request):     
+def seventeen(request):
+    """
+    View function for rendering the 'seventeen.html' template.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response for rendering the 'seventeen.html' template.
+    """
     return render(request,'seventeen.html')
 
-def word_msg(request):
-    child_name = request.session.get('child_name')
 
+def word_msg(request):
+    """
+    View function for rendering the 'answer_word.html' template.
+
+    Retrieves the 'child_name' session variable and passes it as the 'child_name' context variable
+    to the template.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response for rendering the 'answer_word.html' template with the 'child_name' context.
+    """
+    child_name = request.session.get('child_name')
     return render(request,'answer_word.html',{'child_name': child_name})
 
-def next_answer(request):
-    child_name = request.session.get('child_name')
 
+def next_answer(request):
+    """
+    View function for rendering the 'answer_story.html' template.
+
+    Retrieves the 'child_name' session variable and passes it as the 'child_name' context variable
+    to the template.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response for rendering the 'answer_story.html' template with the 'child_name' context.
+    """
+    child_name = request.session.get('child_name')
     return render(request,'answer_story.html',{'child_name': child_name})
 
-def word_ltr(request):
-    child_name = request.session.get('child_name')
 
+def word_ltr(request):
+    """
+    View function for rendering the 'answer_letter.html' template.
+
+    Retrieves the 'child_name' session variable and passes it as the 'child_name' context variable
+    to the template.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response for rendering the 'answer_letter.html' template with the 'child_name' context.
+    """
+    child_name = request.session.get('child_name')
     return render(request,'answer_letter.html',{'child_name': child_name})
 
 def word_beg(request):
-    child_name = request.session.get('child_name')
+    """
+    View function for rendering the 'answer_beginer.html' template.
 
+    Retrieves the 'child_name' session variable and passes it as the 'child_name' context variable
+    to the template.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The HTTP response for rendering the 'answer_beginer.html' template with the 'child_name' context.
+    """
+    child_name = request.session.get('child_name')
     return render(request,'answer_beginer.html',{'child_name': child_name})
 
     
