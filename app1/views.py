@@ -71,7 +71,6 @@ json_ben_data = json_data.get('json_ben')
 json_eng_data = json_data.get('json_eng')
 json_guj_data = json_data.get('json_guj')
 json_hin_data = json_data.get('json_hin')
-print('json hindi', type(json_hin_data))
 json_pun_data = json_data.get('json_pun')
 json_tml_data = json_data.get('json_tml')
 json_knd_data = json_data.get('json_knd')
@@ -6482,7 +6481,8 @@ def retake_letter5(request):
                 l_copy_audio_files.append(filepath)
         request.session['filepath'] = filepath
         return render(request, 'letter_answer.html', { 'audio_url': filepath})
-    
+
+
 def save_letter5(request):
     """
     View function for saving the recording of letter 5 and sending it for transcription.
@@ -6510,23 +6510,8 @@ def save_letter5(request):
     selected_option = request.session.get('selected_option')
     request.session['l_dataid[4]'] = l_dataid[4]
     json_file_path = json_files.get(selected_option)
-    data_id = request.session.get('data_id')
-    
-    # if json_file_path:
-    #     data = json_file_path
-    #     if data is not None:
-    #         for d in data['Letter']:
-    #             if d['id'] == l_dataid[4]:
-    #                 val = d['data']
-    #                 break
+    val = None
 
-    # if selected_option == 'English':
-    #     request.session['l_dataid[4]'] = l_dataid[4]
-    #     data = json_eng
-    #     for d in data['Letter']:
-    #         if d['id'] == l_dataid[4]:
-    #             val = d['data']
-    #             break
     if json_file_path:
         data = json_file_path
         if data is not None:
@@ -6535,40 +6520,38 @@ def save_letter5(request):
                     val = letter_data['data']
                     break
 
-    if selected_option == 'English':
+    if selected_option == 'English' and val is None:
         request.session['l_dataid[4]'] = l_dataid[4]
         data = json_eng
         for letter_data in data['Letter']:
             if letter_data['id'] == l_dataid[4]:
                 val = letter_data['data']
                 break 
+
     if val:
-        print("the val",val)
+        print("the val", val)
+
     url = 'http://3.7.133.80:8000/gettranscript/'
     files = [('audio', (filepath, open(filepath, 'rb'), 'audio/wav'))]
-    payload = {'language': selected_option ,'question':val}
+    payload = {'language': selected_option, 'question': val}
     headers = {}
     response = requests.request("POST", url, headers=headers, data=payload, files=files)
+
     if response.status_code == 200:
         lc_res = request.session.setdefault('lc_res', [])
-        if request.session.get("lc_res",None) is None:
-            lc_res = []
+        lc_res = lc_res or []
+        if len(lc_res) == 5:
+            lc_res[4] = response.text
         else:
-            lc_res = request.session.get("lc_res")
-            if len(lc_res) ==5:
-                lc_res[4] = response.text
-            else:
-                lc_res.insert(4, response.text)
-            request.session["lc_res"] = lc_res
-            if len(lc_res)==5:
-                request.session['lc_rec'] = lc_res
-                context = {'l_res': lc_res}
-                url = reverse('lans_page')
-                if len(lc_res)==5:
-                    return redirect(url,context)
-                    
-    else:
-        return render(request, 'Error/pages-500.html' )
+            lc_res.insert(4, response.text)
+        request.session["lc_res"] = lc_res
+        if len(lc_res) == 5:
+            request.session['lc_rec'] = lc_res
+            context = {'l_res': lc_res}
+            url = reverse('lans_page')
+            return redirect(url, context)
+    
+    return render(request, 'Error/pages-500.html')
 
 
 def seventeen(request):
